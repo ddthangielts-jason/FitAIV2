@@ -589,27 +589,79 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
   </div>
 </div>
 
-<!-- ═══ SHARE CARD MODAL ═══ -->
-<div id="share-modal" style="position:fixed;inset:0;z-index:450;background:rgba(0,0,0,.95);display:none;align-items:center;justify-content:center;max-width:430px;margin:0 auto">
-  <div style="width:100%;padding:20px">
-    <div class="rb" style="margin-bottom:16px">
-      <div style="font-family:var(--FD);font-size:22px;letter-spacing:.04em">Share <span style="color:var(--lime)">kết quả</span></div>
-      <button onclick="document.getElementById('share-modal').style.display='none'" style="background:none;border:none;color:var(--txt2);font-size:22px;cursor:pointer">✕</button>
+<!-- ═══ SHARE / CHECK-IN MODAL ═══ -->
+<div id="share-modal" style="position:fixed;inset:0;z-index:450;background:#000;display:none;flex-direction:column;max-width:430px;margin:0 auto">
+  <!-- Header -->
+  <div style="padding:16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div style="font-family:var(--FD);font-size:22px;letter-spacing:.04em">Lên <span style="color:var(--lime)">level!</span></div>
+    <button onclick="closeShareModal()" style="background:var(--bg3);border:1px solid var(--brd);color:var(--txt2);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
+  </div>
+
+  <!-- Canvas area -->
+  <div style="flex:1;overflow-y:auto;padding:0 16px 16px">
+    <!-- Photo + overlay container -->
+    <div id="checkin-canvas" style="position:relative;border-radius:16px;overflow:hidden;margin-bottom:14px;background:#111;aspect-ratio:.85;display:flex;align-items:center;justify-content:center">
+      <!-- Background photo -->
+      <img id="checkin-photo" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none">
+      <!-- No photo placeholder -->
+      <div id="checkin-placeholder" style="display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer" onclick="triggerPhotoUpload()">
+        <div style="width:60px;height:60px;border-radius:50%;background:var(--bg3);border:2px dashed var(--brd3);display:flex;align-items:center;justify-content:center;font-size:24px">📷</div>
+        <div style="font-size:13px;color:var(--txt3)">Chọn ảnh gym của bạn</div>
+        <div style="font-size:11px;color:var(--txt3)">Hoặc dùng màu nền bên dưới</div>
+      </div>
+      <!-- Stats overlay (always shown) -->
+      <div id="checkin-overlay" style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding:16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <div style="font-family:var(--FD);font-size:13px;letter-spacing:.1em;color:var(--lime)">FIT<span style="color:#fff">AI</span></div>
+          <div id="ov-plan" style="font-size:11px;color:rgba(255,255,255,.6);font-family:var(--FM)"></div>
+        </div>
+        <div id="ov-title" style="font-family:var(--FD);font-size:28px;letter-spacing:.04em;color:#fff;line-height:1;margin-bottom:8px"></div>
+        <div style="display:flex;gap:14px;align-items:center">
+          <div style="display:flex;align-items:center;gap:4px">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--lime)"></div>
+            <span id="ov-dur" style="font-size:12px;color:#fff;font-family:var(--FM)"></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--lime)"></div>
+            <span id="ov-sets" style="font-size:12px;color:#fff;font-family:var(--FM)"></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--lime)"></div>
+            <span id="ov-vol" style="font-size:12px;color:#fff;font-family:var(--FM)"></span>
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- Card preview -->
-    <div id="share-card" style="background:linear-gradient(135deg,#0a1a00,#111);border:1px solid rgba(200,241,53,.3);border-radius:16px;padding:24px;margin-bottom:16px">
-      <div style="font-family:var(--FD);font-size:14px;letter-spacing:.15em;color:var(--lime);margin-bottom:16px">FIT<span style="color:#fff">AI</span></div>
-      <div id="sc-headline" style="font-family:var(--FD);font-size:40px;letter-spacing:.04em;color:#fff;line-height:1;margin-bottom:4px">BEAST MODE</div>
-      <div id="sc-date" style="font-size:11px;color:var(--txt3);font-family:var(--FM);margin-bottom:16px"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:16px" id="sc-stats"></div>
-      <div id="sc-exlist" style="font-size:12px;color:var(--txt2);line-height:1.8;border-top:1px solid rgba(255,255,255,.1);padding-top:12px"></div>
-      <div style="margin-top:14px;font-size:10px;color:var(--txt3);font-family:var(--FM);letter-spacing:.08em">fitai.app · AI Workout Coach 🇻🇳</div>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn bl" style="flex:1" onclick="copyShareText()">Copy text</button>
-      <button class="btn bg" style="flex:1" onclick="nativeShare()">Chia sẻ ↗</button>
+
+    <!-- Motivational quote -->
+    <div id="ov-quote" style="text-align:center;font-size:13px;color:var(--txt2);font-style:italic;margin-bottom:14px"></div>
+
+    <!-- Background color picker (if no photo) -->
+    <div style="margin-bottom:14px">
+      <div class="xs muted" style="margin-bottom:8px">Màu nền</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div onclick="setBg('linear-gradient(135deg,#0a1a00,#111)')" style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#0a1a00,#111);cursor:pointer;border:2px solid var(--lime)"></div>
+        <div onclick="setBg('linear-gradient(135deg,#1a0000,#111)')" style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#1a0000,#111);cursor:pointer;border:1.5px solid var(--brd3)"></div>
+        <div onclick="setBg('linear-gradient(135deg,#00001a,#111)')" style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#00001a,#111);cursor:pointer;border:1.5px solid var(--brd3)"></div>
+        <div onclick="setBg('linear-gradient(135deg,#1a1000,#111)')" style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#1a1000,#111);cursor:pointer;border:1.5px solid var(--brd3)"></div>
+        <div onclick="setBg('#111')" style="width:36px;height:36px;border-radius:8px;background:#111;cursor:pointer;border:1.5px solid var(--brd3)"></div>
+        <div onclick="triggerPhotoUpload()" style="width:36px;height:36px;border-radius:8px;background:var(--bg3);cursor:pointer;border:1.5px solid var(--brd3);display:flex;align-items:center;justify-content:center;font-size:16px">📷</div>
+      </div>
     </div>
   </div>
+
+  <!-- Action buttons -->
+  <div style="padding:0 16px calc(16px + var(--safe-bottom));flex-shrink:0;border-top:1px solid var(--brd)">
+    <div style="padding-top:14px;display:flex;gap:8px">
+      <button class="btn bg" onclick="copyShareText()" style="flex:1;height:46px">
+        📋 Copy text
+      </button>
+      <button class="btn bl" onclick="nativeShare()" style="flex:1;height:46px">
+        ↗ Chia sẻ
+      </button>
+    </div>
+  </div>
+  <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">
 </div>
 
 <!-- ═══ PAYWALL ═══ -->
@@ -1048,7 +1100,36 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         AI tạo meal plan hôm nay
       </button>
 
-      <!-- Meals -->
+      <!-- Water + Custom Cal Goal -->
+      <div class="g2" style="margin-bottom:12px">
+        <div class="card" style="padding:12px">
+          <div style="font-size:10px;color:var(--txt3);font-family:var(--FM);letter-spacing:.08em;margin-bottom:8px">💧 NƯỚC (ml)</div>
+          <div style="font-family:var(--FD);font-size:28px;color:var(--blue);letter-spacing:.04em;line-height:1" id="water-display">0</div>
+          <div style="font-size:10px;color:var(--txt3);margin-bottom:8px">/ <span id="water-goal">2000</span>ml</div>
+          <div class="pb pb-blue" style="margin-bottom:8px"><div class="pf" id="water-bar" style="width:0%"></div></div>
+          <div style="display:flex;gap:5px">
+            <button onclick="addWater(200)" style="flex:1;background:var(--bg4);border:1px solid var(--brd2);border-radius:6px;color:var(--blue);font-size:11px;padding:5px;cursor:pointer">+200</button>
+            <button onclick="addWater(350)" style="flex:1;background:var(--bg4);border:1px solid var(--brd2);border-radius:6px;color:var(--blue);font-size:11px;padding:5px;cursor:pointer">+350</button>
+            <button onclick="addWater(500)" style="flex:1;background:var(--bg4);border:1px solid var(--brd2);border-radius:6px;color:var(--blue);font-size:11px;padding:5px;cursor:pointer">+500</button>
+          </div>
+        </div>
+        <div class="card" style="padding:12px">
+          <div style="font-size:10px;color:var(--txt3);font-family:var(--FM);letter-spacing:.08em;margin-bottom:8px">🎯 MỤC TIÊU CALO</div>
+          <div style="font-family:var(--FD);font-size:22px;color:var(--lime);letter-spacing:.04em;line-height:1;margin-bottom:4px" id="custom-cal-disp">Auto</div>
+          <div style="font-size:10px;color:var(--txt3);margin-bottom:8px">TDEE: <span id="tdee-disp">--</span>kcal</div>
+          <input class="inp" id="custom-cal-inp" type="number" placeholder="Tùy chỉnh..." style="font-size:12px;padding:6px 8px;height:32px" oninput="setCustomCal(this.value)">
+        </div>
+      </div>
+
+      <!-- Meal category filter -->
+      <div class="pill-row" style="margin-bottom:10px" id="meal-filter-row">
+        <button class="pill on" onclick="filterMealView('all',this)">Tất cả</button>
+        <button class="pill" onclick="filterMealView('b',this)">🌅 Sáng</button>
+        <button class="pill" onclick="filterMealView('l',this)">☀️ Trưa</button>
+        <button class="pill" onclick="filterMealView('d',this)">🌙 Tối</button>
+        <button class="pill" onclick="filterMealView('s',this)">🍎 Phụ</button>
+      </div>
+
       <div id="nut-meals"></div>
 
       <!-- AI output -->
@@ -1094,6 +1175,12 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <div style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--txt3);font-family:var(--FM);margin-top:3px" id="squat-lbls"></div>
       </div>
 
+      <!-- Volume per muscle group -->
+      <div class="sec-label">Volume theo nhóm cơ (tuần này)</div>
+      <div class="chart-card" style="margin-bottom:10px">
+        <div id="muscle-vol-chart"></div>
+      </div>
+
       <!-- Monthly Calendar -->
       <div class="sec-label">Lịch tập tháng này</div>
       <div class="card" style="margin-bottom:10px">
@@ -1120,7 +1207,10 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
       <div class="card-lime" style="margin-bottom:10px">
         <div style="font-size:10px;color:var(--lime);font-family:var(--FM);letter-spacing:.1em;margin-bottom:7px">⚡ AI COACH</div>
         <div style="font-size:13px;color:rgba(200,241,53,.85);line-height:1.65" id="weekly-review-txt">Nhấn để AI phân tích tuần tập luyện...</div>
-        <button class="btn bg" style="margin-top:10px;height:34px;font-size:12px" onclick="loadWeeklyReview()">Nhận AI review tuần này</button>
+        <div style="display:flex;gap:7px;margin-top:10px">
+          <button class="btn bg" style="flex:1;height:34px;font-size:12px" onclick="loadWeeklyReview()">Review tuần</button>
+          <button class="btn bg" style="flex:1;height:34px;font-size:12px" onclick="genMonthlySummary()">Tóm tắt tháng</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1566,25 +1656,130 @@ const EXERCISES=[
    cues:['Pad đặt trên đầu gối','Nâng lên cao nhất có thể','Hạ chậm stretch hoàn toàn','Làm chậm, cảm nhận từng reps'],
    mistakes:['Range ngắn','Quá nhanh'],
    sets:{'muscle':'4×15-20','strength':'','endurance':'5×20-25'},diffVi:'Cơ bản'},
+  // ── BÀI TẬP BỔ SUNG ──
+  {id:50,name:'Smith Machine Squat',nameVi:'Smith Machine Squat',muscle:'legs',equip:'machine',emoji:'🏗️',ytId:'ZMS9TqPEHCI',
+   cues:['Chân ra trước hơn squat thường','Bar trên vai không phải cổ','Squat sâu kiểm soát','Đẩy qua gót chân'],
+   mistakes:['Chân quá gần machine','Không squat đủ sâu'],
+   sets:{'muscle':'4×8-12','strength':'4×5-8','endurance':'3×15-20'},diffVi:'Cơ bản'},
+  {id:51,name:'Cable Pull Through',nameVi:'Cable Pull Through',muscle:'glutes',equip:'cable',emoji:'🔄',ytId:'JKLNNqHxHSs',
+   cues:['Cable thấp giữa chân','Hinge hông ra sau như RDL','Đẩy hông về trước mạnh','Squeeze mông ở điểm đứng'],
+   mistakes:['Squat thay vì hinge','Không squeeze mông'],
+   sets:{'muscle':'4×12-15','strength':'','endurance':'3×15-20'},diffVi:'Cơ bản'},
+  {id:52,name:'Incline Curl',nameVi:'Incline Dumbbell Curl',muscle:'arms',equip:'dumbbell',emoji:'💪',ytId:'soxrZlIl35U',
+   cues:['Ngả lưng 45-60° trên incline bench','Tay thả hoàn toàn xuống','Curl lên chậm rãi','Stretch bicep ở điểm thấp nhất'],
+   mistakes:['Không để tay thả hoàn toàn','Swing người'],
+   sets:{'muscle':'3×10-15','strength':'','endurance':'3×12-15'},diffVi:'Trung cấp'},
+  {id:53,name:'EZ Bar Curl',nameVi:'EZ Bar Curl',muscle:'arms',equip:'barbell',emoji:'🔧',ytId:'zG2i9-ya4cM',
+   cues:['Grip ở phần nghiêng của bar','Khuỷu cố định ở sườn','Curl lên đến ngực trên','Hạ chậm kiểm soát'],
+   mistakes:['Swing khuỷu','Không lower hoàn toàn'],
+   sets:{'muscle':'3-4×10-15','strength':'','endurance':'3×15-20'},diffVi:'Cơ bản'},
+  {id:54,name:'Skull Crusher',nameVi:'Skull Crusher (Tricep)',muscle:'arms',equip:'barbell',emoji:'💀',ytId:'NIK2JKEMv28',
+   cues:['Nằm ngửa, bar trên đầu','Hạ bar xuống trán từ từ','Khuỷu cố định không mở rộng','Đẩy lên bằng tricep hoàn toàn'],
+   mistakes:['Khuỷu flare ra ngoài','Hạ quá nhanh'],
+   sets:{'muscle':'3-4×10-12','strength':'4×6-8','endurance':'3×12-15'},diffVi:'Trung cấp'},
+  {id:55,name:'Rope Pushdown',nameVi:'Tricep Rope Pushdown',muscle:'arms',equip:'cable',emoji:'🪢',ytId:'vB5OHsJ3EME',
+   cues:['Dùng rope attachment','Đẩy xuống tách 2 đầu rope ra','Khuỷu cố định ép sát sườn','Squeeze tricep ở điểm cuối'],
+   mistakes:['Khuỷu ra trước','Không tách rope ở cuối'],
+   sets:{'muscle':'4×12-15','strength':'','endurance':'3×15-20'},diffVi:'Cơ bản'},
+  {id:56,name:'Seated Leg Curl',nameVi:'Seated Leg Curl',muscle:'legs',equip:'machine',emoji:'🦵',ytId:'ELOCsoDSmrg',
+   cues:['Ngồi thẳng, lưng sát pad','Pad ở trên mắt cá chân','Curl xuống đến hết range','Squeeze hamstring ở điểm thấp'],
+   mistakes:['Không full range','Hips nhấc lên'],
+   sets:{'muscle':'3-4×12-15','strength':'','endurance':'3×15-20'},diffVi:'Cơ bản'},
+  {id:57,name:'Hip Abduction',nameVi:'Hip Abduction Machine',muscle:'glutes',equip:'machine',emoji:'↔️',ytId:'M0D6Fes2mEE',
+   cues:['Ngồi thẳng lưng sát pad','Đẩy 2 gối ra ngoài','Squeeze ở điểm rộng nhất','Trả về chậm kiểm soát'],
+   mistakes:['Ngả người ra sau lấy momentum','Không squeeze ở đỉnh'],
+   sets:{'muscle':'4×15-20','strength':'','endurance':'4×20-25'},diffVi:'Cơ bản'},
+  {id:58,name:'Reverse Fly',nameVi:'Reverse Fly Dumbbell',muscle:'shoulders',equip:'dumbbell',emoji:'🦅',ytId:'Eot3HSmMRHQ',
+   cues:['Cúi người 45° hoặc nằm sấp trên incline','Tay hơi cong, nâng ra 2 bên','Squeeze rear delt ở đỉnh','Hạ chậm kiểm soát'],
+   mistakes:['Đứng thẳng — mất kích thích rear delt','Nâng quá cao'],
+   sets:{'muscle':'4×15-20','strength':'','endurance':'4×20-25'},diffVi:'Cơ bản'},
+  {id:59,name:'Dumbbell Shrug',nameVi:'Dumbbell Shrug',muscle:'shoulders',equip:'dumbbell',emoji:'🤷',ytId:'cJRVVxmytaM',
+   cues:['Đứng thẳng, DB 2 bên','Shrug vai lên cao nhất có thể','Giữ 1-2 giây ở đỉnh','Hạ chậm hoàn toàn'],
+   mistakes:['Xoay vai — không hiệu quả','Không giữ ở đỉnh'],
+   sets:{'muscle':'4×12-15','strength':'','endurance':'3×15-20'},diffVi:'Cơ bản'},
+  {id:60,name:'Wrist Curl',nameVi:'Wrist Curl (Cổ tay)',muscle:'arms',equip:'barbell',emoji:'🤏',ytId:'IgBCe9qX4WM',
+   cues:['Ngồi, cẳng tay đặt trên đùi','Curl cổ tay lên cầm bar','Hạ chậm hoàn toàn','Không để cánh tay di chuyển'],
+   mistakes:['Di chuyển cánh tay','Range ngắn'],
+   sets:{'muscle':'3×15-20','strength':'','endurance':'3×20-25'},diffVi:'Cơ bản'},
+  {id:61,name:'Reverse Curl',nameVi:'Reverse Curl (Overhand)',muscle:'arms',equip:'barbell',emoji:'↩️',ytId:'nwMJtaxloss',
+   cues:['Grip overhand ngón cái ở trên','Curl lên giữ cổ tay thẳng','Khuỷu cố định ở sườn','Tốt cho brachialis và brachioradialis'],
+   mistakes:['Cổ tay gập','Swing người'],
+   sets:{'muscle':'3×12-15','strength':'','endurance':'3×15-20'},diffVi:'Cơ bản'},
+  {id:62,name:'Sissy Squat',nameVi:'Sissy Squat',muscle:'legs',equip:'bodyweight',emoji:'🏃',ytId:'1CS8pNKCL5c',
+   cues:['Đứng, giữ thứ gì đó để cân bằng','Gối đẩy ra trước, người ngả ra sau','Hạ xuống gối gần sàn','Đẩy lên qua đầu gối'],
+   mistakes:['Không để gối đẩy ra trước','Không đủ sâu'],
+   sets:{'muscle':'3×10-15','strength':'','endurance':'3×15-20'},diffVi:'Nâng cao'},
+  {id:63,name:'Box Jump',nameVi:'Box Jump',muscle:'legs',equip:'bodyweight',emoji:'📦',ytId:'hxldG9bMBM0',
+   cues:['Đứng trước box','Squat nhẹ rồi bật mạnh','Đáp nhẹ nhàng bằng cả 2 chân','Bước xuống không nhảy xuống'],
+   mistakes:['Đáp cứng','Không cúi gối khi đáp'],
+   sets:{'muscle':'','strength':'4×5','endurance':'3×10'},diffVi:'Trung cấp'},
+  {id:64,name:'Battle Rope',nameVi:'Battle Rope',muscle:'core',equip:'other',emoji:'🪢',ytId:'_Z2FeLdZbpM',
+   cues:['Đứng chân rộng hơn vai','Tay giữ 1 đầu dây mỗi bên','Đập dây tạo sóng liên tục','Core braced suốt bài'],
+   mistakes:['Tay không đủ cao khi đập','Không giữ nhịp'],
+   sets:{'muscle':'','strength':'','endurance':'5×30s'},diffVi:'Cơ bản'},
 ];
 
 const FOOD_PRESETS=[
+  // ── CƠM & CÁC MÓN CƠM ──
   {name:'Cơm trắng 200g',cal:260,p:5,c:57,f:0.4},
-  {name:'Ức gà 150g',cal:165,p:31,c:0,f:3.6},
-  {name:'Trứng luộc (2 quả)',cal:156,p:12,c:1.2,f:10.6},
-  {name:'Phở bò 1 tô',cal:420,p:25,c:55,f:10},
-  {name:'Bún bò 1 tô',cal:380,p:22,c:48,f:12},
-  {name:'Bánh mì trứng',cal:320,p:14,c:38,f:12},
+  {name:'Cơm trắng 100g',cal:130,p:2.5,c:28,f:0.2},
   {name:'Cơm sườn',cal:480,p:22,c:62,f:15},
-  {name:'Sữa chua 1 hũ',cal:100,p:6,c:14,f:2.5},
-  {name:'Chuối 1 quả',cal:89,p:1.1,c:23,f:0.3},
-  {name:'Whey protein scoop',cal:120,p:24,c:3,f:2},
-  {name:'Bắp ngô 1 trái',cal:110,p:3.2,c:25,f:1.5},
+  {name:'Cơm gà xối mỡ',cal:520,p:28,c:58,f:18},
+  {name:'Cơm tấm sườn trứng',cal:580,p:26,c:65,f:20},
+  {name:'Cơm chiên dương châu',cal:450,p:14,c:60,f:16},
+  {name:'Cơm rang thịt',cal:430,p:18,c:55,f:14},
+  // ── PHỞ & BÚN ──
+  {name:'Phở bò 1 tô',cal:420,p:25,c:55,f:10},
+  {name:'Phở gà 1 tô',cal:380,p:28,c:50,f:8},
+  {name:'Bún bò Huế 1 tô',cal:420,p:24,c:52,f:14},
+  {name:'Bún chả 1 suất',cal:460,p:26,c:52,f:16},
+  {name:'Bún riêu 1 tô',cal:350,p:20,c:48,f:9},
+  {name:'Hủ tiếu Nam Vang',cal:440,p:22,c:58,f:12},
+  {name:'Mì Quảng 1 tô',cal:400,p:20,c:56,f:10},
+  // ── BÁNH MÌ & BÁNH ──
+  {name:'Bánh mì thịt',cal:350,p:16,c:42,f:12},
+  {name:'Bánh mì trứng',cal:320,p:14,c:38,f:12},
+  {name:'Bánh mì pate',cal:340,p:14,c:40,f:13},
+  {name:'Bánh mì không 1 ổ',cal:160,p:5,c:32,f:1.5},
+  {name:'Bánh cuốn 3 cái',cal:200,p:8,c:35,f:4},
+  // ── ĐỒ ĂN CAO PROTEIN ──
+  {name:'Ức gà 100g (luộc)',cal:110,p:23,c:0,f:1.8},
+  {name:'Ức gà 150g',cal:165,p:31,c:0,f:3.6},
   {name:'Ức gà 200g',cal:220,p:41,c:0,f:4.8},
+  {name:'Đùi gà 150g (luộc)',cal:210,p:26,c:0,f:11},
   {name:'Cá hồi 150g',cal:280,p:30,c:0,f:18},
-  {name:'Rau xào',cal:80,p:3,c:10,f:3},
+  {name:'Cá ngừ đóng hộp 100g',cal:120,p:25,c:0,f:2},
+  {name:'Trứng luộc 1 quả',cal:78,p:6,c:0.6,f:5.3},
+  {name:'Trứng luộc 2 quả',cal:156,p:12,c:1.2,f:10.6},
+  {name:'Trứng chiên 2 quả',cal:185,p:12,c:1,f:14},
+  {name:'Thịt bò nạc 100g',cal:150,p:26,c:0,f:5},
+  {name:'Tôm luộc 100g',cal:85,p:18,c:0.5,f:0.9},
+  {name:'Thịt heo nạc 100g',cal:142,p:22,c:0,f:6},
+  {name:'Đậu phụ 100g',cal:76,p:8,c:2,f:4},
+  // ── SỮA & PROTEIN ──
+  {name:'Whey protein 1 scoop',cal:120,p:24,c:3,f:2},
+  {name:'Sữa tươi không đường 200ml',cal:120,p:6.5,c:9,f:6},
+  {name:'Sữa chua Vinamilk 1 hũ',cal:100,p:6,c:14,f:2.5},
+  {name:'Sữa chua Hy Lạp 150g',cal:130,p:15,c:6,f:4},
   {name:'Phô mai 30g',cal:110,p:7,c:1,f:9},
+  // ── RAU & TRÁI CÂY ──
+  {name:'Chuối 1 quả',cal:89,p:1.1,c:23,f:0.3},
+  {name:'Bơ 100g',cal:160,p:2,c:9,f:15},
+  {name:'Táo 1 quả',cal:72,p:0.4,c:19,f:0.2},
+  {name:'Khoai lang 100g',cal:86,p:1.6,c:20,f:0.1},
+  {name:'Rau xào dầu hào',cal:80,p:3,c:10,f:3},
+  {name:'Salad rau trộn',cal:60,p:2,c:8,f:2.5},
+  // ── NGŨ CỐC & TINH BỘT ──
   {name:'Bột yến mạch 50g',cal:190,p:7,c:33,f:4},
+  {name:'Bắp ngô 1 trái',cal:110,p:3.2,c:25,f:1.5},
+  {name:'Khoai tây 100g',cal:77,p:2,c:17,f:0.1},
+  {name:'Bánh gạo 2 cái',cal:70,p:1.5,c:16,f:0.3},
+  // ── ĐỒ ĂN VẶT & UỐNG ──
+  {name:'Hạt điều 30g',cal:185,p:5,c:9,f:16},
+  {name:'Hạt chia 15g',cal:73,p:2.5,c:5,f:4.7},
+  {name:'Nước ép cam 200ml',cal:88,p:1.3,c:21,f:0.2},
+  {name:'Sinh tố chuối sữa',cal:250,p:7,c:45,f:5},
+  {name:'Trà sữa không đường',cal:120,p:3,c:20,f:3},
 ];
 
 const ACHIEVEMENTS=[
@@ -1629,6 +1824,7 @@ function save(){
     weekDone:ST.weekDone,nut:ST.nut,isPro:ST.isPro,
     planStartDate:ST.planStartDate,lastWorkoutDate:ST.lastWorkoutDate,
     weekSavedOn:getWeekKey(),customExercises:ST.customExercises||[],
+    water:ST.water||0,prs:ST.prs||{},rpeHistory:ST.rpeHistory||[],
   }));}catch(e){}
 }
 function load(){
@@ -1650,6 +1846,9 @@ function load(){
       ST.customExercises=d.customExercises;
       d.customExercises.forEach(e=>{if(!EXERCISES.find(x=>x.id===e.id))EXERCISES.push(e);});
     }
+    if(d.water)ST.water=d.water;
+    if(d.prs)ST.prs=d.prs;
+    if(d.rpeHistory)ST.rpeHistory=d.rpeHistory;
     // ── Streak reset logic ──
     // If last workout was >1 day ago, reset streak
     if(ST.lastWorkoutDate){
@@ -1952,6 +2151,9 @@ function doneSet(id,i,btn){
       ?`<strong>Set ${i+2}:</strong> ${nextSet.kg||'?'}kg × ${nextSet.reps||'?'} reps · RPE ${nextSet.rpe||7}`
       :'<strong>Xong bài này!</strong> Chuyển bài tiếp theo 🎉';
     startRest(120, nextMsg, ST.exData[id].name);
+    // Track RPE
+    const rpeVal=ST.exData[id].sets[i]?.rpe;
+    if(rpeVal)trackRPE(rpeVal);
     if(doneSets.length===2){
       const prompt=`${ST.profile.level} ${ST.profile.kg}kg, ${ST.profile.goal}. Vừa tập ${ST.exData[id].name}: ${doneSets.map(s=>`${s.kg}kg×${s.reps}reps RPE${s.rpe||7}`).join(', ')}. Gợi ý set tiếp theo (1-2 câu tiếng Việt, số kg cụ thể).`;
       ai(prompt,180).then(r=>{
@@ -2036,6 +2238,14 @@ function finishWorkout(){
   vol=Math.round(vol);
   ST.stats.total++;ST.stats.streak++;ST.stats.volume+=vol;
   ST.lastWorkoutDate=new Date().toISOString();
+  // PR detection
+  Object.entries(ST.exData).forEach(([id,ex])=>{
+    const done=ex.sets.filter(s=>s.done&&s.kg>0&&s.reps>0);
+    if(done.length){
+      const best=done.reduce((b,s)=>calc1RM(s.kg,s.reps)>calc1RM(b.kg,b.reps)?s:b);
+      if(checkPR(ex.name,best.kg,best.reps))setTimeout(()=>toast(`🏆 PR mới: ${ex.name} ${best.kg}kg×${best.reps}!`),500);
+    }
+  });
   const w={date:new Date().toLocaleDateString('vi-VN'),title:ST.activeW.title,dur,vol,exCount,totalSets,exDetails};
   ST.workouts.unshift(w);
   document.getElementById('w-idle').style.display='block';
@@ -2044,6 +2254,8 @@ function finishWorkout(){
   ST.weekDone[new Date().getDay()===0?6:new Date().getDay()-1]=true;
   save();renderHome();renderWHist();
   showWS(w);
+  checkDeload();
+  setTimeout(checkInjuryRisk,1500);
 }
 function renderWHist(){
   const el=document.getElementById('w-hist');
@@ -2365,7 +2577,7 @@ function renderNutMeals(){
   ];
   const el=document.getElementById('nut-meals');
   let totalCal=0,totalP=0,totalC=0,totalF=0;
-  el.innerHTML=MEAL_DEFS.map(m=>{
+  el.innerHTML=MEAL_DEFS.filter(m=>currentMealFilter==='all'||m.id===currentMealFilter).map(m=>{
     const foods=ST.nut[m.id]||[];
     const cal=foods.reduce((t,f)=>t+f.cal,0);
     totalCal+=cal;totalP+=foods.reduce((t,f)=>t+f.p,0);totalC+=foods.reduce((t,f)=>t+f.c,0);totalF+=foods.reduce((t,f)=>t+f.f,0);
@@ -2438,6 +2650,8 @@ function renderProgress(){
   renderCharts();renderMeas();renderAchievements();
   renderMonthlyCalendar('monthly-cal');
   render1RM();
+  renderMuscleVolChart();
+  updateWaterDisplay();
 }
 function renderCharts(){
   const bench=[60,62.5,65,67.5,70,72.5,75,77.5];
@@ -2765,6 +2979,8 @@ function tickRest(){
     else arc.style.stroke='var(--lime)';
   }
   restState.remaining--;
+  const r=restState.remaining;
+  if(r===10||r===5||r===3)playRestWarning();
 }
 function setRest(sec){
   document.querySelectorAll('.rest-preset').forEach(b=>b.classList.remove('on'));
@@ -2778,6 +2994,7 @@ function setRest(sec){
   scheduleRestNotification(sec, restState.exName);
 }
 function skipRest(){
+  if(restState.active)playRestDone();
   clearInterval(restState.interval);
   restState.active=false;
   document.getElementById('rest-overlay').classList.remove('show');
@@ -3182,37 +3399,56 @@ function render1RM(){
 }
 
 // ════════════════════════════════════════════════════════
-// SHARE WORKOUT CARD
+// SHARE / CHECK-IN (Repto / Nudges Me style)
 // ════════════════════════════════════════════════════════
+const QUOTES=[
+  'Có công mài sắt, có ngày nên kim 💪',
+  'Không có con đường nào dễ đến thành công',
+  'Mỗi set là một bước gần hơn đến mục tiêu',
+  'Đau hôm nay, mạnh ngày mai 🔥',
+  'Train insane or remain the same',
+  'Cơ thể đạt được những gì tâm trí tin',
+  'Progress not perfection 🚀',
+  'Ai nói dễ thì chưa thật sự cố gắng',
+];
 function showShareCard(w){
   w=w||ST.workouts[0];if(!w)return toast('Chưa có buổi tập nào!');
   document.getElementById('share-modal').style.display='flex';
-  const titles=['BEAST MODE!','CRUSHED IT!','LET\'S GO!','DONE! 💪'];
-  document.getElementById('sc-headline').textContent=titles[Math.floor(Math.random()*titles.length)];
-  document.getElementById('sc-date').textContent=w.date.toUpperCase();
-  document.getElementById('sc-stats').innerHTML=`
-    <div style="background:rgba(200,241,53,.1);border-radius:8px;padding:8px;text-align:center">
-      <div style="font-family:var(--FD);font-size:24px;color:var(--lime)">${w.dur}</div>
-      <div style="font-size:9px;color:var(--txt3);font-family:var(--FM)">PHÚT</div>
-    </div>
-    <div style="background:rgba(200,241,53,.1);border-radius:8px;padding:8px;text-align:center">
-      <div style="font-family:var(--FD);font-size:24px;color:var(--lime)">${w.vol>999?(w.vol/1000).toFixed(1)+'k':w.vol}</div>
-      <div style="font-size:9px;color:var(--txt3);font-family:var(--FM)">KG VOL</div>
-    </div>
-    <div style="background:rgba(200,241,53,.1);border-radius:8px;padding:8px;text-align:center">
-      <div style="font-family:var(--FD);font-size:24px;color:var(--lime)">${w.exCount}</div>
-      <div style="font-size:9px;color:var(--txt3);font-family:var(--FM)">BÀI</div>
-    </div>
-    <div style="background:rgba(200,241,53,.1);border-radius:8px;padding:8px;text-align:center">
-      <div style="font-family:var(--FD);font-size:24px;color:var(--lime)">${ST.stats.streak}</div>
-      <div style="font-size:9px;color:var(--txt3);font-family:var(--FM)">STREAK</div>
-    </div>`;
-  document.getElementById('sc-exlist').innerHTML=Object.entries(w.exDetails||{}).slice(0,4).map(([n,d])=>`
-    <div style="display:flex;justify-content:space-between"><span>${n}</span><span style="color:var(--lime)">${d}</span></div>`).join('');
+  // Reset photo
+  document.getElementById('checkin-photo').style.display='none';
+  document.getElementById('checkin-placeholder').style.display='flex';
+  document.getElementById('checkin-canvas').style.background='linear-gradient(135deg,#0a1a00,#111)';
+  // Fill overlay
+  document.getElementById('ov-plan').textContent=w.title.split(' ').slice(0,3).join(' ');
+  const titles=['BEAST MODE!','LÊN LEVEL!','CRUSHED IT!','DONE! 💪','NỖ LỰC THÔI!'];
+  document.getElementById('ov-title').textContent=titles[Math.floor(Math.random()*titles.length)];
+  document.getElementById('ov-dur').textContent=`${w.dur||0}ph`;
+  document.getElementById('ov-sets').textContent=`${w.totalSets||0} sets`;
+  document.getElementById('ov-vol').textContent=`${w.vol||0}kg`;
+  document.getElementById('ov-quote').textContent=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+}
+function closeShareModal(){document.getElementById('share-modal').style.display='none';}
+function triggerPhotoUpload(){document.getElementById('photo-input').click();}
+function handlePhotoUpload(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=document.getElementById('checkin-photo');
+    img.src=e.target.result;
+    img.style.display='block';
+    document.getElementById('checkin-placeholder').style.display='none';
+    document.getElementById('checkin-canvas').style.background='transparent';
+  };
+  reader.readAsDataURL(file);
+}
+function setBg(bg){
+  document.getElementById('checkin-photo').style.display='none';
+  document.getElementById('checkin-placeholder').style.display='flex';
+  document.getElementById('checkin-canvas').style.background=bg;
 }
 function getShareText(){
   const w=ST.workouts[0];if(!w)return'';
-  return `💪 Vừa hoàn thành buổi tập với FitAI!\n\n⏱ ${w.dur} phút · 🏋️ ${w.vol}kg · 🔥 ${ST.stats.streak} day streak\n\n${Object.entries(w.exDetails||{}).slice(0,3).map(([n,d])=>`• ${n}: ${d}`).join('\n')}\n\nfitai.app — AI Workout Coach 🇻🇳`;
+  return`💪 Vừa hoàn thành buổi tập với FitAI!\n\n⏱ ${w.dur}ph · 🏋️ ${w.vol}kg · 🔥 ${ST.stats.streak} day streak\n\n${Object.entries(w.exDetails||{}).slice(0,3).map(([n,d])=>`• ${n}: ${d}`).join('\n')}\n\n${QUOTES[0]}\n\nfitai.app — AI Workout Coach 🇻🇳`;
 }
 function copyShareText(){
   navigator.clipboard?.writeText(getShareText()).then(()=>toast('✅ Đã copy!'));
@@ -3221,8 +3457,6 @@ function nativeShare(){
   if(navigator.share)navigator.share({text:getShareText()});
   else copyShareText();
 }
-
-// Override shareWS to use new modal
 function shareWS(){showShareCard(ST.workouts[0]);}
 
 // ════════════════════════════════════════════════════════
@@ -3247,8 +3481,226 @@ function exportData(){
 }
 
 // ════════════════════════════════════════════════════════
+// WATER TRACKER
+// ════════════════════════════════════════════════════════
+function addWater(ml){
+  ST.water=(ST.water||0)+ml;
+  updateWaterDisplay();save();
+  if(ST.water>=2000)toast('🎉 Đã đủ nước hôm nay!');
+}
+function updateWaterDisplay(){
+  const w=ST.water||0;
+  const goal=ST.profile.waterGoal||2000;
+  const el=document.getElementById('water-display');
+  const bar=document.getElementById('water-bar');
+  const goalEl=document.getElementById('water-goal');
+  if(el)el.textContent=w;
+  if(bar)bar.style.width=Math.min(w/goal*100,100)+'%';
+  if(goalEl)goalEl.textContent=goal;
+  const tdeeEl=document.getElementById('tdee-disp');
+  if(tdeeEl)tdeeEl.textContent=calcTDEE();
+  const calDisp=document.getElementById('custom-cal-disp');
+  if(calDisp)calDisp.textContent=ST.profile.customCal?ST.profile.customCal+'kcal':'Auto';
+}
+function setCustomCal(v){
+  ST.profile.customCal=+v||null;
+  renderNutMeals();save();
+}
+
+// ════════════════════════════════════════════════════════
+// MEAL CATEGORY FILTER
+// ════════════════════════════════════════════════════════
+let currentMealFilter='all';
+function filterMealView(f,btn){
+  currentMealFilter=f;
+  document.querySelectorAll('#meal-filter-row .pill').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  renderNutMeals();
+}
+
+// ════════════════════════════════════════════════════════
+// PR DETECTION PER EXERCISE
+// ════════════════════════════════════════════════════════
+function checkPR(exName,kg,reps){
+  if(!ST.prs)ST.prs={};
+  const orm=calc1RM(kg,reps);
+  const prev=ST.prs[exName]||0;
+  if(orm>prev){
+    ST.prs[exName]=orm;
+    save();
+    return true;
+  }
+  return false;
+}
+
+// ════════════════════════════════════════════════════════
+// REST TIMER SOUND (beep)
+// ════════════════════════════════════════════════════════
+function playBeep(freq=800,dur=200,vol=0.3){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.frequency.value=freq;
+    gain.gain.setValueAtTime(vol,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur/1000);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime+dur/1000);
+  }catch(e){}
+}
+function playRestDone(){
+  playBeep(600,150);
+  setTimeout(()=>playBeep(800,150),200);
+  setTimeout(()=>playBeep(1000,300),400);
+}
+function playRestWarning(){playBeep(440,100);}
+
+// ════════════════════════════════════════════════════════
+// DELOAD DETECTION
+// ════════════════════════════════════════════════════════
+function checkDeload(){
+  const total=ST.stats.total;
+  if(total>0&&total%16===0){
+    // Every 16 workouts suggest deload
+    setTimeout(()=>{
+      notif('⚠️','Đến lúc Deload rồi!',
+        `Bạn đã tập ${total} buổi liên tiếp. 1 tuần giảm 40% volume để phục hồi tốt hơn.`,6000);
+    },2000);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// RPE AUTO-SUGGEST
+// ════════════════════════════════════════════════════════
+function checkRPEWarning(){
+  // Check last 3 workouts - if avg RPE > 8.5, warn
+  const recent=ST.workouts.slice(0,3);
+  if(recent.length<2)return;
+  // Simple heuristic: if user logs RPE 9+ consistently
+  const highRPE=ST.rpeHistory?.filter(r=>r>=9)?.length||0;
+  if(highRPE>=4){
+    notif('🔴','RPE cao liên tục!',
+      'Bạn đang training ở RPE 9+ nhiều buổi — cân nhắc giảm weight 5-10% để tránh overtraining.',5000);
+    ST.rpeHistory=[];
+  }
+}
+function trackRPE(rpe){
+  if(!ST.rpeHistory)ST.rpeHistory=[];
+  if(rpe>=1&&rpe<=10){ST.rpeHistory.push(rpe);if(ST.rpeHistory.length>20)ST.rpeHistory.shift();}
+}
+
+// ════════════════════════════════════════════════════════
+// VOLUME PER MUSCLE GROUP CHART
+// ════════════════════════════════════════════════════════
+function renderMuscleVolChart(){
+  const el=document.getElementById('muscle-vol-chart');if(!el)return;
+  // Get this week's workouts
+  const now=new Date();
+  const weekStart=new Date(now);
+  weekStart.setDate(now.getDate()-now.getDay());
+  const weekWorkouts=ST.workouts.filter(w=>{
+    const d=new Date(w.date.split('/').reverse().join('-'));
+    return d>=weekStart;
+  });
+  if(!weekWorkouts.length){
+    el.innerHTML='<div class="xs muted">Chưa có dữ liệu tuần này</div>';return;
+  }
+  // Count sets per muscle
+  const muscleVol={chest:0,back:0,shoulders:0,arms:0,legs:0,glutes:0,core:0};
+  const muscleVi={chest:'Ngực',back:'Lưng',shoulders:'Vai',arms:'Bắp tay',legs:'Chân',glutes:'Mông',core:'Core'};
+  weekWorkouts.forEach(w=>{
+    Object.keys(w.exDetails||{}).forEach(exName=>{
+      const ex=EXERCISES.find(e=>e.name===exName||e.nameVi===exName);
+      if(ex&&ex.muscle in muscleVol){
+        const setsStr=w.exDetails[exName];
+        const setsCount=(setsStr.match(/×/g)||[]).length;
+        muscleVol[ex.muscle]+=setsCount||1;
+      }
+    });
+  });
+  const max=Math.max(...Object.values(muscleVol),1);
+  const colors={chest:'#c8f135',back:'#4d9fff',shoulders:'#ffb84d',arms:'#ff6eb4',legs:'#3dd9b3',glutes:'#ff4545',core:'#9b59b6'};
+  el.innerHTML=Object.entries(muscleVol).map(([m,v])=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+      <div style="font-size:11px;color:var(--txt2);width:52px;flex-shrink:0">${muscleVi[m]}</div>
+      <div style="flex:1;height:18px;background:var(--bg4);border-radius:4px;overflow:hidden">
+        <div style="width:${v/max*100}%;height:100%;background:${colors[m]};border-radius:4px;transition:width .5s ease;display:flex;align-items:center;padding-left:5px">
+          ${v>0?`<span style="font-size:10px;color:#111;font-family:var(--FM);font-weight:500">${v}s</span>`:''}
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--txt3);width:24px;text-align:right;font-family:var(--FM)">${v}</div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// MONTHLY SUMMARY (AI)
+// ════════════════════════════════════════════════════════
+async function genMonthlySummary(){
+  const now=new Date();
+  const monthStr=`Tháng ${now.getMonth()+1}/${now.getFullYear()}`;
+  const monthWorkouts=ST.workouts.filter(w=>{
+    return w.date.endsWith(`/${now.getFullYear()}`);
+  });
+  if(!monthWorkouts.length)return toast('Chưa có dữ liệu tháng này!');
+  const totalVol=monthWorkouts.reduce((t,w)=>t+(w.vol||0),0);
+  const totalSets=monthWorkouts.reduce((t,w)=>t+(w.totalSets||0),0);
+  const prompt=`${ST.profile.name}, ${ST.profile.level}, mục tiêu ${ST.profile.goal}. ${monthStr}: ${monthWorkouts.length} buổi tập, ${totalVol}kg tổng volume, ${totalSets} sets. Viết tóm tắt tháng ngắn gọn (3-4 câu tiếng Việt): thành tích nổi bật và 1 mục tiêu cho tháng sau.`;
+  const el=document.getElementById('weekly-review-txt');
+  if(el){
+    el.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
+    el.innerHTML=(await ai(prompt,400)).replace(/\n/g,'<br>');
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// AI INJURY PREVENTION
+// ════════════════════════════════════════════════════════
+async function checkInjuryRisk(){
+  // If same muscle group trained 3+ days in a row, warn
+  if(ST.workouts.length<3)return;
+  const last3=ST.workouts.slice(0,3).map(w=>Object.keys(w.exDetails||{}).map(n=>{
+    const ex=EXERCISES.find(e=>e.name===n||e.nameVi===n);
+    return ex?.muscle||'';
+  })).flat();
+  const muscleCount={};
+  last3.forEach(m=>{if(m)muscleCount[m]=(muscleCount[m]||0)+1;});
+  const overworked=Object.entries(muscleCount).find(([m,c])=>c>=3);
+  if(overworked){
+    notif('⚠️','Cảnh báo phục hồi',
+      `Nhóm cơ ${overworked[0]} đã tập ${overworked[1]} ngày liên tiếp. Cân nhắc nghỉ ngơi để tránh chấn thương.`,6000);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// UPDATE EXISTING FUNCTIONS
+// ════════════════════════════════════════════════════════
+
+
+
+
+
+
+
+
+
+
+// ════════════════════════════════════════════════════════
 // BOOT
 // ════════════════════════════════════════════════════════
+// Swipe down to close rest overlay
+document.addEventListener('DOMContentLoaded',()=>{
+  let touchStartY=0;
+  const overlay=document.getElementById('rest-overlay');
+  if(overlay){
+    overlay.addEventListener('touchstart',e=>{touchStartY=e.touches[0].clientY;},{passive:true});
+    overlay.addEventListener('touchend',e=>{
+      const dy=e.changedTouches[0].clientY-touchStartY;
+      if(dy>80)skipRest();
+    },{passive:true});
+  }
+});
+
 window.onload=async()=>{
   registerSW();
   const hasData=load();
