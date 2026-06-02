@@ -929,6 +929,8 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
             <div class="g2">
               <div class="sb" style="padding:10px"><div class="sv" style="font-size:22px" id="h-workouts">0</div><div class="sk">Buổi tập</div></div>
               <div class="sb" style="padding:10px"><div class="sv" style="font-size:22px" id="h-volume">0</div><div class="sk">Total kg</div></div>
+              <div class="sb" style="padding:10px"><div class="sv" style="font-size:16px;color:var(--amber)" id="h-hours">0h</div><div class="sk">Giờ tập</div></div>
+              <div class="sb" style="padding:10px"><div class="sv" style="font-size:16px;color:var(--pink)" id="h-level">Lv 1</div><div class="sk">Level</div></div>
             </div>
           </div>
         </div>
@@ -941,6 +943,10 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <div class="sec-label">Buổi tập hôm nay</div>
         <div id="home-today"></div>
 
+        <!-- Daily Challenge -->
+        <div class="sec-label">Thách thức hôm nay</div>
+        <div class="card" style="margin-bottom:10px" id="daily-challenge"></div>
+
         <!-- AI Insight -->
         <div class="sec-label">AI Insight</div>
         <div class="ai-insight-card" id="home-insight-card">
@@ -948,10 +954,11 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             AI COACH
           </div>
-          <div class="ai-insight-txt" id="home-insight-txt">Nhấn để nhận insight cá nhân từ AI...</div>
-          <button class="btn bg" style="margin-top:10px;height:34px;font-size:12px" onclick="loadInsight()">
-            Nhận AI insight hôm nay
-          </button>
+          <div class="ai-insight-txt" id="home-insight-txt">Nhấn để nhận insight hoặc kế hoạch tuần từ AI...</div>
+          <div style="display:flex;gap:7px;margin-top:10px">
+            <button class="btn bg" style="flex:1;height:34px;font-size:12px" onclick="loadInsight()">Insight hôm nay</button>
+            <button class="btn bl" style="flex:1;height:34px;font-size:12px" onclick="genAIPeriodization()">Kế hoạch tuần ⚡</button>
+          </div>
         </div>
 
         <!-- Recent workouts -->
@@ -976,6 +983,8 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           Thư viện bài tập & Form Guide
         </button>
+        <div class="sec-label">Template đã lưu</div>
+        <div id="template-list"><div class="xs muted">Chưa có template. Tập xong nhấn "Lưu template"!</div></div>
         <div class="sec-label">Lịch sử</div>
         <div id="w-hist"><div class="xs muted">Chưa có buổi tập nào.</div></div>
       </div>
@@ -1006,6 +1015,7 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Thêm bài
         </button>
+        <button class="btn bg bsm" style="width:auto" onclick="saveWorkoutTemplate()" title="Lưu template">💾</button>
         <button class="btn bd bsm" style="width:auto" onclick="cancelWorkout()">Hủy</button>
       </div>
     </div>
@@ -1022,6 +1032,8 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <button class="pill" onclick="filterPlans('advanced',this)">Advanced 🏆</button>
         <button class="pill" onclick="filterPlans('female',this)">Cho nữ ♀</button>
         <button class="pill" onclick="filterPlans('home',this)">Tại nhà 🏠</button>
+        <button class="pill" onclick="filterPlans('strength',this)">Sức mạnh 💪</button>
+        <button class="pill" onclick="filterPlans('fat',this)">Giảm mỡ 🔥</button>
       </div>
     </div>
     <div style="flex:1;overflow-y:auto;padding:8px 16px 16px" id="plan-list"></div>
@@ -1095,6 +1107,12 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         </div>
       </div>
 
+      <!-- Macro Pie Chart -->
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px">Phân bổ macro hôm nay</div>
+        <div id="macro-pie"></div>
+      </div>
+
       <button class="btn bl" style="margin-bottom:14px" onclick="genMealPlan()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         AI tạo meal plan hôm nay
@@ -1107,10 +1125,15 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
           <div style="font-family:var(--FD);font-size:28px;color:var(--blue);letter-spacing:.04em;line-height:1" id="water-display">0</div>
           <div style="font-size:10px;color:var(--txt3);margin-bottom:8px">/ <span id="water-goal">2000</span>ml</div>
           <div class="pb pb-blue" style="margin-bottom:8px"><div class="pf" id="water-bar" style="width:0%"></div></div>
-          <div style="display:flex;gap:5px">
-            <button onclick="addWater(200)" style="flex:1;background:var(--bg4);border:1px solid var(--brd2);border-radius:6px;color:var(--blue);font-size:11px;padding:5px;cursor:pointer">+200</button>
-            <button onclick="addWater(350)" style="flex:1;background:var(--bg4);border:1px solid var(--brd2);border-radius:6px;color:var(--blue);font-size:11px;padding:5px;cursor:pointer">+350</button>
-            <button onclick="addWater(500)" style="flex:1;background:var(--bg4);border:1px solid var(--brd2);border-radius:6px;color:var(--blue);font-size:11px;padding:5px;cursor:pointer">+500</button>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:5px">
+            <button onclick="addWater(200)" style="background:rgba(77,159,255,.15);border:1px solid rgba(77,159,255,.3);border-radius:6px;color:var(--blue);font-size:11px;padding:5px;cursor:pointer;font-weight:500">+200</button>
+            <button onclick="addWater(350)" style="background:rgba(77,159,255,.15);border:1px solid rgba(77,159,255,.3);border-radius:6px;color:var(--blue);font-size:11px;padding:5px;cursor:pointer;font-weight:500">+350</button>
+            <button onclick="addWater(500)" style="background:rgba(77,159,255,.15);border:1px solid rgba(77,159,255,.3);border-radius:6px;color:var(--blue);font-size:11px;padding:5px;cursor:pointer;font-weight:500">+500</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">
+            <button onclick="addWater(-200)" style="background:var(--bg4);border:1px solid var(--brd2);border-radius:6px;color:var(--txt3);font-size:11px;padding:5px;cursor:pointer">-200</button>
+            <button onclick="addWater(-350)" style="background:var(--bg4);border:1px solid var(--brd2);border-radius:6px;color:var(--txt3);font-size:11px;padding:5px;cursor:pointer">-350</button>
+            <button onclick="resetWater()" style="background:var(--bg4);border:1px solid var(--brd2);border-radius:6px;color:var(--red);font-size:11px;padding:5px;cursor:pointer">Reset</button>
           </div>
         </div>
         <div class="card" style="padding:12px">
@@ -1153,6 +1176,12 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
       <div class="card" style="margin-bottom:10px" id="orm-card">
         <div class="xs muted" style="margin-bottom:10px">Tính tự động từ set nặng nhất trong lịch sử</div>
         <div id="orm-list"><div class="xs muted">Chưa có dữ liệu — bắt đầu tập để tính 1RM</div></div>
+      </div>
+
+      <!-- Body weight chart -->
+      <div class="sec-label" style="margin-top:0">Cân nặng</div>
+      <div class="chart-card" style="margin-bottom:10px">
+        <div id="bw-chart"></div>
       </div>
 
       <!-- Charts -->
@@ -1290,6 +1319,7 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <div class="menu-item" onclick="goTab('s-plan')"><div class="menu-ico">📋</div><div class="menu-lbl">Kho plan</div><div class="menu-arr">›</div></div>
         <div class="menu-item" onclick="openExLib(false)"><div class="menu-ico">🎬</div><div class="menu-lbl">Thư viện bài tập</div><div class="menu-arr">›</div></div>
         <div class="menu-item" onclick="showPlateCalc()"><div class="menu-ico">🧮</div><div class="menu-lbl">Tính đĩa tạ</div><div class="menu-arr">›</div></div>
+        <div class="menu-item" onclick="installPWA()"><div class="menu-ico">📱</div><div class="menu-lbl">Cài app về máy (PWA)</div><div class="menu-arr">›</div></div>
         <div class="menu-item" onclick="exportData()"><div class="menu-ico">📥</div><div class="menu-lbl">Export data CSV</div><div class="menu-arr">›</div></div>
         <div class="menu-item" onclick="showPW()"><div class="menu-ico">⚡</div><div class="menu-lbl" style="color:var(--lime)">Nâng cấp Pro</div><div class="menu-arr" style="color:var(--lime)">›</div></div>
         <div class="menu-item" onclick="resetApp()"><div class="menu-ico">🗑️</div><div class="menu-lbl" style="color:var(--red)">Xóa tất cả dữ liệu</div><div class="menu-arr" style="color:var(--red)">›</div></div>
@@ -1454,6 +1484,69 @@ const PLANS=[
        {day:'Thứ 4',type:'Full Body B',exs:[{n:'DB Incline Press',s:'3×10-12',r:'RPE 7'},{n:'DB Romanian DL',s:'3×12-15',r:'RPE 7'},{n:'DB Goblet Squat',s:'3×12-15',r:'RPE 7'},{n:'DB Lateral Raise',s:'3×15-20',r:'RPE 7'},{n:'Hammer Curl',s:'3×12-15',r:'RPE 7'}]},
        {day:'Thứ 6',type:'Full Body C',exs:[{n:'Push Up',s:'4×15-20',r:'RPE 7'},{n:'DB Hip Thrust',s:'4×15-20',r:'RPE 7'},{n:'DB Lunge',s:'3×12/leg',r:'RPE 7'},{n:'Plank',s:'3×45s',r:'RPE 7'},{n:'DB Tricep Ext',s:'3×12-15',r:'RPE 7'}]},
        {day:'Các ngày',type:'REST',exs:[]},
+     ]},
+   ]},
+  {id:7,name:'PHAT — Power Hypertrophy',short:'PHAT',lvl:'advanced',goal:'muscle',days:5,eq:'full',female:false,color:'#0d0020',acc:'#9b59b6',
+   desc:'Kết hợp sức mạnh (2 ngày) và hypertrophy (3 ngày) trong cùng 1 tuần. Tối ưu cả strength lẫn size. Thiết kế bởi Layne Norton. Dành cho lifter advanced muốn phá barie plateau.',
+   weeks:[
+     {name:'Mỗi tuần',days:[
+       {day:'Thứ 2',type:'Upper Power',exs:[{n:'Bench Press',s:'3×3-5 @85%',r:'RPE 8-9'},{n:'Barbell Row',s:'3×3-5',r:'RPE 8-9'},{n:'Overhead Press',s:'2×6-10',r:'RPE 8'},{n:'Pull-up',s:'2×6-10',r:'RPE 8'},{n:'Barbell Curl',s:'2×6-10',r:'RPE 8'}]},
+       {day:'Thứ 3',type:'Lower Power',exs:[{n:'Barbell Squat',s:'3×3-5 @85%',r:'RPE 9'},{n:'Barbell Deadlift',s:'2×3-5',r:'RPE 9'},{n:'Leg Press',s:'2×10-15',r:'RPE 8'},{n:'Leg Curl',s:'2×6-10',r:'RPE 8'}]},
+       {day:'Thứ 4',type:'REST',exs:[]},
+       {day:'Thứ 5',type:'Back & Shoulders Hypertrophy',exs:[{n:'Incline DB Press',s:'3×10-15',r:'RPE 8'},{n:'Lat Pulldown',s:'3×12-15',r:'RPE 8'},{n:'Seated Cable Row',s:'3×12-15',r:'RPE 8'},{n:'Lateral Raise',s:'4×15-20',r:'RPE 7'},{n:'Face Pull',s:'3×15-20',r:'RPE 7'}]},
+       {day:'Thứ 6',type:'Lower Hypertrophy',exs:[{n:'Hack Squat',s:'4×12-15',r:'RPE 8'},{n:'Romanian DL',s:'3×12-15',r:'RPE 8'},{n:'Hip Thrust',s:'4×12-15',r:'RPE 8'},{n:'Leg Extension',s:'3×15-20',r:'RPE 7'},{n:'Seated Calf Raise',s:'5×15-20',r:'RPE 8'}]},
+       {day:'Thứ 7',type:'Arms & Chest Hypertrophy',exs:[{n:'Cable Fly',s:'4×12-15',r:'RPE 8'},{n:'Incline DB Press',s:'3×12-15',r:'RPE 8'},{n:'Preacher Curl',s:'4×12-15',r:'RPE 8'},{n:'Skull Crusher',s:'4×12-15',r:'RPE 8'},{n:'Lateral Raise',s:'3×15-20',r:'RPE 7'}]},
+       {day:'CN',type:'REST',exs:[]},
+     ]},
+   ]},
+  {id:8,name:'German Volume Training',short:'GVT',lvl:'intermediate',goal:'muscle',days:4,eq:'full',female:false,color:'#1a1500',acc:'#ffb84d',
+   desc:'10 sets × 10 reps cho bài chính — công thức tăng size cơ cổ điển của Đức. Volume cực cao, rest ngắn. Chỉ dùng 60-70% 1RM. Kết quả thấy rõ sau 4-6 tuần.',
+   weeks:[
+     {name:'Week 1-3',days:[
+       {day:'Thứ 2',type:'Chest & Back',exs:[{n:'Bench Press',s:'10×10 @60%',r:'90s nghỉ'},{n:'Barbell Row',s:'10×10 @60%',r:'90s nghỉ'},{n:'Incline DB Press',s:'3×10-12',r:'60s'},{n:'Cable Row',s:'3×10-12',r:'60s'}]},
+       {day:'Thứ 3',type:'Legs & Abs',exs:[{n:'Barbell Squat',s:'10×10 @60%',r:'90s nghỉ'},{n:'Romanian DL',s:'10×10 @60%',r:'90s nghỉ'},{n:'Leg Curl',s:'3×10-12',r:'60s'},{n:'Plank',s:'3×45s',r:''}]},
+       {day:'Thứ 4',type:'REST',exs:[]},
+       {day:'Thứ 5',type:'Arms & Shoulders',exs:[{n:'Close Grip Bench',s:'10×10 @60%',r:'90s nghỉ'},{n:'Barbell Curl',s:'10×10 @60%',r:'90s nghỉ'},{n:'Lateral Raise',s:'3×12-15',r:'60s'},{n:'Face Pull',s:'3×12-15',r:'60s'}]},
+       {day:'Thứ 6',type:'REST',exs:[]},
+       {day:'Thứ 7',type:'REST',exs:[]},
+       {day:'CN',type:'REST',exs:[]},
+     ]},
+     {name:'Week 4-6 (Deload volume)',days:[
+       {day:'Thứ 2',type:'Chest & Back',exs:[{n:'Bench Press',s:'10×6 @70%',r:'90s'},{n:'Barbell Row',s:'10×6 @70%',r:'90s'},{n:'Incline DB Press',s:'3×10-12',r:'60s'},{n:'Lat Pulldown',s:'3×10-12',r:'60s'}]},
+       {day:'Thứ 3',type:'Legs',exs:[{n:'Barbell Squat',s:'10×6 @70%',r:'90s'},{n:'Romanian DL',s:'10×6 @70%',r:'90s'},{n:'Hip Thrust',s:'3×12',r:'60s'},{n:'Calf Raise',s:'4×15',r:'60s'}]},
+       {day:'Thứ 4',type:'REST',exs:[]},
+       {day:'Thứ 5',type:'Arms & Shoulders',exs:[{n:'Close Grip Bench',s:'10×6 @70%',r:'90s'},{n:'Barbell Curl',s:'10×6 @70%',r:'90s'},{n:'Arnold Press',s:'3×12',r:'60s'},{n:'Face Pull',s:'3×15',r:'60s'}]},
+       {day:'Thứ 6',type:'REST',exs:[]},{day:'Thứ 7',type:'REST',exs:[]},{day:'CN',type:'REST',exs:[]},
+     ]},
+   ]},
+  {id:9,name:'Nữ — Fat Loss & Tone',short:'FLT',lvl:'beginner',goal:'fat',days:4,eq:'full',female:true,color:'#200015',acc:'#ff6eb4',
+   desc:'Thiết kế đặc biệt cho nữ muốn giảm mỡ và định hình cơ thể. Kết hợp resistance training với cardio finisher. Volume cao, rest ngắn để tăng calorie burn. Không lo bị "to" — chỉ tone và săn chắc.',
+   weeks:[
+     {name:'Week 1-2',days:[
+       {day:'Thứ 2',type:'Lower + Glutes',exs:[{n:'Hip Thrust',s:'4×15',r:'RPE 7'},{n:'Barbell Squat',s:'3×12',r:'RPE 7'},{n:'Romanian DL',s:'3×12',r:'RPE 7'},{n:'Leg Curl',s:'3×15',r:'RPE 7'},{n:'Walking Lunge',s:'3×12/leg',r:'RPE 7'}]},
+       {day:'Thứ 3',type:'Upper + Core',exs:[{n:'DB Bench Press',s:'3×12-15',r:'RPE 7'},{n:'Lat Pulldown',s:'3×12-15',r:'RPE 7'},{n:'Lateral Raise',s:'4×15-20',r:'RPE 7'},{n:'Bicep Curl',s:'3×15',r:'RPE 7'},{n:'Plank',s:'3×40s',r:''}]},
+       {day:'Thứ 4',type:'REST',exs:[]},
+       {day:'Thứ 5',type:'Full Body Circuit',exs:[{n:'Hip Thrust',s:'3×15',r:'RPE 7'},{n:'Push Up',s:'3×12-15',r:'RPE 7'},{n:'DB Row',s:'3×12',r:'RPE 7'},{n:'Goblet Squat',s:'3×15',r:'RPE 7'},{n:'Russian Twist',s:'3×20',r:''}]},
+       {day:'Thứ 6',type:'Glutes & Hamstrings',exs:[{n:'Romanian DL',s:'4×12',r:'RPE 8'},{n:'Hip Thrust',s:'4×12',r:'RPE 8'},{n:'Donkey Kicks',s:'3×20/side',r:'RPE 7'},{n:'Cable Kickback',s:'3×15/side',r:'RPE 7'},{n:'Dead Bug',s:'3×10/side',r:''}]},
+       {day:'Thứ 7',type:'REST',exs:[]},{day:'CN',type:'REST',exs:[]},
+     ]},
+   ]},
+  {id:10,name:'5/3/1 Wendler',short:'531',lvl:'intermediate',goal:'strength',days:4,eq:'barbell',female:false,color:'#1a0a00',acc:'#ff6f00',
+   desc:'Chương trình sức mạnh kinh điển của Jim Wendler. Tăng weight từng tháng (cycle), focus 4 big lift. Kết hợp joker sets và beyond. Proven hiệu quả cho lifter muốn tăng total liên tục.',
+   weeks:[
+     {name:'Week 1 (3×5)',days:[
+       {day:'Thứ 2',type:'Squat Day',exs:[{n:'Barbell Squat',s:'5@65%, 5@75%, 5+@85%',r:'RPE tới failure'},{n:'Romanian DL',s:'5×10',r:'50%'},{n:'Leg Curl',s:'3×10',r:'RPE 7'}]},
+       {day:'Thứ 3',type:'Bench Day',exs:[{n:'Bench Press',s:'5@65%, 5@75%, 5+@85%',r:'RPE tới failure'},{n:'DB Row',s:'5×10',r:'RPE 7'},{n:'Tricep Pushdown',s:'3×12',r:'RPE 7'}]},
+       {day:'Thứ 5',type:'Deadlift Day',exs:[{n:'Barbell Deadlift',s:'5@65%, 5@75%, 5+@85%',r:'RPE tới failure'},{n:'Barbell Squat',s:'5×10 @50%',r:'Pumping'},{n:'Calf Raise',s:'4×15',r:''}]},
+       {day:'Thứ 6',type:'Press Day',exs:[{n:'Overhead Press',s:'5@65%, 5@75%, 5+@85%',r:'RPE tới failure'},{n:'Barbell Row',s:'5×10',r:'RPE 7'},{n:'Bicep Curl',s:'3×12',r:'RPE 7'}]},
+       {day:'Thứ 2',type:'REST',exs:[]},{day:'Thứ 4',type:'REST',exs:[]},{day:'Thứ 7',type:'REST',exs:[]},
+     ]},
+     {name:'Week 2 (3×3)',days:[
+       {day:'Thứ 2',type:'Squat Day',exs:[{n:'Barbell Squat',s:'3@70%, 3@80%, 3+@90%',r:'RPE tới failure'},{n:'Romanian DL',s:'5×10',r:'RPE 7'},{n:'Hip Thrust',s:'3×12',r:'RPE 7'}]},
+       {day:'Thứ 3',type:'Bench Day',exs:[{n:'Bench Press',s:'3@70%, 3@80%, 3+@90%',r:'RPE tới failure'},{n:'Lat Pulldown',s:'5×10',r:'RPE 7'},{n:'Face Pull',s:'3×15',r:'RPE 7'}]},
+       {day:'Thứ 5',type:'Deadlift Day',exs:[{n:'Barbell Deadlift',s:'3@70%, 3@80%, 3+@90%',r:'RPE tới failure'},{n:'Barbell Squat',s:'5×10 @50%',r:'RPE 7'},{n:'Leg Curl',s:'3×12',r:''}]},
+       {day:'Thứ 6',type:'Press Day',exs:[{n:'Overhead Press',s:'3@70%, 3@80%, 3+@90%',r:'RPE tới failure'},{n:'Barbell Row',s:'5×10',r:'RPE 7'},{n:'Tricep Pushdown',s:'3×12',r:'RPE 7'}]},
+       {day:'Thứ 2',type:'REST',exs:[]},{day:'Thứ 4',type:'REST',exs:[]},{day:'Thứ 7',type:'REST',exs:[]},
      ]},
    ]},
 ];
@@ -1825,6 +1918,8 @@ function save(){
     planStartDate:ST.planStartDate,lastWorkoutDate:ST.lastWorkoutDate,
     weekSavedOn:getWeekKey(),customExercises:ST.customExercises||[],
     water:ST.water||0,prs:ST.prs||{},rpeHistory:ST.rpeHistory||[],
+    templates:ST.templates||[],trialStart:ST.trialStart,
+    bestStreak:ST.stats.bestStreak||0,
   }));}catch(e){}
 }
 function load(){
@@ -1849,6 +1944,9 @@ function load(){
     if(d.water)ST.water=d.water;
     if(d.prs)ST.prs=d.prs;
     if(d.rpeHistory)ST.rpeHistory=d.rpeHistory;
+    if(d.templates)ST.templates=d.templates;
+    if(d.trialStart)ST.trialStart=d.trialStart;
+    if(d.bestStreak)ST.stats.bestStreak=d.bestStreak;
     // ── Streak reset logic ──
     // If last workout was >1 day ago, reset streak
     if(ST.lastWorkoutDate){
@@ -1928,6 +2026,9 @@ function initApp(){
   renderAchievements();
   renderExGrid('all','');
   renderCustomExList();
+  renderTemplates();
+  initOfflineIndicator();
+  updateBestStreak();
   if(ST.isPro)hidePro();
 }
 function hidePro(){
@@ -1976,6 +2077,10 @@ function renderHome(){
   renderWeekStrip();
   // Today plan card
   renderTodayCard();
+  // Level + hours
+  renderLevelHome();
+  // Daily challenge
+  renderDailyChallenge();
   // Recent
   const el=document.getElementById('home-recent');
   if(!ST.workouts.length){el.innerHTML='<div class="xs muted">Chưa có buổi tập nào. Bắt đầu ngay!</div>';return;}
@@ -2254,6 +2359,8 @@ function finishWorkout(){
   ST.weekDone[new Date().getDay()===0?6:new Date().getDay()-1]=true;
   save();renderHome();renderWHist();
   showWS(w);
+  updateBestStreak();
+  renderTemplates();
   checkDeload();
   setTimeout(checkInjuryRisk,1500);
 }
@@ -2339,7 +2446,7 @@ function filterPlans(f,btn){
 function renderPlans(f){
   const lvlMap={beginner:'B',intermediate:'I',advanced:'A'};
   const lvlCls={beginner:'tb',intermediate:'ta',advanced:'tr'};
-  const list=f==='all'?PLANS:f==='female'?PLANS.filter(p=>p.female):f==='home'?PLANS.filter(p=>p.eq==='home'):PLANS.filter(p=>p.lvl===f);
+  const list=f==='all'?PLANS:f==='female'?PLANS.filter(p=>p.female):f==='home'?PLANS.filter(p=>p.eq==='home'):f==='strength'?PLANS.filter(p=>p.goal==='strength'):f==='fat'?PLANS.filter(p=>p.goal==='fat'):PLANS.filter(p=>p.lvl===f);
   document.getElementById('plan-list').innerHTML=list.map(p=>`
     <div class="plan-card" onclick="openPlanDetail(${p.id})">
       <div class="plan-cover" style="background:${p.color}">
@@ -2603,6 +2710,7 @@ function renderNutMeals(){
   const ftEl=document.getElementById('nut-f-target');if(ftEl)ftEl.textContent='/ '+targets.fat+'g';
   const calTagEl=document.getElementById('nut-cal-tag');
   if(calTagEl)calTagEl.title=`Target: P${targets.protein}g C${targets.carbs}g F${targets.fat}g`;
+  renderMacroPie();
 }
 function calcTDEE(){
   const{kg,cm,age,sex,days}=ST.profile;
@@ -2652,6 +2760,7 @@ function renderProgress(){
   render1RM();
   renderMuscleVolChart();
   updateWaterDisplay();
+  renderBodyWeightChart();
 }
 function renderCharts(){
   const bench=[60,62.5,65,67.5,70,72.5,75,77.5];
@@ -3484,9 +3593,12 @@ function exportData(){
 // WATER TRACKER
 // ════════════════════════════════════════════════════════
 function addWater(ml){
-  ST.water=(ST.water||0)+ml;
+  ST.water=Math.max(0,(ST.water||0)+ml);
   updateWaterDisplay();save();
-  if(ST.water>=2000)toast('🎉 Đã đủ nước hôm nay!');
+  if(ml>0&&ST.water>=2000)toast('🎉 Đã đủ nước hôm nay!');
+}
+function resetWater(){
+  ST.water=0;updateWaterDisplay();save();toast('💧 Đã reset nước về 0');
 }
 function updateWaterDisplay(){
   const w=ST.water||0;
@@ -3684,6 +3796,281 @@ async function checkInjuryRisk(){
 
 
 
+
+// ════════════════════════════════════════════════════════
+// XP / LEVEL SYSTEM
+// ════════════════════════════════════════════════════════
+const LEVELS=[
+  {lv:1,name:'Newbie',xpNeeded:0,emoji:'🌱'},
+  {lv:2,name:'Beginner',xpNeeded:100,emoji:'💪'},
+  {lv:3,name:'Trainee',xpNeeded:300,emoji:'🔥'},
+  {lv:4,name:'Athlete',xpNeeded:600,emoji:'⚡'},
+  {lv:5,name:'Beast',xpNeeded:1000,emoji:'🏆'},
+  {lv:6,name:'Elite',xpNeeded:2000,emoji:'💎'},
+  {lv:7,name:'Legend',xpNeeded:5000,emoji:'👑'},
+];
+function calcXP(){
+  const st=ST.stats;
+  return (st.total||0)*10 + Math.floor((st.volume||0)/100) + (st.streak||0)*5;
+}
+function getLevel(){
+  const xp=calcXP();
+  let cur=LEVELS[0];
+  for(const l of LEVELS){if(xp>=l.xpNeeded)cur=l;}
+  const next=LEVELS.find(l=>l.xpNeeded>xp);
+  return{...cur,xp,nextXP:next?.xpNeeded||9999,nextName:next?.name||'MAX'};
+}
+function renderLevelHome(){
+  const lv=getLevel();
+  const el=document.getElementById('h-level');
+  if(el)el.textContent=lv.emoji+' '+lv.lv;
+  const hoursEl=document.getElementById('h-hours');
+  if(hoursEl){
+    const totalMin=ST.workouts.reduce((t,w)=>t+(w.dur||0),0);
+    hoursEl.textContent=totalMin>=60?Math.round(totalMin/60)+'h':totalMin+'m';
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// CALORIES BURNED ESTIMATE
+// ════════════════════════════════════════════════════════
+function estimateCalBurned(durationMin){
+  // MET-based: ~5 METs for weight training
+  const kg=ST.profile.kg||70;
+  return Math.round(5*3.5*kg/200*durationMin);
+}
+
+// ════════════════════════════════════════════════════════
+// PWA INSTALL PROMPT
+// ════════════════════════════════════════════════════════
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  setTimeout(()=>{
+    if(deferredPrompt)notif('📱','Cài FitAI về máy!',
+      'Nhấn để cài như app thật — dùng offline, nhanh hơn',8000);
+  },3000);
+});
+function installPWA(){
+  if(!deferredPrompt)return toast('App đã được cài hoặc không hỗ trợ');
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(r=>{
+    if(r.outcome==='accepted')toast('✅ FitAI đã được cài!');
+    deferredPrompt=null;
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// OFFLINE INDICATOR
+// ════════════════════════════════════════════════════════
+function initOfflineIndicator(){
+  const show=()=>notif('📡','Mất kết nối','Dữ liệu sẽ được lưu tự động. AI tạm thời không hoạt động.',5000);
+  const hide=()=>toast('✅ Đã kết nối lại!');
+  window.addEventListener('offline',show);
+  window.addEventListener('online',hide);
+}
+
+// ════════════════════════════════════════════════════════
+// WORKOUT TEMPLATES (save/load custom)
+// ════════════════════════════════════════════════════════
+function saveWorkoutTemplate(){
+  if(!ST.activeW||!Object.keys(ST.exData).length)return toast('Chưa có bài tập nào!');
+  if(!ST.templates)ST.templates=[];
+  const template={
+    name:ST.activeW.title+' (template)',
+    exercises:Object.values(ST.exData).map(e=>e.name),
+    savedAt:new Date().toLocaleDateString('vi-VN'),
+  };
+  ST.templates.push(template);
+  save();toast(`✅ Đã lưu template "${template.name}"`);
+}
+function loadTemplate(i){
+  const t=ST.templates[i];if(!t)return;
+  initWorkout(t.name);
+  t.exercises.forEach(name=>addEx(name));
+  goTab('s-workout');
+  notif('📋','Template đã load!',t.name);
+}
+function renderTemplates(){
+  const el=document.getElementById('template-list');if(!el)return;
+  if(!ST.templates?.length){el.innerHTML='<div class="xs muted" style="padding:4px 0">Chưa có template</div>';return;}
+  el.innerHTML=ST.templates.map((t,i)=>`
+    <div class="rb" style="padding:8px 0;border-bottom:1px solid var(--brd)">
+      <div>
+        <div style="font-size:13px;font-weight:500">${t.name}</div>
+        <div class="xs muted">${t.exercises.join(' · ').substring(0,40)}...</div>
+      </div>
+      <button class="btn bl bxs" onclick="loadTemplate(${i})">Dùng</button>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// AUTO-INCREMENT WEIGHT SUGGEST
+// ════════════════════════════════════════════════════════
+function getWeightSuggest(exName){
+  // Find last workout with this exercise
+  const lastW=ST.workouts.find(w=>w.exDetails?.[exName]);
+  if(!lastW)return null;
+  // Parse last weight e.g. "80kg×5, 82.5kg×5"
+  const sets=lastW.exDetails[exName].split(', ');
+  const lastSet=sets[sets.length-1];
+  const m=lastSet.match(/(\d+\.?\d*)kg×(\d+)/);
+  if(!m)return null;
+  const kg=+m[1],reps=+m[2];
+  // If completed all reps at RPE<9, suggest +2.5kg
+  const suggest=Math.round((kg+2.5)*2)/2;
+  return{lastKg:kg,lastReps:reps,suggest};
+}
+
+// ════════════════════════════════════════════════════════
+// MACRO PIE CHART
+// ════════════════════════════════════════════════════════
+function renderMacroPie(){
+  const el=document.getElementById('macro-pie');if(!el)return;
+  let totalP=0,totalC=0,totalF=0;
+  const MEAL_IDS=['b','l','d','s'];
+  MEAL_IDS.forEach(id=>{
+    (ST.nut[id]||[]).forEach(f=>{totalP+=f.p||0;totalC+=f.c||0;totalF+=f.f||0;});
+  });
+  const calP=totalP*4,calC=totalC*4,calF=totalF*9;
+  const total=calP+calC+calF||1;
+  const pP=Math.round(calP/total*360);
+  const pC=Math.round(calC/total*360);
+  const pF=360-pP-pC;
+  // SVG donut
+  function arc(start,sweep,color){
+    if(sweep<=0)return'';
+    const r=40,cx=50,cy=50;
+    const s=start*Math.PI/180,e=(start+sweep)*Math.PI/180;
+    const x1=cx+r*Math.cos(s),y1=cy+r*Math.sin(s);
+    const x2=cx+r*Math.cos(e),y2=cy+r*Math.sin(e);
+    const lg=sweep>180?1:0;
+    return`<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${lg},1 ${x2},${y2} Z" fill="${color}" opacity=".85"/>`;
+  }
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;gap:14px">
+      <svg width="80" height="80" viewBox="0 0 100 100">
+        ${arc(-90,pP,'#c8f135')}
+        ${arc(-90+pP,pC,'#ffb84d')}
+        ${arc(-90+pP+pC,pF,'#4d9fff')}
+        <circle cx="50" cy="50" r="25" fill="var(--bg3)"/>
+      </svg>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+          <div style="width:10px;height:10px;border-radius:2px;background:var(--lime);flex-shrink:0"></div>
+          <span class="xs" style="color:var(--txt2)">Protein ${Math.round(totalP)}g (${Math.round(calP/total*100)}%)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+          <div style="width:10px;height:10px;border-radius:2px;background:var(--amber);flex-shrink:0"></div>
+          <span class="xs" style="color:var(--txt2)">Carbs ${Math.round(totalC)}g (${Math.round(calC/total*100)}%)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="width:10px;height:10px;border-radius:2px;background:var(--blue);flex-shrink:0"></div>
+          <span class="xs" style="color:var(--txt2)">Fat ${Math.round(totalF)}g (${Math.round(calF/total*100)}%)</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// AI PERIODIZATION
+// ════════════════════════════════════════════════════════
+async function genAIPeriodization(){
+  const el=document.getElementById('home-insight-txt');
+  if(el)el.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
+  const lv=getLevel();
+  const prompt=`Tạo kế hoạch tập 1 tuần cụ thể cho: ${ST.profile.name}, ${ST.profile.level}, mục tiêu ${ST.profile.goal}, ${ST.profile.days} buổi/tuần, thiết bị ${ST.profile.equip}. Hiện tại ở Level ${lv.lv} (${lv.name}), streak ${ST.stats.streak} ngày. Liệt kê từng ngày trong tuần: ngày nào tập gì, nhóm cơ nào, nghỉ ngày nào. Ngắn gọn, tiếng Việt, thực tế.`;
+  const result=await ai(prompt,600);
+  if(el){el.innerHTML=result.replace(/\n/g,'<br>');document.querySelector('#home-insight-card .btn').style.display='none';}
+}
+
+// ════════════════════════════════════════════════════════
+// BODY WEIGHT CHART
+// ════════════════════════════════════════════════════════
+function renderBodyWeightChart(){
+  const el=document.getElementById('bw-chart');if(!el)return;
+  const weights=ST.measurements.filter(m=>m.weight>0).slice(-8);
+  if(weights.length<2){el.innerHTML='<div class="xs muted">Cần ít nhất 2 lần đo để hiển thị</div>';return;}
+  const data=weights.map(m=>m.weight);
+  const lbls=weights.map(m=>m.date.substring(0,5));
+  const W=290,H=60,pad=8;
+  const min=Math.min(...data)-1,max=Math.max(...data)+1;
+  const pts=data.map((v,i)=>({x:pad+(i/(data.length-1))*(W-2*pad),y:pad+(1-(v-min)/(max-min))*(H-2*pad)}));
+  const line=pts.map((p,i)=>i===0?`M${p.x},${p.y}`:`L${p.x},${p.y}`).join(' ');
+  const trend=data[data.length-1]-data[0];
+  const col=trend<0?'var(--lime)':trend>0?'var(--red)':'var(--amber)';
+  el.innerHTML=`
+    <div class="rb" style="margin-bottom:6px">
+      <div class="xs muted">Cân nặng 8 lần đo gần nhất</div>
+      <span class="tag" style="background:${trend<0?'#1a2800':trend>0?'#2a0a0a':'#2a1800'};color:${col}">${trend>=0?'+':''}${trend.toFixed(1)}kg</span>
+    </div>
+    <svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" style="overflow:visible">
+      <path d="${line} L${pts[pts.length-1].x},${H} L${pts[0].x},${H} Z" fill="${col}" opacity=".1"/>
+      <path d="${line}" fill="none" stroke="${col}" stroke-width="2" stroke-linecap="round"/>
+      ${pts.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="${i===pts.length-1?4:2.5}" fill="${col}" stroke="var(--bg2)" stroke-width="1.5"/>`).join('')}
+    </svg>
+    <div style="display:flex;justify-content:space-between;margin-top:2px">
+      <span class="xxs muted">${lbls[0]}</span>
+      <span class="xxs muted">${lbls[lbls.length-1]}: <strong style="color:${col}">${data[data.length-1]}kg</strong></span>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// BEST STREAK & ALL-TIME STATS
+// ════════════════════════════════════════════════════════
+function updateBestStreak(){
+  if(!ST.stats.bestStreak||ST.stats.streak>ST.stats.bestStreak){
+    ST.stats.bestStreak=ST.stats.streak;
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// DAILY CHALLENGE
+// ════════════════════════════════════════════════════════
+const CHALLENGES=[
+  {text:'Tập ít nhất 45 phút hôm nay',check:w=>w.dur>=45},
+  {text:'Hoàn thành 20+ sets hôm nay',check:w=>w.totalSets>=20},
+  {text:'Đạt 2000kg volume hôm nay',check:w=>w.vol>=2000},
+  {text:'Tập đủ 5 bài khác nhau',check:w=>w.exCount>=5},
+  {text:'Tập mà không bỏ qua rest timer',check:()=>true},
+];
+function getDailyChallenge(){
+  const dayIdx=new Date().getDate()%CHALLENGES.length;
+  return CHALLENGES[dayIdx];
+}
+function renderDailyChallenge(){
+  const el=document.getElementById('daily-challenge');if(!el)return;
+  const c=getDailyChallenge();
+  const today=new Date().toLocaleDateString('vi-VN');
+  const todayW=ST.workouts.find(w=>w.date===today);
+  const done=todayW&&c.check(todayW);
+  el.innerHTML=`
+    <div class="rb">
+      <div>
+        <div style="font-size:10px;color:${done?'var(--lime)':'var(--amber)'};font-family:var(--FM);letter-spacing:.08em;margin-bottom:3px">
+          ${done?'✅ HOÀN THÀNH':'⚡ THÁCH THỨC HÔM NAY'}
+        </div>
+        <div style="font-size:13px;${done?'text-decoration:line-through;color:var(--txt3)':''}">${c.text}</div>
+      </div>
+      <div style="font-size:24px">${done?'🏆':'🎯'}</div>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// TRIAL COUNTDOWN (Pro)
+// ════════════════════════════════════════════════════════
+function renderTrialCountdown(){
+  const el=document.getElementById('trial-countdown');if(!el)return;
+  if(ST.isPro){el.style.display='none';return;}
+  if(!ST.trialStart)ST.trialStart=new Date().toISOString();
+  const days=Math.max(0,7-Math.floor((Date.now()-new Date(ST.trialStart))/(1000*60*60*24)));
+  el.style.display='flex';
+  el.innerHTML=`
+    <div style="font-size:10px;color:var(--amber);font-family:var(--FM);letter-spacing:.08em;margin-bottom:2px">DÙNG THỬ</div>
+    <div style="font-family:var(--FD);font-size:28px;color:var(--amber);letter-spacing:.04em">${days} ngày</div>
+    <div style="font-size:11px;color:var(--txt3)">còn lại</div>
+    <button class="btn bl" style="height:32px;font-size:12px;margin-top:6px" onclick="showPW()">Nâng cấp →</button>`;
+}
 
 // ════════════════════════════════════════════════════════
 // BOOT
