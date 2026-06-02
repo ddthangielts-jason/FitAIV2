@@ -589,7 +589,30 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
   </div>
 </div>
 
-<!-- ═══════════════════════ PAYWALL ═══════════════════════ -->
+<!-- ═══ SHARE CARD MODAL ═══ -->
+<div id="share-modal" style="position:fixed;inset:0;z-index:450;background:rgba(0,0,0,.95);display:none;align-items:center;justify-content:center;max-width:430px;margin:0 auto">
+  <div style="width:100%;padding:20px">
+    <div class="rb" style="margin-bottom:16px">
+      <div style="font-family:var(--FD);font-size:22px;letter-spacing:.04em">Share <span style="color:var(--lime)">kết quả</span></div>
+      <button onclick="document.getElementById('share-modal').style.display='none'" style="background:none;border:none;color:var(--txt2);font-size:22px;cursor:pointer">✕</button>
+    </div>
+    <!-- Card preview -->
+    <div id="share-card" style="background:linear-gradient(135deg,#0a1a00,#111);border:1px solid rgba(200,241,53,.3);border-radius:16px;padding:24px;margin-bottom:16px">
+      <div style="font-family:var(--FD);font-size:14px;letter-spacing:.15em;color:var(--lime);margin-bottom:16px">FIT<span style="color:#fff">AI</span></div>
+      <div id="sc-headline" style="font-family:var(--FD);font-size:40px;letter-spacing:.04em;color:#fff;line-height:1;margin-bottom:4px">BEAST MODE</div>
+      <div id="sc-date" style="font-size:11px;color:var(--txt3);font-family:var(--FM);margin-bottom:16px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:16px" id="sc-stats"></div>
+      <div id="sc-exlist" style="font-size:12px;color:var(--txt2);line-height:1.8;border-top:1px solid rgba(255,255,255,.1);padding-top:12px"></div>
+      <div style="margin-top:14px;font-size:10px;color:var(--txt3);font-family:var(--FM);letter-spacing:.08em">fitai.app · AI Workout Coach 🇻🇳</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn bl" style="flex:1" onclick="copyShareText()">Copy text</button>
+      <button class="btn bg" style="flex:1" onclick="nativeShare()">Chia sẻ ↗</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAYWALL ═══ -->
 <div id="paywall">
   <div class="pw-hdr">
     <div style="font-family:var(--FD);font-size:22px;letter-spacing:.06em">FIT<span style="color:var(--lime)">AI</span> <span class="pro-chip">PRO</span></div>
@@ -1044,6 +1067,13 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
     <div style="flex:1;overflow-y:auto;padding:18px 16px 16px">
       <div style="font-family:var(--FD);font-size:30px;letter-spacing:.04em;margin-bottom:14px">Tiến <span style="color:var(--lime)">độ</span></div>
 
+      <!-- 1RM Calculator -->
+      <div class="sec-label" style="margin-top:0">Estimated 1RM từ log của bạn</div>
+      <div class="card" style="margin-bottom:10px" id="orm-card">
+        <div class="xs muted" style="margin-bottom:10px">Tính tự động từ set nặng nhất trong lịch sử</div>
+        <div id="orm-list"><div class="xs muted">Chưa có dữ liệu — bắt đầu tập để tính 1RM</div></div>
+      </div>
+
       <!-- Charts -->
       <div class="sec-label" style="margin-top:0">Strength Progress</div>
       <div class="chart-card" id="bench-chart-card">
@@ -1142,6 +1172,26 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
             <option value="full">Full gym</option><option value="barbell">Barbell+Rack</option><option value="dumbbell">Dumbbell</option><option value="home">Bodyweight</option>
           </select>
         </div>
+        <div class="fg"><label class="lbl">Đơn vị trọng lượng</label>
+          <div class="g2" style="gap:6px">
+            <div class="choice on" id="unit-kg" onclick="setUnit('kg')" style="padding:10px;flex-direction:row;gap:5px;border-radius:var(--r)"><span style="font-size:15px">🏋️</span><span style="font-size:13px">kg</span></div>
+            <div class="choice" id="unit-lbs" onclick="setUnit('lbs')" style="padding:10px;flex-direction:row;gap:5px;border-radius:var(--r)"><span style="font-size:15px">🇺🇸</span><span style="font-size:13px">lbs</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-label">Bài tập tùy chỉnh</div>
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:12px;color:var(--txt2);margin-bottom:10px">Thêm bài tập không có trong thư viện</div>
+        <div style="display:flex;gap:7px;margin-bottom:8px">
+          <input class="inp" id="custom-ex-name" placeholder="Tên bài tập..." style="flex:1">
+          <select class="inp" id="custom-ex-muscle" style="width:110px">
+            <option value="chest">Ngực</option><option value="back">Lưng</option><option value="shoulders">Vai</option>
+            <option value="arms">Bắp tay</option><option value="legs">Chân</option><option value="glutes">Mông</option><option value="core">Core</option>
+          </select>
+        </div>
+        <button class="btn bg" style="height:36px;font-size:12px" onclick="addCustomEx()">+ Thêm bài tập</button>
+        <div id="custom-ex-list" style="margin-top:10px"></div>
       </div>
 
       <div class="sec-label">Menu</div>
@@ -1150,6 +1200,7 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <div class="menu-item" onclick="goTab('s-plan')"><div class="menu-ico">📋</div><div class="menu-lbl">Kho plan</div><div class="menu-arr">›</div></div>
         <div class="menu-item" onclick="openExLib(false)"><div class="menu-ico">🎬</div><div class="menu-lbl">Thư viện bài tập</div><div class="menu-arr">›</div></div>
         <div class="menu-item" onclick="showPlateCalc()"><div class="menu-ico">🧮</div><div class="menu-lbl">Tính đĩa tạ</div><div class="menu-arr">›</div></div>
+        <div class="menu-item" onclick="exportData()"><div class="menu-ico">📥</div><div class="menu-lbl">Export data CSV</div><div class="menu-arr">›</div></div>
         <div class="menu-item" onclick="showPW()"><div class="menu-ico">⚡</div><div class="menu-lbl" style="color:var(--lime)">Nâng cấp Pro</div><div class="menu-arr" style="color:var(--lime)">›</div></div>
         <div class="menu-item" onclick="resetApp()"><div class="menu-ico">🗑️</div><div class="menu-lbl" style="color:var(--red)">Xóa tất cả dữ liệu</div><div class="menu-arr" style="color:var(--red)">›</div></div>
       </div>
@@ -1576,9 +1627,8 @@ function save(){
     profile:ST.profile,workouts:ST.workouts.slice(0,100),stats:ST.stats,
     currentPlanId:ST.currentPlan?.id,measurements:ST.measurements,
     weekDone:ST.weekDone,nut:ST.nut,isPro:ST.isPro,
-    planStartDate:ST.planStartDate,
-    lastWorkoutDate:ST.lastWorkoutDate,
-    weekSavedOn:getWeekKey(),
+    planStartDate:ST.planStartDate,lastWorkoutDate:ST.lastWorkoutDate,
+    weekSavedOn:getWeekKey(),customExercises:ST.customExercises||[],
   }));}catch(e){}
 }
 function load(){
@@ -1596,6 +1646,10 @@ function load(){
     if(d.isPro)ST.isPro=d.isPro;
     if(d.planStartDate)ST.planStartDate=d.planStartDate;
     if(d.lastWorkoutDate)ST.lastWorkoutDate=d.lastWorkoutDate;
+    if(d.customExercises){
+      ST.customExercises=d.customExercises;
+      d.customExercises.forEach(e=>{if(!EXERCISES.find(x=>x.id===e.id))EXERCISES.push(e);});
+    }
     // ── Streak reset logic ──
     // If last workout was >1 day ago, reset streak
     if(ST.lastWorkoutDate){
@@ -1667,12 +1721,14 @@ function finishOB(){
 // ════════════════════════════════════════════════════════
 function initApp(){
   syncProfileForm();
+  syncUnitUI();
   renderHome();
   renderPlans('all');
   renderNutMeals();
   renderProgress();
   renderAchievements();
   renderExGrid('all','');
+  renderCustomExList();
   if(ST.isPro)hidePro();
 }
 function hidePro(){
@@ -1835,7 +1891,7 @@ function addEx(name){
   // Get last session data for compare
   const lastW=ST.workouts.find(w=>w.exDetails&&w.exDetails[name]);
   const lastData=lastW?.exDetails[name];
-  ST.exData[id]={name,sets:[
+  ST.exData[id]={name,note:'',sets:[
     {kg:0,reps:0,rpe:0,done:false},
     {kg:0,reps:0,rpe:0,done:false},
     {kg:0,reps:0,rpe:0,done:false},
@@ -1873,6 +1929,9 @@ function addEx(name){
     <div style="display:flex;gap:6px;margin-top:5px">
       <button class="btn bg bxs" onclick="addSet('${id}')">+ Set</button>
       <button class="btn bg bxs" onclick="finishAllSets('${id}')">✓ Finish all</button>
+    </div>
+    <div style="margin-top:7px">
+      <input class="inp" id="${id}_note" placeholder="Ghi chú buổi tập (đau vai, tăng được 5kg...)" style="font-size:12px;padding:7px 10px;color:var(--txt2)" oninput="ST.exData['${id}'].note=this.value">
     </div>
     <div class="ai-tip" id="${id}_tip"></div>`;
   cont.appendChild(wrap);
@@ -2056,12 +2115,7 @@ function setFeel(el,emoji,lbl){
   el.classList.add('on');
 }
 function closeWS(){document.getElementById('ws-screen').classList.remove('show');}
-function shareWS(){
-  const w=ST.workouts[0];
-  const txt=`Vừa hoàn thành buổi tập với FitAI! 💪\n⏱ ${w?.dur}ph · 🏋️ ${w?.vol}kg · ${ST.stats.streak} day streak\n\nfitai.vn`;
-  if(navigator.share)navigator.share({text:txt});
-  else{navigator.clipboard?.writeText(txt);toast('Đã copy kết quả!');}
-}
+
 
 // ════════════════════════════════════════════════════════
 // PLAN SYSTEM
@@ -2383,6 +2437,7 @@ async function genMealPlan(){
 function renderProgress(){
   renderCharts();renderMeas();renderAchievements();
   renderMonthlyCalendar('monthly-cal');
+  render1RM();
 }
 function renderCharts(){
   const bench=[60,62.5,65,67.5,70,72.5,75,77.5];
@@ -3023,6 +3078,172 @@ function schedMonth(dir){
 function schedToday(){
   schedYear=new Date().getFullYear();schedMonth_=new Date().getMonth();
   renderSchedule();
+}
+
+// ════════════════════════════════════════════════════════
+// UNIT TOGGLE (kg/lbs)
+// ════════════════════════════════════════════════════════
+function setUnit(u){
+  ST.profile.unit=u;
+  document.getElementById('unit-kg').classList.toggle('on',u==='kg');
+  document.getElementById('unit-lbs').classList.toggle('on',u==='lbs');
+  save();toast(u==='lbs'?'Đã chuyển sang lbs':'Đã chuyển sang kg');
+}
+function dispKg(kg){
+  if(ST.profile.unit==='lbs')return Math.round(kg*2.205)+'lbs';
+  return kg+'kg';
+}
+function toKg(val){
+  if(ST.profile.unit==='lbs')return Math.round(val/2.205*10)/10;
+  return val;
+}
+function syncUnitUI(){
+  const u=ST.profile.unit||'kg';
+  const kEl=document.getElementById('unit-kg');
+  const lEl=document.getElementById('unit-lbs');
+  if(kEl)kEl.classList.toggle('on',u==='kg');
+  if(lEl)lEl.classList.toggle('on',u==='lbs');
+}
+
+// ════════════════════════════════════════════════════════
+// CUSTOM EXERCISE
+// ════════════════════════════════════════════════════════
+function addCustomEx(){
+  const name=document.getElementById('custom-ex-name').value.trim();
+  const muscle=document.getElementById('custom-ex-muscle').value;
+  if(!name)return toast('Nhập tên bài tập!');
+  if(!ST.customExercises)ST.customExercises=[];
+  const newEx={
+    id:1000+ST.customExercises.length,
+    name,nameVi:name,muscle,equip:'other',emoji:'💪',
+    cues:['Thực hiện đúng kỹ thuật'],mistakes:[],
+    sets:{muscle:'3×10-12',strength:'4×6-8',endurance:'3×15-20'},diffVi:'Tùy chỉnh',
+    custom:true
+  };
+  ST.customExercises.push(newEx);
+  EXERCISES.push(newEx);
+  document.getElementById('custom-ex-name').value='';
+  renderCustomExList();
+  renderExGrid(exLibMuscle,exLibQ);
+  save();
+  toast(`✅ Đã thêm "${name}"`);
+}
+function renderCustomExList(){
+  const el=document.getElementById('custom-ex-list');if(!el)return;
+  if(!ST.customExercises?.length){el.innerHTML='';return;}
+  el.innerHTML=`<div class="sec-label" style="margin-top:8px">Bài tập đã tạo</div>`+
+    ST.customExercises.map((e,i)=>`
+      <div class="rb" style="padding:6px 0;border-bottom:1px solid var(--brd);font-size:12.5px">
+        <span style="color:var(--txt2)">${e.emoji} ${e.name}</span>
+        <button onclick="deleteCustomEx(${i})" style="background:none;border:none;color:var(--txt3);cursor:pointer;font-size:13px">✕</button>
+      </div>`).join('');
+}
+function deleteCustomEx(i){
+  const ex=ST.customExercises[i];
+  ST.customExercises.splice(i,1);
+  const idx=EXERCISES.findIndex(e=>e.id===ex.id);
+  if(idx>-1)EXERCISES.splice(idx,1);
+  renderCustomExList();renderExGrid(exLibMuscle,exLibQ);save();
+}
+
+// ════════════════════════════════════════════════════════
+// 1RM CALCULATOR
+// ════════════════════════════════════════════════════════
+function calc1RM(kg,reps){
+  // Epley formula
+  if(reps===1)return kg;
+  return Math.round(kg*(1+reps/30));
+}
+function render1RM(){
+  const el=document.getElementById('orm-list');if(!el)return;
+  // Build 1RM from workout history
+  const ormMap={};
+  ST.workouts.forEach(w=>{
+    Object.entries(w.exDetails||{}).forEach(([name,data])=>{
+      // Parse "80kg×5, 85kg×3" format
+      const sets=data.split(', ');
+      sets.forEach(s=>{
+        const m=s.match(/(\d+\.?\d*)kg×(\d+)/);
+        if(m){
+          const kg=+m[1],reps=+m[2];
+          const orm=calc1RM(kg,reps);
+          if(!ormMap[name]||orm>ormMap[name])ormMap[name]=orm;
+        }
+      });
+    });
+  });
+  const entries=Object.entries(ormMap).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  if(!entries.length){el.innerHTML='<div class="xs muted">Chưa có dữ liệu — log workout để tính 1RM</div>';return;}
+  el.innerHTML=entries.map(([name,orm])=>`
+    <div class="rb" style="padding:8px 0;border-bottom:1px solid var(--brd)">
+      <span style="font-size:13px;color:var(--txt2)">${name}</span>
+      <span style="font-family:var(--FM);font-size:13px;color:var(--lime)">${dispKg(orm)} 1RM</span>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// SHARE WORKOUT CARD
+// ════════════════════════════════════════════════════════
+function showShareCard(w){
+  w=w||ST.workouts[0];if(!w)return toast('Chưa có buổi tập nào!');
+  document.getElementById('share-modal').style.display='flex';
+  const titles=['BEAST MODE!','CRUSHED IT!','LET\'S GO!','DONE! 💪'];
+  document.getElementById('sc-headline').textContent=titles[Math.floor(Math.random()*titles.length)];
+  document.getElementById('sc-date').textContent=w.date.toUpperCase();
+  document.getElementById('sc-stats').innerHTML=`
+    <div style="background:rgba(200,241,53,.1);border-radius:8px;padding:8px;text-align:center">
+      <div style="font-family:var(--FD);font-size:24px;color:var(--lime)">${w.dur}</div>
+      <div style="font-size:9px;color:var(--txt3);font-family:var(--FM)">PHÚT</div>
+    </div>
+    <div style="background:rgba(200,241,53,.1);border-radius:8px;padding:8px;text-align:center">
+      <div style="font-family:var(--FD);font-size:24px;color:var(--lime)">${w.vol>999?(w.vol/1000).toFixed(1)+'k':w.vol}</div>
+      <div style="font-size:9px;color:var(--txt3);font-family:var(--FM)">KG VOL</div>
+    </div>
+    <div style="background:rgba(200,241,53,.1);border-radius:8px;padding:8px;text-align:center">
+      <div style="font-family:var(--FD);font-size:24px;color:var(--lime)">${w.exCount}</div>
+      <div style="font-size:9px;color:var(--txt3);font-family:var(--FM)">BÀI</div>
+    </div>
+    <div style="background:rgba(200,241,53,.1);border-radius:8px;padding:8px;text-align:center">
+      <div style="font-family:var(--FD);font-size:24px;color:var(--lime)">${ST.stats.streak}</div>
+      <div style="font-size:9px;color:var(--txt3);font-family:var(--FM)">STREAK</div>
+    </div>`;
+  document.getElementById('sc-exlist').innerHTML=Object.entries(w.exDetails||{}).slice(0,4).map(([n,d])=>`
+    <div style="display:flex;justify-content:space-between"><span>${n}</span><span style="color:var(--lime)">${d}</span></div>`).join('');
+}
+function getShareText(){
+  const w=ST.workouts[0];if(!w)return'';
+  return `💪 Vừa hoàn thành buổi tập với FitAI!\n\n⏱ ${w.dur} phút · 🏋️ ${w.vol}kg · 🔥 ${ST.stats.streak} day streak\n\n${Object.entries(w.exDetails||{}).slice(0,3).map(([n,d])=>`• ${n}: ${d}`).join('\n')}\n\nfitai.app — AI Workout Coach 🇻🇳`;
+}
+function copyShareText(){
+  navigator.clipboard?.writeText(getShareText()).then(()=>toast('✅ Đã copy!'));
+}
+function nativeShare(){
+  if(navigator.share)navigator.share({text:getShareText()});
+  else copyShareText();
+}
+
+// Override shareWS to use new modal
+function shareWS(){showShareCard(ST.workouts[0]);}
+
+// ════════════════════════════════════════════════════════
+// EXPORT CSV
+// ════════════════════════════════════════════════════════
+function exportData(){
+  if(!ST.workouts.length)return toast('Chưa có dữ liệu!');
+  const rows=[['Ngày','Buổi tập','Thời gian (ph)','Volume (kg)','Số bài','Bài tập chi tiết']];
+  ST.workouts.forEach(w=>{
+    rows.push([
+      w.date,w.title,w.dur||0,w.vol||0,w.exCount||0,
+      Object.entries(w.exDetails||{}).map(([n,d])=>`${n}: ${d}`).join(' | ')
+    ]);
+  });
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`FitAI_workouts_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();URL.revokeObjectURL(url);
+  toast('✅ Đã export CSV!');
 }
 
 // ════════════════════════════════════════════════════════
