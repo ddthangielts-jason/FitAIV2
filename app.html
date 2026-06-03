@@ -888,7 +888,9 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
     </div>
     <!-- Custom food with AI lookup -->
     <div style="display:flex;gap:7px;margin-bottom:6px">
-      <input class="inp" id="food-custom-name" placeholder="Nhập tên món ăn..." style="flex:1" onkeydown="if(event.key==='Enter')lookupFood()">
+      <input class="inp" id="food-custom-name" placeholder="Nhập tên món ăn..." style="flex:1" 
+        onkeydown="if(event.key==='Enter')lookupFood()"
+        oninput="foodSearchDebounce(this.value)">
       <button class="btn bl bsm" onclick="lookupFood()" style="white-space:nowrap;flex-shrink:0">AI tính</button>
     </div>
     <div id="food-ai-result" style="display:none;background:var(--lime-dim);border:1px solid rgba(200,241,53,.2);border-radius:var(--r);padding:10px 12px;margin-bottom:10px">
@@ -896,7 +898,9 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
       <div style="font-size:13px;color:rgba(200,241,53,.9)" id="food-ai-txt"></div>
       <button class="btn bl" style="margin-top:8px;height:34px;font-size:12px" id="food-ai-add-btn" onclick="addFoodFromAI()">+ Thêm món này</button>
     </div>
-    <div style="font-size:11px;color:var(--txt3);margin-bottom:10px;font-family:var(--FM)">— HOẶC CHỌN NHANH —</div>
+    <!-- Recent foods -->
+    <div id="recent-foods-grid" style="margin-bottom:10px"></div>
+    <div style="font-size:11px;color:var(--txt3);margin-bottom:8px;font-family:var(--FM)">— TẤT CẢ MÓN —</div>
     <div class="food-preset-grid" id="food-presets"></div>
   </div>
 </div>
@@ -1113,10 +1117,13 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <div id="macro-pie"></div>
       </div>
 
-      <button class="btn bl" style="margin-bottom:14px" onclick="genMealPlan()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        AI tạo meal plan hôm nay
-      </button>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button class="btn bl" style="flex:1" onclick="genMealPlan()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          AI meal plan hôm nay
+        </button>
+        <button class="btn bg" style="flex:1" onclick="genNutWeeklySummary()">📊 Tóm tắt tuần</button>
+      </div>
 
       <!-- Water + Custom Cal Goal -->
       <div class="g2" style="margin-bottom:12px">
@@ -1319,6 +1326,7 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <div class="menu-item" onclick="goTab('s-plan')"><div class="menu-ico">📋</div><div class="menu-lbl">Kho plan</div><div class="menu-arr">›</div></div>
         <div class="menu-item" onclick="openExLib(false)"><div class="menu-ico">🎬</div><div class="menu-lbl">Thư viện bài tập</div><div class="menu-arr">›</div></div>
         <div class="menu-item" onclick="showPlateCalc()"><div class="menu-ico">🧮</div><div class="menu-lbl">Tính đĩa tạ</div><div class="menu-arr">›</div></div>
+        <div class="menu-item" onclick="shareReferral()"><div class="menu-ico">🎁</div><div class="menu-lbl">Mời bạn bè — nhận Pro!</div><div class="menu-arr">›</div></div>
         <div class="menu-item" onclick="installPWA()"><div class="menu-ico">📱</div><div class="menu-lbl">Cài app về máy (PWA)</div><div class="menu-arr">›</div></div>
         <div class="menu-item" onclick="exportData()"><div class="menu-ico">📥</div><div class="menu-lbl">Export data CSV</div><div class="menu-arr">›</div></div>
         <div class="menu-item" onclick="showPW()"><div class="menu-ico">⚡</div><div class="menu-lbl" style="color:var(--lime)">Nâng cấp Pro</div><div class="menu-arr" style="color:var(--lime)">›</div></div>
@@ -2029,6 +2037,7 @@ function initApp(){
   renderTemplates();
   initOfflineIndicator();
   updateBestStreak();
+  addTransitionCSS();
   if(ST.isPro)hidePro();
 }
 function hidePro(){
@@ -2176,6 +2185,7 @@ function initWorkout(title){
   document.getElementById('aw-title').textContent=title;
   document.getElementById('aw-exercises').innerHTML='';
   startTimer();
+  setTimeout(initSessionNote,100);
   goTab('s-workout');
 }
 function startTimer(){
@@ -2192,54 +2202,106 @@ function addEx(name){
   ST.exCtr++;
   const id='e'+ST.exCtr;
   const exInfo=EXERCISES.find(e=>e.name===name||e.nameVi===name);
-  // Get last session data for compare
+  // Get last session data for compare + auto-fill
   const lastW=ST.workouts.find(w=>w.exDetails&&w.exDetails[name]);
   const lastData=lastW?.exDetails[name];
+  // Parse last sets for auto-fill
+  let prevSets=[];
+  if(lastData){
+    prevSets=lastData.split(', ').map(s=>{
+      const m=s.match(/(\d+\.?\d*)kg×(\d+)/);
+      return m?{kg:+m[1],reps:+m[2]}:null;
+    }).filter(Boolean);
+  }
+  // Auto-suggest weight (last + 2.5 if PR possible)
+  const suggest=prevSets.length?Math.round((prevSets[prevSets.length-1].kg+2.5)*2)/2:null;
   ST.exData[id]={name,note:'',sets:[
-    {kg:0,reps:0,rpe:0,done:false},
-    {kg:0,reps:0,rpe:0,done:false},
-    {kg:0,reps:0,rpe:0,done:false},
+    {kg:prevSets[0]?.kg||0,reps:prevSets[0]?.reps||0,rpe:0,done:false},
+    {kg:prevSets[1]?.kg||0,reps:prevSets[1]?.reps||0,rpe:0,done:false},
+    {kg:prevSets[2]?.kg||0,reps:prevSets[2]?.reps||0,rpe:0,done:false},
   ]};
   const cont=document.getElementById('aw-exercises');
   const wrap=document.createElement('div');
   wrap.className='ex-block';wrap.id=id+'_b';
-  const vsHtml=lastData?`<div class="vs-row">📅 Lần trước: <span class="vs-better">${lastData}</span></div>`:'';
+  // Warm-up sets suggestion
+  const workingKg=prevSets[0]?.kg||60;
+  const warmupHtml=prevSets.length?`
+    <div style="background:rgba(255,184,77,.06);border:1px solid rgba(255,184,77,.15);border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:11px;color:var(--amber)">
+      <span style="font-family:var(--FM);font-size:9px;letter-spacing:.08em">WARM-UP GỢI Ý</span>
+      <div style="margin-top:4px;color:var(--txt2)">
+        Bar×10 → ${Math.round(workingKg*0.5)}kg×8 → ${Math.round(workingKg*0.7)}kg×5 → ${Math.round(workingKg*0.85)}kg×3
+      </div>
+    </div>`:'';
+  // Suggest badge
+  const suggestHtml=suggest?`<span style="background:rgba(200,241,53,.15);color:var(--lime);font-size:10px;padding:1px 6px;border-radius:4px;font-family:var(--FM)">↑ Thử ${suggest}kg</span>`:'';
+  const vsHtml=lastData?`
+    <div class="vs-row" style="flex-wrap:wrap;gap:6px">
+      📅 Lần trước: <span class="vs-better">${lastData}</span>
+      ${suggestHtml}
+      <button onclick="copyPrevSets('${id}')" style="background:none;border:none;color:var(--lime);font-size:10px;cursor:pointer;font-family:var(--FM);padding:0">📋 Copy</button>
+    </div>`:'';
+  const makeSetRow=(i,kg,reps)=>`
+    <div class="set-row" id="${id}_row${i}">
+      <span class="sn" style="position:relative">
+        ${i+1}
+        <span id="${id}_pr${i}" style="display:none;position:absolute;top:-6px;right:-4px;background:var(--lime);color:#111;font-size:7px;font-weight:700;border-radius:3px;padding:1px 3px;font-family:var(--FM)">PR</span>
+      </span>
+      <div style="position:relative">
+        <input class="si" type="number" min="0" step="0.5" value="${kg||''}" placeholder="${prevSets[i]?.kg||0}" 
+          oninput="setV('${id}',${i},'kg',this.value);checkSetPR('${id}',${i})"
+          onfocus="this.select()">
+      </div>
+      <div style="position:relative">
+        <input class="si" type="number" min="0" value="${reps||''}" placeholder="${prevSets[i]?.reps||0}"
+          oninput="setV('${id}',${i},'reps',this.value);checkSetPR('${id}',${i})"
+          onfocus="this.select()">
+      </div>
+      <input class="si" type="number" min="1" max="10" placeholder="7" oninput="setV('${id}',${i},'rpe',this.value);trackRPE(+this.value)">
+      <button class="sdone" id="${id}_s${i}" onclick="doneSet('${id}',${i},this)">✓</button>
+    </div>`;
   wrap.innerHTML=`
     <div class="ex-block-header">
       <div class="ex-block-thumb">${exInfo?.emoji||'💪'}</div>
       <div style="flex:1">
         <div class="ex-block-name">${name}</div>
-        ${exInfo?`<div class="xxs muted">${exInfo.nameVi!==name?exInfo.nameVi:''}</div>`:''}
+        ${exInfo?`<div class="xxs muted">${exInfo.nameVi!==name?exInfo.nameVi:''} · ${exInfo.diffVi||''}${exInfo.muscle?' · '+exInfo.muscle:''}</div>`:''}
       </div>
       <div class="ex-block-actions">
         <button class="btn bg bxs" onclick="showPlateCalc('${id}','${name}')" title="Tính đĩa tạ">🏋️</button>
-        <button class="btn bg bxs" onclick="openAITip('${id}','${name}')">⚡ AI</button>
+        <button class="btn bg bxs" onclick="openAITip('${id}','${name}')">⚡</button>
         <button class="btn bg bxs" onclick="swapEx('${id}','${name}')">↔</button>
         <button class="btn bg bxs" onclick="removeEx('${id}')">✕</button>
       </div>
     </div>
     ${vsHtml}
+    ${warmupHtml}
     <div class="set-table-head"><span>#</span><span>kg</span><span>Reps</span><span>RPE</span><span></span></div>
     <div id="${id}_sets">
-      ${[1,2,3].map(i=>`
-      <div class="set-row">
-        <span class="sn">${i}</span>
-        <input class="si" type="number" min="0" step="0.5" placeholder="0" oninput="setV('${id}',${i-1},'kg',this.value)">
-        <input class="si" type="number" min="0" placeholder="0" oninput="setV('${id}',${i-1},'reps',this.value)">
-        <input class="si" type="number" min="1" max="10" placeholder="7" oninput="setV('${id}',${i-1},'rpe',this.value)">
-        <button class="sdone" id="${id}_s${i-1}" onclick="doneSet('${id}',${i-1},this)">✓</button>
-      </div>`).join('')}
+      ${[0,1,2].map(i=>makeSetRow(i,prevSets[i]?.kg,prevSets[i]?.reps)).join('')}
     </div>
     <div style="display:flex;gap:6px;margin-top:5px">
       <button class="btn bg bxs" onclick="addSet('${id}')">+ Set</button>
-      <button class="btn bg bxs" onclick="finishAllSets('${id}')">✓ Finish all</button>
+      <button class="btn bg bxs" onclick="finishAllSets('${id}')">✓ All</button>
+      <button class="btn bg bxs" onclick="toggleRestAdj('${id}')">⏱ ±</button>
+    </div>
+    <div id="${id}_rest_adj" style="display:none;margin-top:6px;display:none">
+      <div class="row" style="gap:6px">
+        <button onclick="adjustRest(-15)" class="btn bg bxs">-15s</button>
+        <button onclick="adjustRest(15)" class="btn bg bxs">+15s</button>
+        <button onclick="adjustRest(30)" class="btn bg bxs">+30s</button>
+        <button onclick="adjustRest(60)" class="btn bg bxs">+1:00</button>
+      </div>
     </div>
     <div style="margin-top:7px">
-      <input class="inp" id="${id}_note" placeholder="Ghi chú buổi tập (đau vai, tăng được 5kg...)" style="font-size:12px;padding:7px 10px;color:var(--txt2)" oninput="ST.exData['${id}'].note=this.value">
+      <input class="inp" id="${id}_note" placeholder="Ghi chú bài này..." style="font-size:12px;padding:7px 10px;color:var(--txt2)" oninput="ST.exData['${id}'].note=this.value">
     </div>
     <div class="ai-tip" id="${id}_tip"></div>`;
   cont.appendChild(wrap);
   updateWorkoutProgress();
+  // Auto-fill exData with prev values
+  [0,1,2].forEach(i=>{
+    if(prevSets[i]){ST.exData[id].sets[i].kg=prevSets[i].kg;ST.exData[id].sets[i].reps=prevSets[i].reps;}
+  });
 }
 function setV(id,i,f,v){if(ST.exData[id]?.sets[i])ST.exData[id].sets[i][f]=+v;}
 function doneSet(id,i,btn){
@@ -2279,18 +2341,6 @@ function updateWorkoutProgress(){
   Object.values(ST.exData).forEach(e=>e.sets.forEach(s=>{total++;if(s.done)done++;}));
   const pct=total>0?Math.round(done/total*100):0;
   document.getElementById('aw-prog').style.width=pct+'%';
-}
-function addSet(id){
-  const idx=ST.exData[id].sets.length;
-  ST.exData[id].sets.push({kg:0,reps:0,rpe:0,done:false});
-  const r=document.createElement('div');r.className='set-row';
-  r.innerHTML=`<span class="sn">${idx+1}</span>
-    <input class="si" type="number" min="0" step="0.5" placeholder="0" oninput="setV('${id}',${idx},'kg',this.value)">
-    <input class="si" type="number" min="0" placeholder="0" oninput="setV('${id}',${idx},'reps',this.value)">
-    <input class="si" type="number" min="1" max="10" placeholder="7" oninput="setV('${id}',${idx},'rpe',this.value)">
-    <button class="sdone" id="${id}_s${idx}" onclick="doneSet('${id}',${idx},this)">✓</button>`;
-  document.getElementById(id+'_sets').appendChild(r);
-  updateWorkoutProgress();
 }
 function finishAllSets(id){
   const sets=document.querySelectorAll(`#${id}_sets .sdone`);
@@ -2361,6 +2411,7 @@ function finishWorkout(){
   showWS(w);
   updateBestStreak();
   renderTemplates();
+  checkAppRating();
   checkDeload();
   setTimeout(checkInjuryRisk,1500);
 }
@@ -2732,7 +2783,9 @@ function openAddFood(meal,mealName){
   ST.addFoodMeal=meal;
   document.getElementById('add-food-meal-name').textContent='Thêm vào '+mealName;
   document.getElementById('food-custom-name').value='';
-  // Render presets
+  // Render recent foods
+  renderRecentFoods();
+  // Render all presets
   document.getElementById('food-presets').innerHTML=FOOD_PRESETS.map((f,i)=>`
     <div class="food-preset" onclick="addFoodPreset(${i})">
       <div class="food-preset-name">${f.name}</div>
@@ -2820,10 +2873,10 @@ function renderAchievements(){
   const el=document.getElementById('ach-grid');if(!el)return;
   el.innerHTML=ACHIEVEMENTS.map(a=>{
     const on=a.fn(ST.stats);
-    return`<div class="ach-card ${on?'on':'off'}">
+    return`<div class="ach-card ${on?'on':'off'}" ${on?`onclick="shareAchievement({ico:'${a.ico}',name:'${a.name}',desc:'${a.desc}'})" title="Nhấn để share"`:''}>
       <div class="ach-ico">${a.ico}</div>
       <div class="ach-name">${a.name}</div>
-      <div class="ach-desc">${on?a.desc:'???'}</div>
+      <div class="ach-desc">${on?a.desc+'<br><span style="font-size:9px;color:var(--lime)">Tap to share ↗</span>':'???'}</div>
     </div>`;
   }).join('');
 }
@@ -4070,6 +4123,203 @@ function renderTrialCountdown(){
     <div style="font-family:var(--FD);font-size:28px;color:var(--amber);letter-spacing:.04em">${days} ngày</div>
     <div style="font-size:11px;color:var(--txt3)">còn lại</div>
     <button class="btn bl" style="height:32px;font-size:12px;margin-top:6px" onclick="showPW()">Nâng cấp →</button>`;
+}
+
+// Copy previous session sets into inputs
+function copyPrevSets(id){
+  const name=ST.exData[id]?.name;if(!name)return;
+  const lastW=ST.workouts.find(w=>w.exDetails?.[name]);
+  if(!lastW)return;
+  const sets=lastW.exDetails[name].split(', ').map(s=>{
+    const m=s.match(/(\d+\.?\d*)kg×(\d+)/);return m?{kg:+m[1],reps:+m[2]}:null;
+  }).filter(Boolean);
+  sets.forEach((s,i)=>{
+    if(!ST.exData[id].sets[i])ST.exData[id].sets.push({kg:0,reps:0,rpe:0,done:false});
+    ST.exData[id].sets[i].kg=s.kg;ST.exData[id].sets[i].reps=s.reps;
+    const row=document.getElementById(id+'_row'+i);
+    if(row){
+      const inputs=row.querySelectorAll('input');
+      if(inputs[0])inputs[0].value=s.kg;
+      if(inputs[1])inputs[1].value=s.reps;
+    }
+  });
+  updateWorkoutProgress();toast('📋 Đã copy sets từ buổi trước!');
+}
+
+// Check if current set is a PR — show badge
+function checkSetPR(id,i){
+  const s=ST.exData[id]?.sets[i];if(!s||!s.kg||!s.reps)return;
+  const name=ST.exData[id].name;
+  const orm=calc1RM(s.kg,s.reps);
+  const prev=ST.prs?.[name]||0;
+  const badge=document.getElementById(id+'_pr'+i);
+  if(badge)badge.style.display=orm>prev?'block':'none';
+}
+
+// Rest timer adjust while running
+function adjustRest(sec){
+  if(!restState.active)return;
+  restState.remaining=Math.max(5,restState.remaining+sec);
+  restState.total=Math.max(restState.total,restState.remaining);
+  toast(sec>0?`+${sec}s`:`${sec}s`);
+}
+function toggleRestAdj(id){
+  const el=document.getElementById(id+'_rest_adj');
+  if(el)el.style.display=el.style.display==='none'||!el.style.display?'block':'none';
+}
+
+// Upgrade addSet to use consistent row style
+function addSet(id){
+  const idx=ST.exData[id].sets.length;
+  ST.exData[id].sets.push({kg:0,reps:0,rpe:0,done:false});
+  const prevSets=ST.exData[id].sets;
+  const prevKg=prevSets[idx-1]?.kg||0;
+  const prevReps=prevSets[idx-1]?.reps||0;
+  const r=document.createElement('div');
+  r.className='set-row';r.id=id+'_row'+idx;
+  r.innerHTML=`
+    <span class="sn" style="position:relative">
+      ${idx+1}
+      <span id="${id}_pr${idx}" style="display:none;position:absolute;top:-6px;right:-4px;background:var(--lime);color:#111;font-size:7px;font-weight:700;border-radius:3px;padding:1px 3px;font-family:var(--FM)">PR</span>
+    </span>
+    <input class="si" type="number" min="0" step="0.5" placeholder="${prevKg}" onfocus="this.select()"
+      oninput="setV('${id}',${idx},'kg',this.value);checkSetPR('${id}',${idx})">
+    <input class="si" type="number" min="0" placeholder="${prevReps}" onfocus="this.select()"
+      oninput="setV('${id}',${idx},'reps',this.value);checkSetPR('${id}',${idx})">
+    <input class="si" type="number" min="1" max="10" placeholder="7" oninput="setV('${id}',${idx},'rpe',this.value);trackRPE(+this.value)">
+    <button class="sdone" id="${id}_s${idx}" onclick="doneSet('${id}',${idx},this)">✓</button>`;
+  document.getElementById(id+'_sets').appendChild(r);
+  updateWorkoutProgress();
+}
+
+// ════════════════════════════════════════════════════════
+// SESSION NOTE (whole workout)
+// ════════════════════════════════════════════════════════
+function initSessionNote(){
+  const tb=document.getElementById('session-note-bar');if(tb)return;
+  const bar=document.createElement('div');
+  bar.id='session-note-bar';
+  bar.style.cssText='padding:8px 16px;border-bottom:1px solid var(--brd);flex-shrink:0';
+  bar.innerHTML=`<input class="inp" id="session-note-inp" placeholder="📝 Ghi chú buổi tập (mood, chấn thương, PR...)" style="font-size:12px;padding:7px 10px">`;
+  const activeW=document.getElementById('w-active');
+  const prog=activeW?.querySelector('.pb');
+  if(prog&&prog.nextSibling)activeW.insertBefore(bar,prog.nextSibling);
+}
+
+// ════════════════════════════════════════════════════════
+// RECENT FOODS QUICK-ADD
+// ════════════════════════════════════════════════════════
+function getRecentFoods(){
+  const all=[];
+  ['b','l','d','s'].forEach(m=>(ST.nut[m]||[]).forEach(f=>all.push(f)));
+  // Deduplicate by name, keep most recent
+  const seen=new Set();
+  return all.filter(f=>{if(seen.has(f.name))return false;seen.add(f.name);return true;}).slice(0,8);
+}
+function renderRecentFoods(){
+  const el=document.getElementById('recent-foods-grid');if(!el)return;
+  const recent=getRecentFoods();
+  if(!recent.length){el.innerHTML='<div class="xs muted">Chưa có món ăn gần đây</div>';return;}
+  el.innerHTML=`<div class="xs muted" style="margin-bottom:6px">Gần đây</div>`+
+    recent.map((f,i)=>`
+      <div class="food-preset" onclick="quickAddRecentFood(${i})" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px">
+        <div>
+          <div class="food-preset-name">${f.name}</div>
+          <div class="food-preset-info">${f.cal}kcal · ${f.p}g P</div>
+        </div>
+        <span style="color:var(--lime);font-size:18px;font-weight:300">+</span>
+      </div>`).join('');
+}
+function quickAddRecentFood(i){
+  const recent=getRecentFoods();
+  if(!ST.addFoodMeal||!recent[i])return;
+  ST.nut[ST.addFoodMeal].push({...recent[i]});
+  cancelAddFood();save();renderNutMeals();
+  toast(`✅ ${recent[i].name}`);
+}
+
+// ════════════════════════════════════════════════════════
+// NUTRITION WEEKLY SUMMARY
+// ════════════════════════════════════════════════════════
+async function genNutWeeklySummary(){
+  const el=document.getElementById('nut-ai-txt');
+  const wrap=document.getElementById('nut-ai-wrap');
+  if(wrap)wrap.style.display='block';
+  if(el)el.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
+  const targets=calcMacroTargets();
+  const prompt=`User: ${ST.profile.name}, ${ST.profile.kg}kg, mục tiêu ${ST.profile.goal}. Target: ${targets.cal}kcal/ngày, ${targets.protein}g protein. Tạo tóm tắt dinh dưỡng tuần và gợi ý 3 món Việt Nam phù hợp để đạt target protein (${targets.protein}g/ngày). Tiếng Việt, ngắn gọn thực tế.`;
+  if(el)el.innerHTML=(await ai(prompt,500)).replace(/\n/g,'<br>');
+}
+
+// ════════════════════════════════════════════════════════
+// SMOOTH PAGE TRANSITIONS
+// ════════════════════════════════════════════════════════
+function addTransitionCSS(){
+  const style=document.createElement('style');
+  style.textContent=`
+    .screen{transition:opacity .18s ease,transform .18s ease}
+    .screen:not(.active){opacity:0;pointer-events:none}
+    .screen.active{opacity:1}
+    .ex-block{animation:fadeUp .2s ease both}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .bni{transition:color .15s,transform .1s}
+    .bni:active{transform:scale(.9)}
+    .btn:active{transform:scale(.97)}
+    .plan-card:active{transform:scale(.985);transition:transform .1s}
+    .food-preset:active{background:var(--bg4)}
+    input.si:focus{border-color:var(--lime);background:rgba(200,241,53,.05)}
+    .sdone.on{animation:popIn .2s ease}
+  `;
+  document.head.appendChild(style);
+}
+
+// ════════════════════════════════════════════════════════
+// ACHIEVEMENT SHARE CARD
+// ════════════════════════════════════════════════════════
+function shareAchievement(ach){
+  const text=`🏆 Vừa mở khóa thành tích "${ach.name}" trên FitAI!\n${ach.ico} ${ach.desc}\n\n💪 Streak ${ST.stats.streak} ngày · ${ST.stats.total} buổi tập\nfitai.app`;
+  if(navigator.share)navigator.share({text});
+  else{navigator.clipboard?.writeText(text);toast('✅ Đã copy thành tích!');}
+}
+
+// ════════════════════════════════════════════════════════
+// APP RATING PROMPT
+// ════════════════════════════════════════════════════════
+function checkAppRating(){
+  if(ST.stats.total===10&&!ST.ratedApp){
+    setTimeout(()=>{
+      notif('⭐','Thích FitAI không?','Đánh giá 5 sao để ủng hộ team nhé! 🙏',8000);
+      ST.ratedApp=true;save();
+    },3000);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// FOOD SEARCH WITH DEBOUNCE
+// ════════════════════════════════════════════════════════
+let foodSearchTimer=null;
+function foodSearchDebounce(q){
+  clearTimeout(foodSearchTimer);
+  foodSearchTimer=setTimeout(()=>filterFoodPresets(q),300);
+}
+function filterFoodPresets(q){
+  const grid=document.getElementById('food-presets');if(!grid)return;
+  const filtered=FOOD_PRESETS.filter(f=>f.name.toLowerCase().includes(q.toLowerCase()));
+  grid.innerHTML=filtered.map((f,i)=>`
+    <div class="food-preset" onclick="addFoodPreset(${FOOD_PRESETS.indexOf(f)})">
+      <div class="food-preset-name">${f.name}</div>
+      <div class="food-preset-info">${f.cal}kcal · ${f.p}g P · ${f.c}g C</div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// REFERRAL SHARE
+// ════════════════════════════════════════════════════════
+function shareReferral(){
+  const code=ST.profile.name?.replace(/\s/g,'').toUpperCase().slice(0,6)||'FITAI';
+  const text=`💪 Mình đang dùng FitAI — AI Workout Coach tiếng Việt!\n\nDùng code "${code}" để được 1 tháng Pro miễn phí!\nfitai.app\n\n${QUOTES[Math.floor(Math.random()*QUOTES.length)]}`;
+  if(navigator.share)navigator.share({text});
+  else{navigator.clipboard?.writeText(text);toast(`✅ Copy link với code ${code}!`);}
 }
 
 // ════════════════════════════════════════════════════════
