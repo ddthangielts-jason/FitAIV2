@@ -997,18 +997,12 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <div class="sec-label">Thách thức hôm nay</div>
         <div class="card" style="margin-bottom:10px" id="daily-challenge"></div>
 
-        <!-- AI Insight -->
-        <div class="sec-label">AI Insight</div>
-        <div class="ai-insight-card" id="home-insight-card">
-          <div class="ai-insight-lbl">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            AI COACH
-          </div>
-          <div class="ai-insight-txt" id="home-insight-txt">Nhấn để nhận insight hoặc kế hoạch tuần từ AI...</div>
-          <div style="display:flex;gap:7px;margin-top:10px">
-            <button class="btn bg" style="flex:1;height:34px;font-size:12px" onclick="loadInsight()">Insight hôm nay</button>
-            <button class="btn bl" style="flex:1;height:34px;font-size:12px" onclick="genAIPeriodization()">Kế hoạch tuần ⚡</button>
-          </div>
+        <!-- Quick Stats -->
+        <div class="sec-label" id="lbl-quick-stats">Thống kê nhanh</div>
+        <div class="g3" style="margin-bottom:10px">
+          <div class="sb"><div class="sv" style="font-size:20px" id="h-best-streak">0</div><div class="sk">Best streak</div></div>
+          <div class="sb"><div class="sv" style="font-size:20px;color:var(--amber)" id="h-avg-dur">0</div><div class="sk">Avg phút</div></div>
+          <div class="sb"><div class="sv" style="font-size:20px;color:var(--teal)" id="h-this-week">0</div><div class="sk">Tuần này</div></div>
         </div>
 
         <!-- Recent workouts -->
@@ -1116,42 +1110,6 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
     <div style="flex:1;overflow-y:auto;padding:8px 16px 16px" id="plan-list"></div>
   </div>
 
-  <!-- ── AI COACH ── -->
-  <div class="screen" id="s-ai" style="padding-bottom:0">
-    <div style="padding:18px 16px 12px;border-bottom:1px solid var(--brd);flex-shrink:0;display:flex;align-items:center;justify-content:space-between">
-      <div style="font-family:var(--FD);font-size:24px;letter-spacing:.04em">AI <span style="color:var(--lime)">Coach</span></div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div id="ai-status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--txt3)"></div>
-        <span id="ai-status-lbl" style="font-size:10px;color:var(--txt3);font-family:var(--FM)">Đang kiểm tra...</span>
-        <span style="background:var(--lime);color:#111;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;font-family:var(--FM)">Claude AI</span>
-      </div>
-    </div>
-    <div class="chat-area" id="chat-msgs">
-      <div class="bubble ai">
-        <div class="ai-lbl"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> AI COACH</div>
-        Xin chào! Mình là AI Coach cá nhân của bạn 🇻🇳<br><br>
-        💪 Gợi ý weight chính xác từng set<br>
-        🔄 Bài thay thế khi thiết bị bận<br>
-        🍽️ Meal plan từ đồ ăn Việt Nam<br>
-        📊 Phân tích tiến độ của bạn<br>
-        🎯 Form cue cho từng động tác<br><br>
-        Bạn muốn hỏi gì?
-      </div>
-    </div>
-    <div class="quick-qs">
-      <div class="qq" onclick="quickChat('Gợi ý tăng tạ bench press cho tôi')">Tăng tạ bench</div>
-      <div class="qq" onclick="quickChat('Tôi là nữ 55kg, nên dùng plan nào?')">Plan cho nữ</div>
-      <div class="qq" onclick="quickChat('Bài thay thế barbell squat khi rack bận')">Swap bài</div>
-      <div class="qq" onclick="quickChat('Tạo meal plan tăng cơ 1 ngày cho người Việt Nam')">Meal plan</div>
-      <div class="qq" onclick="quickChat('Kỹ thuật hip thrust đúng')">Form guide</div>
-    </div>
-    <div class="chat-inp-wrap">
-      <input class="inp" id="chat-inp" placeholder="Hỏi AI Coach..." style="flex:1;padding:10px 13px" onkeydown="if(event.key==='Enter')sendChat()">
-      <button class="btn bl" style="width:44px;height:44px;padding:0;flex-shrink:0" onclick="sendChat()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      </button>
-    </div>
-  </div>
 
   <!-- ── NUTRITION ── -->
   <div class="screen" id="s-nut">
@@ -1195,7 +1153,7 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           AI meal plan hôm nay
         </button>
-        <button class="btn bg" style="flex:1" onclick="genNutWeeklySummary()">📊 Tóm tắt tuần</button>
+        <button class="btn bg" style="flex:1" onclick="showNutHistory()">📅 Lịch sử</button>
       </div>
 
       <!-- Water + Custom Cal Goal -->
@@ -1630,9 +1588,9 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Lịch
     </button>
-    <button class="bni" onclick="goTab('s-ai')" id="bn-ai">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      AI Coach
+    <button class="bni" onclick="goTab('s-progress')" id="bn-progress">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Tiến độ
     </button>
     <button class="bni" onclick="goTab('s-nut')" id="bn-nut">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M5 8H4a4 4 0 0 0 0 8h1"/><line x1="9" y1="12" x2="15" y2="12"/><path d="M12 2v4M12 18v4"/></svg>
@@ -2380,7 +2338,7 @@ function goTab(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.bni').forEach(b=>b.classList.remove('on'));
   document.getElementById(id).classList.add('active');
-  const map={'s-home':'bn-home','s-workout':'bn-workout','s-plan':'bn-plan','s-ai':'bn-ai','s-nut':'bn-nut','s-schedule':'bn-schedule','s-progress':'bn-home','s-profile':'bn-home'};
+  const map={'s-home':'bn-home','s-workout':'bn-workout','s-plan':'bn-plan','s-progress':'bn-progress','s-nut':'bn-nut','s-schedule':'bn-schedule','s-profile':'bn-home'};
   if(map[id])document.getElementById(map[id]).classList.add('on');
   if(id==='s-home'){renderHome();document.getElementById('s-home').querySelector('[style*="overflow"]')?.scrollTo(0,0);}
   if(id==='s-workout')renderWHist();
@@ -2416,6 +2374,8 @@ function renderHome(){
   renderTodayCard();
   // Level + hours
   renderLevelHome();
+  // Quick stats
+  renderQuickStats();
   // Today stats
   renderHomeTodayStats();
   // Mood tracker
@@ -2485,13 +2445,7 @@ function renderTodayCard(){
     </div>
   </div>`;
 }
-async function loadInsight(){
-  const el=document.getElementById('home-insight-txt');
-  el.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
-  const prompt=`Hồ sơ: ${ST.profile.name}, ${ST.profile.kg}kg, ${ST.profile.level}, mục tiêu ${ST.profile.goal}, ${ST.profile.days}x/tuần. Stats: ${ST.stats.total} buổi, streak ${ST.stats.streak}, volume ${ST.stats.volume}kg. Cho 1 insight ngắn (2-3 câu tiếng Việt) thực tế về training hoặc recovery hôm nay. Không nhắc lại thông tin profile.`;
-  el.textContent=await ai(prompt,250);
-  document.querySelector('#home-insight-card .btn').style.display='none';
-}
+
 
 // ════════════════════════════════════════════════════════
 // WORKOUT LOGGER
@@ -2715,22 +2669,43 @@ function removeEx(id){
   delete ST.exData[id];
   updateWorkoutProgress();
 }
-async function openAITip(id,name){
-  const tip=document.getElementById(id+'_tip');
-  tip.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
+function openAITip(id,name){
+  const tip=document.getElementById(id+'_tip');if(!tip)return;
+  // Show local coaching tip from exercise database
+  const ex=EXERCISES.find(e=>e.name===name||e.nameVi===name);
+  const done=ST.exData[id]?.sets.filter(s=>s.done&&s.kg>0&&s.reps>0)||[];
+  let tipText='';
+  if(done.length>0){
+    const lastSet=done[done.length-1];
+    const orm=calc1RM(lastSet.kg,lastSet.reps);
+    const suggest=Math.round(lastSet.kg*1.025/2.5)*2.5; // 2.5% increase
+    tipText=`💡 Set vừa rồi: ${lastSet.kg}kg×${lastSet.reps} → 1RM ≈ ${orm}kg. Set tiếp thử ${suggest}kg!`;
+  } else if(ex?.cues?.length) {
+    tipText='💡 '+ex.cues[0];
+  } else {
+    tipText='💡 Giữ form đúng, tăng cân từ từ mỗi buổi.';
+  }
+  tip.textContent=tipText;
   tip.classList.add('show');
-  const done=ST.exData[id]?.sets.filter(s=>s.kg>0&&s.reps>0)||[];
-  const prompt=done.length
-    ?`${ST.profile.level} ${ST.profile.kg}kg. Tập ${name}: ${done.map(s=>`${s.kg}kg×${s.reps}reps RPE${s.rpe||7}`).join(', ')}. Gợi ý set tiếp theo và 1 kỹ thuật cải thiện. 2-3 câu tiếng Việt.`
-    :`Gợi ý bắt đầu bài ${name} cho ${ST.profile.level} ${ST.profile.kg}kg, mục tiêu ${ST.profile.goal}. 2 câu tiếng Việt, có số kg cụ thể.`;
-  tip.textContent=await ai(prompt,220);
 }
-async function swapEx(id,name){
-  const tip=document.getElementById(id+'_tip');
-  tip.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
+function swapEx(id,name){
+  const tip=document.getElementById(id+'_tip');if(!tip)return;
+  const ex=EXERCISES.find(e=>e.name===name||e.nameVi===name);
+  if(!ex){tip.textContent='Không tìm thấy bài thay thế.';tip.classList.add('show');return;}
+  const equip=ST.profile.equip||'full';
+  // Find alternatives: same muscle, different exercise, compatible equipment
+  const alts=EXERCISES.filter(e=>
+    e.muscle===ex.muscle&&e.id!==ex.id&&
+    (equip==='full'||e.equip==='bodyweight'||e.equip===equip||e.equip==='dumbbell')
+  ).slice(0,3);
+  if(!alts.length){tip.textContent='Không có bài thay thế phù hợp.';tip.classList.add('show');return;}
+  tip.innerHTML='🔄 <strong>Bài thay thế:</strong><br>'+alts.map(a=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--brd)">
+      <span>${a.emoji}</span>
+      <span style="flex:1;font-size:12px">${a.nameVi}</span>
+      <button onclick="removeEx('${id}');addEx('${a.name}')" class="btn bl bxs">Swap</button>
+    </div>`).join('');
   tip.classList.add('show');
-  const prompt=`Thiết bị cho ${name} đang bận. Thiết bị có: ${ST.profile.equip}. 3 bài thay thế cùng nhóm cơ, mỗi bài 1 dòng. Tiếng Việt.`;
-  tip.innerHTML='🔄 <strong>Bài thay thế:</strong><br>'+(await ai(prompt,250)).replace(/\n/g,'<br>');
 }
 function cancelWorkout(){
   if(!confirm('Hủy buổi tập?'))return;
@@ -3105,37 +3080,6 @@ function addExFromDetail(){
   }
 }
 
-// ════════════════════════════════════════════════════════
-// AI CHAT
-// ════════════════════════════════════════════════════════
-function sendChat(){
-  const inp=document.getElementById('chat-inp');
-  const msg=inp.value.trim();if(!msg)return;inp.value='';
-  addBubble(msg,'user');doChat(msg);
-}
-function quickChat(msg){addBubble(msg,'user');doChat(msg);}
-function addBubble(msg,role){
-  const cont=document.getElementById('chat-msgs');
-  const d=document.createElement('div');d.className='bubble '+role;
-  if(role==='ai')d.innerHTML=`<div class="ai-lbl"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> AI COACH</div>${msg}`;
-  else d.textContent=msg;
-  cont.appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'});
-  return d;
-}
-async function doChat(msg){
-  const loading=addBubble('<span class="td"></span><span class="td"></span><span class="td"></span>','ai');
-  ST.chatHist.push({role:'user',content:msg});
-  if(ST.chatHist.length>14)ST.chatHist=ST.chatHist.slice(-14);
-  const sys=buildAIChatSystem();
-  try{
-    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:ST.chatHist,max_tokens:700})});
-    const d=await r.json();
-    const txt=d.content?.find(c=>c.type==='text')?.text||'Có lỗi xảy ra.';
-    ST.chatHist.push({role:'assistant',content:txt});
-    loading.innerHTML=`<div class="ai-lbl"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> AI COACH</div>${txt.replace(/\n/g,'<br>')}`;
-  }catch{loading.innerHTML='<div class="ai-lbl">AI COACH</div>Lỗi kết nối. Thử lại nhé!';}
-  loading.scrollIntoView({behavior:'smooth',block:'end'});
-}
 
 // ════════════════════════════════════════════════════════
 // NUTRITION
@@ -3225,19 +3169,51 @@ function openAddFood(meal,mealName){
   document.getElementById('add-food-modal').classList.add('show');
 }
 function removeFood(meal,i){ST.nut[meal].splice(i,1);renderNutMeals();save();}
-async function genMealPlan(){
-  const el=document.getElementById('nut-ai-wrap');
-  const txt=document.getElementById('nut-ai-txt');
-  el.style.display='block';
-  txt.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
-  const goal=ST.profile.goal==='fat'?'giảm mỡ':ST.profile.goal==='muscle'?'tăng cơ':'sức khỏe';
-  const p=`${ST.profile.sex==='female'?'Nữ':'Nam'} ${ST.profile.kg}kg, mục tiêu ${goal}, tập ${ST.profile.days}x/tuần. Tạo meal plan 1 ngày đầy đủ với đồ ăn Việt Nam phổ biến. Ghi rõ bữa sáng/trưa/tối và phụ với tên món, calo và protein. Tổng calo và protein ở cuối. Tiếng Việt, thực tế.`;
-  txt.innerHTML=(await ai(p,600)).replace(/\n/g,'<br>');
+function genMealPlan(){
+  const targets=calcMacroTargets();
+  const goal=ST.profile.goal;
+  // Local meal plan suggestions based on goal
+  const plans={
+    muscle:[
+      {time:'Sáng 7h',foods:['Bột yến mạch 50g','Trứng luộc 3 quả','Sữa tươi 200ml'],cal:420,p:28},
+      {time:'Bữa phụ 10h',foods:['Chuối 1 quả','Hạt điều 30g'],cal:274,p:6},
+      {time:'Trưa 12h',foods:['Cơm trắng 200g','Ức gà 200g','Rau xào'],cal:520,p:47},
+      {time:'Pre-workout 4h',foods:['Chuối 1 quả','Whey protein 1 scoop'],cal:209,p:25},
+      {time:'Tối 7h',foods:['Cơm trắng 150g','Cá hồi 150g','Rau luộc'],cal:500,p:35},
+    ],
+    fat:[
+      {time:'Sáng 7h',foods:['Trứng chiên 2 quả','Rau xào','Phô mai 30g'],cal:355,p:21},
+      {time:'Trưa 12h',foods:['Ức gà 200g','Salad rau','Bơ 100g'],cal:540,p:43},
+      {time:'Bữa phụ 4h',foods:['Sữa chua Hy Lạp 150g'],cal:130,p:15},
+      {time:'Tối 7h',foods:['Cá ngừ đóng hộp 100g','Rau luộc','Khoai lang 100g'],cal:292,p:28},
+    ],
+    general:[
+      {time:'Sáng 7h',foods:['Phở gà 1 tô'],cal:380,p:28},
+      {time:'Trưa 12h',foods:['Cơm sườn'],cal:480,p:22},
+      {time:'Bữa phụ 4h',foods:['Chuối 1 quả','Sữa chua 1 hũ'],cal:189,p:7},
+      {time:'Tối 7h',foods:['Cơm trắng 150g','Thịt heo nạc 100g','Rau xào'],cal:427,p:26},
+    ],
+  };
+  const selected=plans[goal]||plans.general;
+  const totalCal=selected.reduce((t,m)=>t+m.cal,0);
+  const totalP=selected.reduce((t,m)=>t+m.p,0);
+  const wrap=document.getElementById('nut-ai-wrap');
+  const el=document.getElementById('nut-ai-txt');
+  if(wrap)wrap.style.display='block';
+  if(el)el.innerHTML=`
+    <div style="margin-bottom:8px;font-size:11px;color:var(--lime);font-family:var(--FM)">
+      MỤC TIÊU: ${targets.cal}kcal · ${targets.protein}g protein
+    </div>
+    ${selected.map(m=>`
+      <div style="padding:7px 0;border-bottom:1px solid rgba(200,241,53,.15)">
+        <div style="font-size:11px;color:var(--lime);font-family:var(--FM);margin-bottom:3px">${m.time}</div>
+        <div style="font-size:12.5px;color:rgba(200,241,53,.85)">${m.foods.join(' · ')}</div>
+        <div style="font-size:10px;color:rgba(200,241,53,.5);margin-top:2px">${m.cal}kcal · ${m.p}g P</div>
+      </div>`).join('')}
+    <div style="margin-top:8px;font-size:12px;color:var(--lime)">
+      Tổng: ~${totalCal}kcal · ~${totalP}g protein
+    </div>`;
 }
-
-// ════════════════════════════════════════════════════════
-// PROGRESS
-// ════════════════════════════════════════════════════════
 function renderProgress(){
   renderCharts();renderMeas();renderAchievements();
   renderMonthlyCalendar('monthly-cal');
@@ -3337,13 +3313,7 @@ function renderAchievements(){
     </div>`;
   }).join('');
 }
-async function loadWeeklyReview(){
-  const el=document.getElementById('weekly-review-txt');
-  el.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
-  const p=`${ST.profile.name}, ${ST.profile.level}, mục tiêu ${ST.profile.goal}. Tuần này: ${ST.stats.total} buổi tổng, streak ${ST.stats.streak} ngày, volume ${ST.stats.volume}kg. Phân tích ngắn (3-4 câu tiếng Việt): 1 điểm tốt và 1 điểm cần cải thiện.`;
-  el.innerHTML=(await ai(p,350)).replace(/\n/g,'<br>');
-  document.querySelector('#s-progress .btn').style.display='none';
-}
+
 
 // ════════════════════════════════════════════════════════
 // PROFILE
@@ -3438,52 +3408,8 @@ if(new URLSearchParams(location.search).get('pro')==='true')activatePro();
 // AI UTILITY — with better error handling
 // ════════════════════════════════════════════════════════
 let aiStatus='unknown'; // 'ok' | 'no-key' | 'error'
-async function ai(prompt,maxTok=400){
-  try{
-    const r=await fetch('/api/chat',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({messages:[{role:'user',content:prompt}],max_tokens:maxTok})
-    });
-    if(!r.ok){aiStatus='error';return'Lỗi server. Thử lại sau.';}
-    const d=await r.json();
-    const txt=d.content?.find(c=>c.type==='text')?.text;
-    if(!txt){aiStatus='error';return'Lỗi định dạng phản hồi.';}
-    if(txt.includes('API key chưa được cấu hình')){aiStatus='no-key';return txt;}
-    aiStatus='ok';
-    return txt;
-  }catch(e){
-    aiStatus='error';
-    return'Lỗi kết nối mạng. Kiểm tra internet và thử lại.';
-  }
-}
-async function testAIConnection(){
-  const dot=document.getElementById('ai-status-dot');
-  const lbl=document.getElementById('ai-status-lbl');
-  const r=await fetch('/api/chat',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({messages:[{role:'user',content:'ping'}],max_tokens:10})
-  }).catch(()=>null);
-  if(!r){
-    if(dot)dot.style.background='var(--red)';
-    if(lbl)lbl.textContent='Không kết nối';
-    notif('⚠️','AI không kết nối được','Kiểm tra internet hoặc API key',5000);
-    return false;
-  }
-  const d=await r.json().catch(()=>null);
-  const txt=d?.content?.find(c=>c.type==='text')?.text||'';
-  if(txt.includes('API key chưa')){
-    if(dot)dot.style.background='var(--amber)';
-    if(lbl)lbl.textContent='Thiếu API key';
-    notif('⚠️','AI chưa kết nối',
-      'Vercel → Settings → Environment Variables → thêm ANTHROPIC_API_KEY → Redeploy',7000);
-    return false;
-  }
-  if(dot)dot.style.background='var(--lime)';
-  if(lbl){lbl.textContent='Đang hoạt động';lbl.style.color='var(--lime)';}
-  return true;
-}
+
+
 
 // ════════════════════════════════════════════════════════
 // NOTIFICATION + TOAST
@@ -3503,26 +3429,47 @@ function toast(msg){
 // NUTRITION — AI FOOD LOOKUP
 // ════════════════════════════════════════════════════════
 let foodAIResult=null;
-async function lookupFood(){
+function lookupFood(){
   const name=document.getElementById('food-custom-name').value.trim();
   if(!name)return;
+  // Search in local preset database
+  const q=name.toLowerCase();
+  const found=FOOD_PRESETS.filter(f=>f.name.toLowerCase().includes(q));
   const wrap=document.getElementById('food-ai-result');
   const txt=document.getElementById('food-ai-txt');
   wrap.style.display='block';
-  txt.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
-  document.getElementById('food-ai-add-btn').style.display='none';
-  const p=`Tra cứu thông tin dinh dưỡng của "${name}" (1 khẩu phần thông thường). Trả về ĐÚNG định dạng JSON này và chỉ JSON, không thêm gì: {"name":"tên món","serving":"khẩu phần","cal":số,"protein":số,"carbs":số,"fat":số}`;
-  try{
-    const raw=await ai(p,200);
-    const match=raw.match(/\{[\s\S]*\}/);
-    if(match){
-      foodAIResult=JSON.parse(match[0]);
-      txt.innerHTML=`<strong>${foodAIResult.name}</strong> (${foodAIResult.serving})<br>${foodAIResult.cal} kcal · ${foodAIResult.protein}g P · ${foodAIResult.carbs}g C · ${foodAIResult.fat}g F`;
-      document.getElementById('food-ai-add-btn').style.display='block';
-    } else {
-      txt.textContent='Không tìm thấy. Thử tên khác.';
-    }
-  }catch{txt.textContent='Lỗi AI. Thử lại.';}
+  if(found.length>0){
+    foodAIResult={name:found[0].name,serving:'1 khẩu phần',cal:found[0].cal,protein:found[0].p,carbs:found[0].c,fat:found[0].f};
+    txt.innerHTML=`<strong>${found[0].name}</strong><br>${found[0].cal} kcal · ${found[0].p}g P · ${found[0].c}g C · ${found[0].f}g F`;
+    document.getElementById('food-ai-add-btn').style.display='block';
+  } else {
+    // Manual entry mode
+    txt.innerHTML=`Không có trong database. <button class="btn bg bxs" onclick="manualAddFood('${name}')">Nhập tay</button>`;
+    document.getElementById('food-ai-add-btn').style.display='none';
+  }
+}
+function manualAddFood(name){
+  // Show manual form
+  const wrap=document.getElementById('food-ai-result');
+  wrap.innerHTML=`
+    <div style="font-size:10px;color:var(--lime);font-family:var(--FM);margin-bottom:8px">✏️ NHẬP THỦ CÔNG</div>
+    <div class="g2" style="gap:6px;margin-bottom:8px">
+      <div class="fg" style="margin-bottom:0"><label class="lbl">Calo</label><input class="inp" id="manual-cal" type="number" placeholder="250" style="padding:6px 8px;font-size:12px"></div>
+      <div class="fg" style="margin-bottom:0"><label class="lbl">Protein (g)</label><input class="inp" id="manual-p" type="number" placeholder="15" style="padding:6px 8px;font-size:12px"></div>
+      <div class="fg" style="margin-bottom:0"><label class="lbl">Carbs (g)</label><input class="inp" id="manual-c" type="number" placeholder="30" style="padding:6px 8px;font-size:12px"></div>
+      <div class="fg" style="margin-bottom:0"><label class="lbl">Fat (g)</label><input class="inp" id="manual-f" type="number" placeholder="8" style="padding:6px 8px;font-size:12px"></div>
+    </div>
+    <button class="btn bl" style="height:34px;font-size:12px" onclick="addManualFood('${name}')">+ Thêm vào</button>`;
+}
+function addManualFood(name){
+  const cal=+document.getElementById('manual-cal')?.value||0;
+  const p=+document.getElementById('manual-p')?.value||0;
+  const c=+document.getElementById('manual-c')?.value||0;
+  const f=+document.getElementById('manual-f')?.value||0;
+  if(!ST.addFoodMeal)return;
+  ST.nut[ST.addFoodMeal].push({name,cal,p,c,f});
+  cancelAddFood();save();renderNutMeals();
+  toast(`✅ Đã thêm ${name}`);
 }
 function addFoodFromAI(){
   if(!foodAIResult||!ST.addFoodMeal)return;
@@ -4271,41 +4218,12 @@ function renderMuscleVolChart(){
 // ════════════════════════════════════════════════════════
 // MONTHLY SUMMARY (AI)
 // ════════════════════════════════════════════════════════
-async function genMonthlySummary(){
-  const now=new Date();
-  const monthStr=`Tháng ${now.getMonth()+1}/${now.getFullYear()}`;
-  const monthWorkouts=ST.workouts.filter(w=>{
-    return w.date.endsWith(`/${now.getFullYear()}`);
-  });
-  if(!monthWorkouts.length)return toast('Chưa có dữ liệu tháng này!');
-  const totalVol=monthWorkouts.reduce((t,w)=>t+(w.vol||0),0);
-  const totalSets=monthWorkouts.reduce((t,w)=>t+(w.totalSets||0),0);
-  const prompt=`${ST.profile.name}, ${ST.profile.level}, mục tiêu ${ST.profile.goal}. ${monthStr}: ${monthWorkouts.length} buổi tập, ${totalVol}kg tổng volume, ${totalSets} sets. Viết tóm tắt tháng ngắn gọn (3-4 câu tiếng Việt): thành tích nổi bật và 1 mục tiêu cho tháng sau.`;
-  const el=document.getElementById('weekly-review-txt');
-  if(el){
-    el.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
-    el.innerHTML=(await ai(prompt,400)).replace(/\n/g,'<br>');
-  }
-}
+
 
 // ════════════════════════════════════════════════════════
 // AI INJURY PREVENTION
 // ════════════════════════════════════════════════════════
-async function checkInjuryRisk(){
-  // If same muscle group trained 3+ days in a row, warn
-  if(ST.workouts.length<3)return;
-  const last3=ST.workouts.slice(0,3).map(w=>Object.keys(w.exDetails||{}).map(n=>{
-    const ex=EXERCISES.find(e=>e.name===n||e.nameVi===n);
-    return ex?.muscle||'';
-  })).flat();
-  const muscleCount={};
-  last3.forEach(m=>{if(m)muscleCount[m]=(muscleCount[m]||0)+1;});
-  const overworked=Object.entries(muscleCount).find(([m,c])=>c>=3);
-  if(overworked){
-    notif('⚠️','Cảnh báo phục hồi',
-      `Nhóm cơ ${overworked[0]} đã tập ${overworked[1]} ngày liên tiếp. Cân nhắc nghỉ ngơi để tránh chấn thương.`,6000);
-  }
-}
+
 
 // ════════════════════════════════════════════════════════
 // UPDATE EXISTING FUNCTIONS
@@ -4498,14 +4416,7 @@ function renderMacroPie(){
 // ════════════════════════════════════════════════════════
 // AI PERIODIZATION
 // ════════════════════════════════════════════════════════
-async function genAIPeriodization(){
-  const el=document.getElementById('home-insight-txt');
-  if(el)el.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
-  const lv=getLevel();
-  const prompt=`Tạo kế hoạch tập 1 tuần cụ thể cho: ${ST.profile.name}, ${ST.profile.level}, mục tiêu ${ST.profile.goal}, ${ST.profile.days} buổi/tuần, thiết bị ${ST.profile.equip}. Hiện tại ở Level ${lv.lv} (${lv.name}), streak ${ST.stats.streak} ngày. Liệt kê từng ngày trong tuần: ngày nào tập gì, nhóm cơ nào, nghỉ ngày nào. Ngắn gọn, tiếng Việt, thực tế.`;
-  const result=await ai(prompt,600);
-  if(el){el.innerHTML=result.replace(/\n/g,'<br>');document.querySelector('#home-insight-card .btn').style.display='none';}
-}
+
 
 // ════════════════════════════════════════════════════════
 // BODY WEIGHT CHART
@@ -4713,15 +4624,7 @@ function quickAddRecentFood(i){
 // ════════════════════════════════════════════════════════
 // NUTRITION WEEKLY SUMMARY
 // ════════════════════════════════════════════════════════
-async function genNutWeeklySummary(){
-  const el=document.getElementById('nut-ai-txt');
-  const wrap=document.getElementById('nut-ai-wrap');
-  if(wrap)wrap.style.display='block';
-  if(el)el.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
-  const targets=calcMacroTargets();
-  const prompt=`User: ${ST.profile.name}, ${ST.profile.kg}kg, mục tiêu ${ST.profile.goal}. Target: ${targets.cal}kcal/ngày, ${targets.protein}g protein. Tạo tóm tắt dinh dưỡng tuần và gợi ý 3 món Việt Nam phù hợp để đạt target protein (${targets.protein}g/ngày). Tiếng Việt, ngắn gọn thực tế.`;
-  if(el)el.innerHTML=(await ai(prompt,500)).replace(/\n/g,'<br>');
-}
+
 
 // ════════════════════════════════════════════════════════
 // SMOOTH PAGE TRANSITIONS
@@ -5024,22 +4927,7 @@ function logMood(val){
 // ════════════════════════════════════════════════════════
 // PROGRESSIVE OVERLOAD LOG (AI)
 // ════════════════════════════════════════════════════════
-async function genProgressiveOverloadLog(){
-  const el=document.getElementById('progressive-log');if(!el)return;
-  el.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
-  // Get last 4 workouts per major exercise
-  const exMap={};
-  ST.workouts.slice(0,8).forEach(w=>{
-    Object.entries(w.exDetails||{}).forEach(([name,data])=>{
-      if(!exMap[name])exMap[name]=[];
-      exMap[name].push({date:w.date,data});
-    });
-  });
-  const top=Object.entries(exMap).slice(0,4).map(([n,logs])=>`${n}: ${logs.slice(0,3).map(l=>l.data).join(' → ')}`).join('\n');
-  if(!top){el.textContent='Chưa đủ dữ liệu.';return;}
-  const prompt=`Phân tích progressive overload cho ${ST.profile.name} (${ST.profile.level}, mục tiêu ${ST.profile.goal}):\n${top}\nNhận xét tiến độ và gợi ý weight cho buổi tới. Tiếng Việt, ngắn gọn, số liệu cụ thể.`;
-  el.innerHTML=(await ai(prompt,500)).replace(/\n/g,'<br>');
-}
+
 
 // ════════════════════════════════════════════════════════
 // BMI VISUAL INDICATOR
@@ -5210,40 +5098,7 @@ Trả lời tiếng Việt, thực tế, số liệu cụ thể, ngắn gọn.`;
 // ════════════════════════════════════════════════════════
 // AI FOOD PHOTO ANALYSIS
 // ════════════════════════════════════════════════════════
-async function analyzeFoodPhoto(file){
-  const el=document.getElementById('food-ai-txt');
-  const wrap=document.getElementById('food-ai-result');
-  wrap.style.display='block';
-  el.innerHTML='🔍 <span class="td"></span><span class="td"></span><span class="td"></span>';
-  document.getElementById('food-ai-add-btn').style.display='none';
-  
-  const reader=new FileReader();
-  reader.onload=async(ev)=>{
-    const base64=ev.target.result.split(',')[1];
-    try{
-      const r=await fetch('/api/chat',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          messages:[{role:'user',content:[
-            {type:'image',source:{type:'base64',media_type:file.type,data:base64}},
-            {type:'text',text:'Phân tích món ăn trong ảnh. Trả về JSON: {"name":"tên món","serving":"khẩu phần ước tính","cal":số,"protein":số,"carbs":số,"fat":số}. Chỉ JSON, không giải thích.'}
-          ]}],
-          max_tokens:200,
-        }),
-      });
-      const d=await r.json();
-      const txt=d.content?.find(c=>c.type==='text')?.text||'';
-      const match=txt.match(/\{[\s\S]*\}/);
-      if(match){
-        foodAIResult=JSON.parse(match[0]);
-        el.innerHTML=`📷 <strong>${foodAIResult.name}</strong> (${foodAIResult.serving})<br>${foodAIResult.cal}kcal · ${foodAIResult.protein}g P · ${foodAIResult.carbs}g C · ${foodAIResult.fat}g F`;
-        document.getElementById('food-ai-add-btn').style.display='block';
-      } else el.textContent='Không nhận diện được món ăn.';
-    }catch{el.textContent='Lỗi phân tích ảnh.';}
-  };
-  reader.readAsDataURL(file);
-}
+
 
 // ════════════════════════════════════════════════════════
 // NUTRITION HISTORY (past days)
@@ -5561,14 +5416,22 @@ function showExHistory(exName){
 // ════════════════════════════════════════════════════════
 // AI AUTO-COACH TIP ON EXERCISE ADD
 // ════════════════════════════════════════════════════════
-async function autoLoadCoachTip(id,name){
+function autoLoadCoachTip(id,name){
   const tip=document.getElementById(id+'_tip');if(!tip)return;
-  tip.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
-  tip.classList.add('show');
+  const ex=EXERCISES.find(e=>e.name===name||e.nameVi===name);
   const lastW=ST.workouts.find(w=>w.exDetails?.[name]);
-  const context=lastW?`Lần trước: ${lastW.exDetails[name]}.`:'Lần đầu tập bài này.';
-  const prompt=`${ST.profile.level}, mục tiêu ${ST.profile.goal}. ${name}. ${context} Gợi ý nhanh 1 câu tiếng Việt (weight, kỹ thuật, hoặc reps target).`;
-  tip.textContent=await ai(prompt,120);
+  let txt='';
+  if(lastW){
+    const sets=lastW.exDetails[name].split(', ');
+    const lastKg=+(sets[sets.length-1]?.match(/(\d+\.?\d*)kg/)?.[1])||0;
+    if(lastKg>0){
+      const suggest=Math.round(lastKg*1.025/2.5)*2.5;
+      txt=`📅 Lần trước: ${lastW.exDetails[name]} → Thử ${suggest}kg hôm nay!`;
+    }
+  } else if(ex?.cues?.[0]){
+    txt='💡 '+ex.cues[0];
+  }
+  if(txt){tip.textContent=txt;tip.classList.add('show');}
 }
 
 // ════════════════════════════════════════════════════════
@@ -5684,6 +5547,47 @@ function promptSuperset(){
   // Use last 2 exercises added
   const last2=exNames.slice(-2);
   addSuperset(last2[0],last2[1]);
+}
+
+// ════════════════════════════════════════════════════════
+// QUICK STATS (replaces AI insight on home)
+// ════════════════════════════════════════════════════════
+function renderQuickStats(){
+  // Best streak
+  const bs=document.getElementById('h-best-streak');
+  if(bs)bs.textContent=ST.stats.bestStreak||ST.stats.streak||0;
+  // Average duration
+  const ad=document.getElementById('h-avg-dur');
+  if(ad&&ST.workouts.length){
+    const avg=Math.round(ST.workouts.slice(0,10).reduce((t,w)=>t+(w.dur||0),0)/Math.min(ST.workouts.length,10));
+    ad.textContent=avg;
+  }
+  // This week count
+  const tw=document.getElementById('h-this-week');
+  if(tw){
+    const now=new Date();
+    const weekStart=new Date(now);weekStart.setDate(now.getDate()-now.getDay()+1);weekStart.setHours(0,0,0,0);
+    const count=ST.workouts.filter(w=>{
+      const d=new Date(w.date.split('/').reverse().join('-'));return d>=weekStart;
+    }).length;
+    tw.textContent=count;
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// NUT HISTORY SCREEN
+// ════════════════════════════════════════════════════════
+function showNutHistory(){
+  const wrap=document.getElementById('nut-ai-wrap');
+  const el=document.getElementById('nut-ai-txt');
+  if(!wrap||!el)return;
+  wrap.style.display='block';
+  if(!ST.nutHistory?.length){el.innerHTML='<div class="xs muted">Chưa có lịch sử</div>';return;}
+  el.innerHTML=ST.nutHistory.slice(0,7).map(h=>`
+    <div class="rb" style="padding:6px 0;border-bottom:1px solid rgba(200,241,53,.15);font-size:12px">
+      <span style="color:rgba(200,241,53,.7)">${h.date}</span>
+      <span style="color:rgba(200,241,53,.9)">${h.cal}kcal · P${h.p}g</span>
+    </div>`).join('');
 }
 
 // ════════════════════════════════════════════════════════
