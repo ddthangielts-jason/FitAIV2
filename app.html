@@ -903,6 +903,9 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         onkeydown="if(event.key==='Enter')lookupFood()"
         oninput="foodSearchDebounce(this.value)">
       <button class="btn bl bsm" onclick="lookupFood()" style="white-space:nowrap;flex-shrink:0">AI tính</button>
+      <label style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;background:var(--bg3);border:1px solid var(--brd2);border-radius:var(--r);cursor:pointer;flex-shrink:0;font-size:18px" title="Chụp ảnh món ăn">
+        📷<input type="file" accept="image/*" capture="environment" style="display:none" onchange="analyzeFoodPhoto(this.files[0])">
+      </label>
     </div>
     <div id="food-ai-result" style="display:none;background:var(--lime-dim);border:1px solid rgba(200,241,53,.2);border-radius:var(--r);padding:10px 12px;margin-bottom:10px">
       <div style="font-size:10px;color:var(--lime);font-family:var(--FM);margin-bottom:5px">⚡ KẾT QUẢ AI</div>
@@ -1203,6 +1206,12 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
 
       <div id="nut-meals"></div>
 
+      <!-- Nutrition history -->
+      <div class="sec-label">Lịch sử dinh dưỡng</div>
+      <div class="card" style="margin-bottom:12px">
+        <div id="nut-history"></div>
+      </div>
+
       <!-- AI output -->
       <div id="nut-ai-wrap" style="display:none">
         <div class="sec-label">AI Meal Plan</div>
@@ -1278,6 +1287,24 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <div style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--txt3);font-family:var(--FM);margin-top:3px" id="squat-lbls"></div>
       </div>
 
+      <!-- Weekly volume chart -->
+      <div class="sec-label" style="margin-top:0">Volume theo tuần</div>
+      <div class="chart-card" style="margin-bottom:10px">
+        <div id="weekly-vol-chart"></div>
+      </div>
+
+      <!-- Strength standards -->
+      <div class="sec-label">Xếp hạng sức mạnh</div>
+      <div class="card" style="margin-bottom:10px">
+        <div id="strength-standards"></div>
+      </div>
+
+      <!-- Body fat estimate -->
+      <div class="sec-label">Body fat (ước tính)</div>
+      <div class="card" style="margin-bottom:10px">
+        <div id="body-fat-display"></div>
+      </div>
+
       <!-- Volume per muscle group -->
       <div class="sec-label">Volume theo nhóm cơ (tuần này)</div>
       <div class="chart-card" style="margin-bottom:10px">
@@ -1324,7 +1351,9 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
       <!-- Avatar -->
       <div class="card rb" style="margin-bottom:14px">
         <div class="row" style="gap:12px">
-          <div class="profile-avatar" id="p-avatar">?</div>
+          <div class="profile-avatar" id="p-avatar" onclick="triggerProfilePhoto()" style="cursor:pointer;overflow:hidden;position:relative" title="Nhấn để đổi ảnh">?
+            <img id="p-avatar-img" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none">
+          </div>
           <div>
             <div style="font-size:15px;font-weight:500" id="p-name-disp">Lifter</div>
             <div class="xs muted" id="p-meta-disp"></div>
@@ -1401,6 +1430,10 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <div class="menu-item" onclick="exportData()"><div class="menu-ico">📥</div><div class="menu-lbl">Export data CSV</div><div class="menu-arr">›</div></div>
         <div class="menu-item" onclick="showPW()"><div class="menu-ico">⚡</div><div class="menu-lbl" style="color:var(--lime)">Nâng cấp Pro</div><div class="menu-arr" style="color:var(--lime)">›</div></div>
         <div class="menu-item" onclick="resetApp()"><div class="menu-ico">🗑️</div><div class="menu-lbl" style="color:var(--red)">Xóa tất cả dữ liệu</div><div class="menu-arr" style="color:var(--red)">›</div></div>
+      </div>
+
+      <div style="text-align:center;padding:8px 0;margin-bottom:4px">
+        <span class="xxs muted">FitAI v2.1.0 · AI Workout Coach 🇻🇳</span>
       </div>
 
       <!-- Macro targets display -->
@@ -2081,6 +2114,7 @@ function save(){
     bestStreak:ST.stats.bestStreak||0,
     lastActiveDate:new Date().toLocaleDateString('vi-VN'),
     moodLog:ST.moodLog||[],settings:ST.settings||{},
+    nutHistory:ST.nutHistory||[],
   }));}catch(e){}
 }
 function load(){
@@ -2106,6 +2140,7 @@ function load(){
     if(d.prs)ST.prs=d.prs;
     if(d.rpeHistory)ST.rpeHistory=d.rpeHistory;
     if(d.moodLog)ST.moodLog=d.moodLog;
+    if(d.nutHistory)ST.nutHistory=d.nutHistory;
     if(d.settings)ST.settings=Object.assign({sound:true,haptic:true,autoRest:true,defaultRest:120,defaultSets:3,fontSize:15},d.settings);
     if(d.templates)ST.templates=d.templates;
     if(d.trialStart)ST.trialStart=d.trialStart;
@@ -2115,6 +2150,11 @@ function load(){
     const today=new Date().toLocaleDateString('vi-VN');
     const lastDate=d.lastActiveDate;
     if(lastDate&&lastDate!==today){
+      // Save yesterday's nutrition to history before reset
+      if(d.nut){
+        ST.nut=d.nut; // temporarily restore to save history
+        saveNutHistory();
+      }
       // New day — reset water and nutrition
       ST.water=0;
       ST.nut={b:[],l:[],d:[],s:[]};
@@ -2164,11 +2204,6 @@ function obNext(n){
   document.querySelectorAll('.ob-slide').forEach(s=>s.classList.remove('show'));
   document.getElementById('ob'+n).classList.add('show');
 }
-function skipOB(){
-  document.getElementById('onboarding').classList.remove('show');
-  document.getElementById('app').style.display='flex';
-  initApp();
-}
 function finishOB(){
   ST.profile.name=document.getElementById('ob-name').value||'Lifter';
   ST.profile.kg=+document.getElementById('ob-kg').value||70;
@@ -2205,6 +2240,9 @@ function initApp(){
   addTransitionCSS();
   // Apply saved settings
   if(ST.settings?.fontSize)document.documentElement.style.fontSize=ST.settings.fontSize+'px';
+  initKeyboardAvoidance();
+  initOverlayDismiss();
+  initFoodSwipe();
   if(ST.isPro)hidePro();
 }
 function hidePro(){
@@ -2499,6 +2537,9 @@ function doneSet(id,i,btn){
       ?`<strong>Set ${i+2}:</strong> ${nextSet.kg||'?'}kg × ${nextSet.reps||'?'} reps · RPE ${nextSet.rpe||7}`
       :'<strong>Xong bài này!</strong> Chuyển bài tiếp theo 🎉';
     if(ST.settings?.autoRest!==false)startRest(ST.settings?.defaultRest||120, nextMsg, ST.exData[id].name);
+    // Find next undone set and auto-scroll
+    const nextIdx=ST.exData[id].sets.findIndex((s,idx)=>idx>i&&!s.done);
+    if(nextIdx>=0)scrollToSet(id,nextIdx);
     // Track RPE
     const rpeVal=ST.exData[id].sets[i]?.rpe;
     if(rpeVal)trackRPE(rpeVal);
@@ -2565,35 +2606,55 @@ function cancelWorkout(){
 function finishWorkout(){
   clearInterval(ST.timerInt);skipRest();
   const dur=Math.round(ST.timerSec/60);
-  const exDetails={};let vol=0,exCount=0,totalSets=0;
+  const exDetails={};const exNotes={};let vol=0,exCount=0,totalSets=0;
   Object.values(ST.exData).forEach(e=>{
-    const done=e.sets.filter(s=>s.done&&s.kg>0&&s.reps>0);
-    if(done.length){exDetails[e.name]=done.map(s=>`${s.kg}kg×${s.reps}`).join(', ');exCount++;}
-    done.forEach(s=>{vol+=s.kg*s.reps;totalSets++;});
+    if(e.type==='cardio'){
+      // Cardio exercise
+      const s=e.sets[0];
+      if(s?.done){
+        exDetails[e.name]=`${s.duration||0}ph · ${s.distance||0}km`;
+        exCount++;vol+=s.duration*50; // rough calorie equiv
+      }
+    } else {
+      const done=e.sets.filter(s=>s.done&&s.kg>0&&s.reps>0);
+      if(done.length){exDetails[e.name]=done.map(s=>`${s.kg}kg×${s.reps}`).join(', ');exCount++;}
+      done.forEach(s=>{vol+=s.kg*s.reps;totalSets++;});
+    }
+    if(e.note)exNotes[e.name]=e.note;
   });
   vol=Math.round(vol);
   ST.stats.total++;ST.stats.streak++;ST.stats.volume+=vol;
   ST.lastWorkoutDate=new Date().toISOString();
+  // Session note
+  const sessionNoteEl=document.getElementById('session-note-inp');
+  const sessionNote=sessionNoteEl?.value||'';
+  // Today's mood
+  const today=new Date().toLocaleDateString('vi-VN');
+  const todayMood=ST.moodLog?.find(m=>m.date===today);
   // PR detection
   Object.entries(ST.exData).forEach(([id,ex])=>{
+    if(ex.type==='cardio')return;
     const done=ex.sets.filter(s=>s.done&&s.kg>0&&s.reps>0);
     if(done.length){
       const best=done.reduce((b,s)=>calc1RM(s.kg,s.reps)>calc1RM(b.kg,b.reps)?s:b);
-      if(checkPR(ex.name,best.kg,best.reps))setTimeout(()=>toast(`🏆 PR mới: ${ex.name} ${best.kg}kg×${best.reps}!`),500);
+      if(checkPR(ex.name,best.kg,best.reps)){
+        setTimeout(()=>{toast(`🏆 PR mới: ${ex.name} ${best.kg}kg×${best.reps}!`);confetti();},500);
+      }
     }
   });
-  const w={date:new Date().toLocaleDateString('vi-VN'),title:ST.activeW.title,dur,vol,exCount,totalSets,exDetails};
+  const w={
+    date:today,title:ST.activeW.title,dur,vol,exCount,totalSets,exDetails,
+    exNotes,sessionNote,mood:todayMood?.val||null,
+    calBurned:estimateCalBurned(dur),
+  };
   ST.workouts.unshift(w);
   document.getElementById('w-idle').style.display='block';
   document.getElementById('w-active').style.display='none';
-  ST.activeW=null;
+  ST.activeW=null;workoutPaused=false;
   ST.weekDone[new Date().getDay()===0?6:new Date().getDay()-1]=true;
   save();renderHome();renderWHist();
   showWS(w);
-  updateBestStreak();
-  renderTemplates();
-  checkAppRating();
-  checkDeload();
+  updateBestStreak();renderTemplates();checkAppRating();checkDeload();
   setTimeout(checkInjuryRisk,1500);
 }
 function renderWHist(){
@@ -2894,7 +2955,7 @@ async function doChat(msg){
   const loading=addBubble('<span class="td"></span><span class="td"></span><span class="td"></span>','ai');
   ST.chatHist.push({role:'user',content:msg});
   if(ST.chatHist.length>14)ST.chatHist=ST.chatHist.slice(-14);
-  const sys=`Bạn là AI Coach gym cá nhân, tiếng Việt hoàn toàn. Hồ sơ: ${ST.profile.name||'lifter'}, ${ST.profile.kg}kg, cao ${ST.profile.cm}cm, ${ST.profile.age} tuổi, ${ST.profile.sex==='female'?'nữ':'nam'}, ${ST.profile.level}, mục tiêu ${ST.profile.goal}, ${ST.profile.days}x/tuần, thiết bị ${ST.profile.equip}. Trả lời tiếng Việt, thực tế, số liệu cụ thể, ngắn gọn.`;
+  const sys=buildAIChatSystem();
   try{
     const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:ST.chatHist,max_tokens:700})});
     const d=await r.json();
@@ -3002,6 +3063,10 @@ function renderProgress(){
   renderHeatmap();
   renderPRTimeline();
   renderBMIIndicator();
+  renderStrengthStandards();
+  renderWeeklyVolumeChart();
+  renderBodyFat();
+  renderNutHistory();
 }
 function renderCharts(){
   const bench=[60,62.5,65,67.5,70,72.5,75,77.5];
@@ -3107,7 +3172,12 @@ function updateProfileDisplay(){
   const bmi=p.kg&&p.cm?(p.kg/((p.cm/100)**2)).toFixed(1):'--';
   const bmiCat=bmi==='--'?'':+bmi<18.5?' · Thiếu cân':+bmi<25?' · Bình thường':+bmi<30?' · Thừa cân':' · Béo phì';
   const av=document.getElementById('p-avatar');
-  if(av)av.textContent=p.name?.[0]?.toUpperCase()||'?';
+  if(av){
+    av.textContent=p.name?.[0]?.toUpperCase()||'?';
+    const img=document.getElementById('p-avatar-img');
+    if(img&&p.photoUrl){img.src=p.photoUrl;img.style.display='block';}
+    else if(img)img.style.display='none';
+  }
   const nd=document.getElementById('p-name-disp');if(nd)nd.textContent=p.name||'Lifter';
   const md=document.getElementById('p-meta-disp');if(md)md.textContent=`${p.kg}kg · ${p.cm}cm · BMI ${bmi}${bmiCat}`;
   if(ST.isPro){
@@ -4824,6 +4894,313 @@ function renderHeatmap(){
       </div>
     </div>`;
 }
+
+// ════════════════════════════════════════════════════════
+// CONFETTI on PR
+// ════════════════════════════════════════════════════════
+function confetti(){
+  const colors=['#c8f135','#ffb84d','#4d9fff','#ff6eb4','#3dd9b3'];
+  const container=document.createElement('div');
+  container.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden';
+  document.body.appendChild(container);
+  for(let i=0;i<60;i++){
+    const p=document.createElement('div');
+    const col=colors[Math.floor(Math.random()*colors.length)];
+    const x=Math.random()*100;
+    const delay=Math.random()*0.8;
+    const size=Math.random()*8+4;
+    p.style.cssText=`position:absolute;top:-10px;left:${x}%;width:${size}px;height:${size}px;background:${col};border-radius:${Math.random()>0.5?'50%':'2px'};animation:confettiFall ${1.5+Math.random()}s ${delay}s ease-in forwards;opacity:1`;
+    container.appendChild(p);
+  }
+  const style=document.createElement('style');
+  style.textContent=`@keyframes confettiFall{to{transform:translateY(100vh) rotate(720deg);opacity:0}}`;
+  document.head.appendChild(style);
+  setTimeout(()=>{container.remove();style.remove();},3000);
+}
+
+// ════════════════════════════════════════════════════════
+// BODY FAT % ESTIMATE (Navy Method)
+// ════════════════════════════════════════════════════════
+function estimateBodyFat(){
+  const p=ST.profile;
+  if(!p.kg||!p.cm)return null;
+  // Simplified: BMI-based estimate
+  const bmi=p.kg/((p.cm/100)**2);
+  if(p.sex==='female') return Math.round(1.2*bmi+0.23*p.age-5.4);
+  return Math.round(1.2*bmi+0.23*p.age-16.2);
+}
+function renderBodyFat(){
+  const el=document.getElementById('body-fat-display');if(!el)return;
+  const bf=estimateBodyFat();if(!bf||bf<3||bf>50){el.innerHTML='';return;}
+  const cat=bf<10?{l:'Athlete',c:'var(--blue)'}:bf<18?{l:'Fitness',c:'var(--lime)'}:bf<25?{l:'Average',c:'var(--amber)'}:{l:'Obese',c:'var(--red)'};
+  el.innerHTML=`
+    <div class="rb" style="margin-bottom:6px">
+      <div><span style="font-family:var(--FD);font-size:28px;color:${cat.c}">${bf}%</span><span class="xs muted"> body fat (est.)</span></div>
+      <span class="tag" style="background:${cat.c}22;color:${cat.c}">${cat.l}</span>
+    </div>
+    <div class="xs muted">Ước tính từ BMI · Đo impedance chính xác hơn</div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// STRENGTH STANDARDS COMPARE
+// ════════════════════════════════════════════════════════
+const STRENGTH_STD={
+  'Bench Press':{male:[{l:'Beginner',kg:60},{l:'Novice',kg:80},{l:'Intermediate',kg:100},{l:'Advanced',kg:120},{l:'Elite',kg:142}],female:[{l:'Beginner',kg:30},{l:'Novice',kg:42},{l:'Intermediate',kg:55},{l:'Advanced',kg:70},{l:'Elite',kg:85}]},
+  'Barbell Squat':{male:[{l:'Beginner',kg:70},{l:'Novice',kg:100},{l:'Intermediate',kg:125},{l:'Advanced',kg:155},{l:'Elite',kg:190}],female:[{l:'Beginner',kg:40},{l:'Novice',kg:55},{l:'Intermediate',kg:72},{l:'Advanced',kg:90},{l:'Elite',kg:110}]},
+  'Barbell Deadlift':{male:[{l:'Beginner',kg:90},{l:'Novice',kg:125},{l:'Intermediate',kg:155},{l:'Advanced',kg:190},{l:'Elite',kg:230}],female:[{l:'Beginner',kg:50},{l:'Novice',kg:70},{l:'Intermediate',kg:90},{l:'Advanced',kg:115},{l:'Elite',kg:140}]},
+  'Overhead Press':{male:[{l:'Beginner',kg:35},{l:'Novice',kg:50},{l:'Intermediate',kg:65},{l:'Advanced',kg:80},{l:'Elite',kg:100}],female:[{l:'Beginner',kg:18},{l:'Novice',kg:26},{l:'Intermediate',kg:35},{l:'Advanced',kg:44},{l:'Elite',kg:55}]},
+};
+function renderStrengthStandards(){
+  const el=document.getElementById('strength-standards');if(!el)return;
+  const sex=ST.profile.sex||'male';
+  const prMap=ST.prs||{};
+  let html='';
+  Object.entries(STRENGTH_STD).forEach(([exName,data])=>{
+    const stds=data[sex];
+    const myOrm=prMap[exName]||0;
+    const myLevel=stds.reduce((best,s)=>myOrm>=s.kg?s:best,{l:'Unranked',kg:0});
+    const nextLevel=stds.find(s=>s.kg>myOrm);
+    const pct=nextLevel?Math.min(myOrm/nextLevel.kg*100,100):100;
+    html+=`
+      <div style="margin-bottom:12px">
+        <div class="rb" style="margin-bottom:4px">
+          <div style="font-size:12.5px;font-weight:500">${exName}</div>
+          <div class="row" style="gap:6px">
+            <span class="tag tl" style="font-size:10px">${myLevel.l}</span>
+            <span class="xxs muted">${myOrm?myOrm+'kg':'--'}</span>
+          </div>
+        </div>
+        <div class="pb"><div class="pf" style="width:${pct}%"></div></div>
+        ${nextLevel?`<div class="xxs muted" style="margin-top:2px">→ ${nextLevel.l}: ${nextLevel.kg}kg (+${Math.max(0,nextLevel.kg-myOrm)}kg)</div>`:'<div class="xxs muted">Elite level! 🏆</div>'}
+      </div>`;
+  });
+  el.innerHTML=html||'<div class="xs muted">Bắt đầu tập để xếp hạng sức mạnh</div>';
+}
+
+// ════════════════════════════════════════════════════════
+// AI CHAT WITH WORKOUT CONTEXT
+// ════════════════════════════════════════════════════════
+function buildAIChatSystem(){
+  const p=ST.profile;
+  const lv=getLevel();
+  const recent=ST.workouts.slice(0,3).map(w=>`${w.date}: ${w.title} (${w.vol}kg vol, ${w.dur}ph)`).join('; ');
+  const prs=Object.entries(ST.prs||{}).slice(0,5).map(([n,v])=>`${n}:${v}kg`).join(', ');
+  return `Bạn là AI Coach gym cá nhân, tiếng Việt hoàn toàn. 
+Hồ sơ: ${p.name||'User'}, ${p.kg}kg, ${p.cm}cm, ${p.age}t, ${p.sex==='female'?'nữ':'nam'}, ${p.level}, mục tiêu ${p.goal}, ${p.days}x/tuần, thiết bị ${p.equip}.
+Level: ${lv.emoji} ${lv.name} (${lv.xp} XP). Streak: ${ST.stats.streak} ngày. Tổng: ${ST.stats.total} buổi.
+3 buổi gần nhất: ${recent||'chưa có'}.
+PR hiện tại: ${prs||'chưa có'}.
+Trả lời tiếng Việt, thực tế, số liệu cụ thể, ngắn gọn.`;
+}
+
+// ════════════════════════════════════════════════════════
+// AI FOOD PHOTO ANALYSIS
+// ════════════════════════════════════════════════════════
+async function analyzeFoodPhoto(file){
+  const el=document.getElementById('food-ai-txt');
+  const wrap=document.getElementById('food-ai-result');
+  wrap.style.display='block';
+  el.innerHTML='🔍 <span class="td"></span><span class="td"></span><span class="td"></span>';
+  document.getElementById('food-ai-add-btn').style.display='none';
+  
+  const reader=new FileReader();
+  reader.onload=async(ev)=>{
+    const base64=ev.target.result.split(',')[1];
+    try{
+      const r=await fetch('/api/chat',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          messages:[{role:'user',content:[
+            {type:'image',source:{type:'base64',media_type:file.type,data:base64}},
+            {type:'text',text:'Phân tích món ăn trong ảnh. Trả về JSON: {"name":"tên món","serving":"khẩu phần ước tính","cal":số,"protein":số,"carbs":số,"fat":số}. Chỉ JSON, không giải thích.'}
+          ]}],
+          max_tokens:200,
+        }),
+      });
+      const d=await r.json();
+      const txt=d.content?.find(c=>c.type==='text')?.text||'';
+      const match=txt.match(/\{[\s\S]*\}/);
+      if(match){
+        foodAIResult=JSON.parse(match[0]);
+        el.innerHTML=`📷 <strong>${foodAIResult.name}</strong> (${foodAIResult.serving})<br>${foodAIResult.cal}kcal · ${foodAIResult.protein}g P · ${foodAIResult.carbs}g C · ${foodAIResult.fat}g F`;
+        document.getElementById('food-ai-add-btn').style.display='block';
+      } else el.textContent='Không nhận diện được món ăn.';
+    }catch{el.textContent='Lỗi phân tích ảnh.';}
+  };
+  reader.readAsDataURL(file);
+}
+
+// ════════════════════════════════════════════════════════
+// NUTRITION HISTORY (past days)
+// ════════════════════════════════════════════════════════
+function renderNutHistory(){
+  const el=document.getElementById('nut-history');if(!el)return;
+  if(!ST.nutHistory?.length){el.innerHTML='<div class="xs muted">Chưa có lịch sử</div>';return;}
+  el.innerHTML=ST.nutHistory.slice(0,7).map(h=>`
+    <div class="rb" style="padding:7px 0;border-bottom:1px solid var(--brd)">
+      <div>
+        <div style="font-size:12px;font-weight:500">${h.date}</div>
+        <div class="xxs muted">P${h.p}g · C${h.c}g · F${h.f}g</div>
+      </div>
+      <span class="tag tl" style="font-size:11px">${h.cal}kcal</span>
+    </div>`).join('');
+}
+function saveNutHistory(){
+  if(!ST.nutHistory)ST.nutHistory=[];
+  // Calculate today's totals
+  let cal=0,p=0,c=0,f=0;
+  ['b','l','d','s'].forEach(m=>(ST.nut[m]||[]).forEach(food=>{cal+=food.cal||0;p+=food.p||0;c+=food.c||0;f+=food.f||0;}));
+  if(!cal)return;
+  const today=new Date().toLocaleDateString('vi-VN');
+  const idx=ST.nutHistory.findIndex(h=>h.date===today);
+  const entry={date:today,cal:Math.round(cal),p:Math.round(p),c:Math.round(c),f:Math.round(f)};
+  if(idx>=0)ST.nutHistory[idx]=entry;
+  else ST.nutHistory.unshift(entry);
+  ST.nutHistory=ST.nutHistory.slice(0,30);
+}
+
+// ════════════════════════════════════════════════════════
+// PROFILE PHOTO UPLOAD
+// ════════════════════════════════════════════════════════
+function triggerProfilePhoto(){
+  const inp=document.createElement('input');
+  inp.type='file';inp.accept='image/*';
+  inp.onchange=e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      ST.profile.photoUrl=ev.target.result;
+      updateProfileDisplay();save();
+    };
+    reader.readAsDataURL(file);
+  };
+  inp.click();
+}
+
+// ════════════════════════════════════════════════════════
+// KEYBOARD AVOIDANCE
+// ════════════════════════════════════════════════════════
+function initKeyboardAvoidance(){
+  if(!window.visualViewport)return;
+  window.visualViewport.addEventListener('resize',()=>{
+    const app=document.getElementById('app');
+    if(!app)return;
+    const vh=window.visualViewport.height;
+    app.style.height=vh+'px';
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// AUTO-SCROLL TO ACTIVE SET
+// ════════════════════════════════════════════════════════
+function scrollToSet(id,i){
+  setTimeout(()=>{
+    const row=document.getElementById(id+'_row'+i);
+    if(row)row.scrollIntoView({behavior:'smooth',block:'center'});
+  },100);
+}
+
+// ════════════════════════════════════════════════════════
+// SWIPE LEFT TO DELETE FOOD
+// ════════════════════════════════════════════════════════
+function initFoodSwipe(){
+  document.addEventListener('touchstart',e=>{
+    const row=e.target.closest('.food-row');
+    if(!row)return;
+    const startX=e.touches[0].clientX;
+    let swiped=false;
+    const onMove=ev=>{
+      const dx=startX-ev.touches[0].clientX;
+      if(dx>60&&!swiped){
+        swiped=true;
+        row.style.transition='transform .2s,opacity .2s';
+        row.style.transform='translateX(-80px)';
+        // Show delete button
+        const del=document.createElement('button');
+        del.innerHTML='🗑️';
+        del.style.cssText='position:absolute;right:0;top:0;bottom:0;width:70px;background:var(--red);border:none;color:#fff;font-size:18px;cursor:pointer;border-radius:0 8px 8px 0';
+        del.onclick=()=>{row.style.opacity='0';setTimeout(()=>row.remove(),200);};
+        row.style.position='relative';
+        row.appendChild(del);
+      }
+    };
+    const onEnd=()=>{
+      document.removeEventListener('touchmove',onMove);
+      document.removeEventListener('touchend',onEnd);
+    };
+    document.addEventListener('touchmove',onMove,{passive:true});
+    document.addEventListener('touchend',onEnd);
+  },{passive:true});
+}
+
+// ════════════════════════════════════════════════════════
+// OVERLAY CLICK TO CLOSE MODALS
+// ════════════════════════════════════════════════════════
+function initOverlayDismiss(){
+  ['add-food-modal','meas-modal','settings-sheet'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.addEventListener('click',e=>{
+      if(e.target===el){
+        if(id==='add-food-modal')cancelAddFood();
+        else if(id==='meas-modal')closeMeasModal();
+        else if(id==='settings-sheet')closeSettings();
+      }
+    });
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// ONBOARDING FIX - save defaults on skip
+// ════════════════════════════════════════════════════════
+function skipOB(){
+  // Save default profile so app works properly
+  if(!ST.profile.name)ST.profile.name='Lifter';
+  ST.profile.goal=ST.ob.goal||'muscle';
+  ST.profile.level=ST.ob.level||'beginner';
+  ST.profile.equip=ST.ob.equip||'full';
+  ST.profile.sex=ST.ob.sex||'male';
+  ST.currentPlan=PLANS[0];
+  document.getElementById('onboarding').classList.remove('show');
+  document.getElementById('app').style.display='flex';
+  save();
+  initApp();
+}
+
+// ════════════════════════════════════════════════════════
+// WEEKLY VOLUME CHART
+// ════════════════════════════════════════════════════════
+function renderWeeklyVolumeChart(){
+  const el=document.getElementById('weekly-vol-chart');if(!el)return;
+  // Get last 8 weeks volume
+  const now=new Date();
+  const weeks=[];
+  for(let w=7;w>=0;w--){
+    const start=new Date(now);start.setDate(now.getDate()-w*7-now.getDay());
+    const end=new Date(start);end.setDate(start.getDate()+7);
+    const vol=ST.workouts
+      .filter(wo=>{const d=new Date(wo.date.split('/').reverse().join('-'));return d>=start&&d<end;})
+      .reduce((t,wo)=>t+(wo.vol||0),0);
+    weeks.push({label:`T${8-w}`,vol});
+  }
+  const max=Math.max(...weeks.map(w=>w.vol),1);
+  el.innerHTML=`
+    <div style="display:flex;align-items:flex-end;gap:4px;height:80px;margin-bottom:4px">
+      ${weeks.map(w=>`
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+          <div style="width:100%;border-radius:4px 4px 0 0;background:${w.vol>0?'var(--lime)':'var(--bg4)'};height:${Math.max(w.vol/max*70,w.vol>0?6:2)}px;transition:height .4s ease;opacity:${w.vol>0?0.7+w.vol/max*0.3:0.3}"></div>
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:4px">
+      ${weeks.map(w=>`<div style="flex:1;text-align:center;font-size:9px;color:var(--txt3);font-family:var(--FM)">${w.label}</div>`).join('')}
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// APP VERSION
+// ════════════════════════════════════════════════════════
+const APP_VERSION='2.1.0';
 
 // ════════════════════════════════════════════════════════
 // BOOT
