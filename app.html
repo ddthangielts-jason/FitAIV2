@@ -8,7 +8,9 @@
 <title>FitAI — AI Workout Coach</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+<style>
 <style>
 /* ═══════════════════════════════════════════
    RESET + VARIABLES
@@ -20,15 +22,24 @@
   --bg:#080808;--bg2:#101010;--bg3:#181818;--bg4:#202020;--bg5:#2a2a2a;
   --txt:#f0efe8;--txt2:#8a8a8a;--txt3:#4a4a4a;
   --brd:#1e1e1e;--brd2:#2a2a2a;--brd3:#363636;
-  --FD:'Bebas Neue','Arial Narrow',Arial,sans-serif;
-  --FB:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  --FM:'JetBrains Mono','Courier New',Courier,monospace;
+  --FD:'Bebas Neue','Arial Narrow','Impact',Arial,sans-serif;
+  --FB:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;
+  --FM:'JetBrains Mono','SF Mono','Consolas','Courier New',Courier,monospace;
   --r:10px;--rl:14px;--rxl:20px;
   --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font-family:var(--FB);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
 input,select,button,textarea{font-family:var(--FB);-webkit-appearance:none;outline:none}
 ::-webkit-scrollbar{display:none}
+/* Mobile UX improvements */
+.screen{-webkit-overflow-scrolling:touch}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+@media(orientation:landscape) and (max-height:500px){
+  .bnav{height:44px;padding-bottom:0}
+  .screen{bottom:44px}
+  .rest-big-num{font-size:80px}
+}
 
 /* ═══════════════════════════════════════════
    APP SHELL
@@ -947,6 +958,10 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <div class="sec-label">Buổi tập hôm nay</div>
         <div id="home-today"></div>
 
+        <!-- Mood tracker -->
+        <div class="sec-label">Cảm giác hôm nay</div>
+        <div class="card" style="margin-bottom:10px" id="mood-tracker"></div>
+
         <!-- Daily Challenge -->
         <div class="sec-label">Thách thức hôm nay</div>
         <div class="card" style="margin-bottom:10px" id="daily-challenge"></div>
@@ -983,6 +998,12 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
           Bắt đầu tập tự do
         </button>
         <button class="btn bg" style="margin-bottom:8px" onclick="goTab('s-plan')">Chọn từ plan</button>
+        <div class="sec-label" style="margin-top:4px">Cardio nhanh</div>
+        <div class="g3" style="margin-bottom:8px">
+          <button class="btn bg" style="font-size:12px" onclick="initWorkout('Cardio');addCardioEx('Chạy bộ')">🏃 Chạy bộ</button>
+          <button class="btn bg" style="font-size:12px" onclick="initWorkout('Cardio');addCardioEx('Đạp xe')">🚴 Đạp xe</button>
+          <button class="btn bg" style="font-size:12px" onclick="initWorkout('Cardio');addCardioEx('Bơi lội')">🏊 Bơi lội</button>
+        </div>
         <button class="btn bg" onclick="openExLib(false)">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           Thư viện bài tập & Form Guide
@@ -1001,11 +1022,12 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
           <div class="wtb-title" id="aw-title">Buổi tập</div>
           <div class="wtb-timer" id="aw-timer">00:00</div>
         </div>
-        <div class="row" style="gap:10px">
+        <div class="row" style="gap:8px">
           <div style="text-align:right">
             <div class="wtb-vol" id="aw-vol">0 kg volume</div>
             <div class="xs" style="color:var(--txt3)" id="aw-sets-done">0 sets</div>
           </div>
+          <button class="btn bg bxs" id="aw-pause-btn" onclick="togglePauseWorkout()" title="Tạm dừng">⏸</button>
           <button class="btn bl bsm" onclick="finishWorkout()">Xong ✓</button>
         </div>
       </div>
@@ -1014,13 +1036,32 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
 
       <div style="flex:1;overflow-y:auto;padding:12px 16px 16px" id="aw-exercises"></div>
 
-      <div style="padding:0 16px 12px;border-top:1px solid var(--brd);display:flex;gap:8px">
-        <button class="btn bg" style="flex:1" onclick="openExLib(true)">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Thêm bài
-        </button>
-        <button class="btn bg bsm" style="width:auto" onclick="saveWorkoutTemplate()" title="Lưu template">💾</button>
-        <button class="btn bd bsm" style="width:auto" onclick="cancelWorkout()">Hủy</button>
+      <div style="padding:0 16px 12px;border-top:1px solid var(--brd);flex-shrink:0">
+        <!-- Quick add by muscle group -->
+        <div class="pill-row" style="margin-bottom:8px" id="quick-muscle-row">
+          <button class="pill on" onclick="quickAddByMuscle('all',this)">Tất cả</button>
+          <button class="pill" onclick="quickAddByMuscle('chest',this)">Ngực</button>
+          <button class="pill" onclick="quickAddByMuscle('back',this)">Lưng</button>
+          <button class="pill" onclick="quickAddByMuscle('shoulders',this)">Vai</button>
+          <button class="pill" onclick="quickAddByMuscle('arms',this)">Tay</button>
+          <button class="pill" onclick="quickAddByMuscle('legs',this)">Chân</button>
+          <button class="pill" onclick="quickAddByMuscle('glutes',this)">Mông</button>
+          <button class="pill" onclick="quickAddByMuscle('core',this)">Core</button>
+        </div>
+        <!-- Exercise search in workout -->
+        <div style="position:relative;margin-bottom:8px">
+          <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--txt3)" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="inp" id="workout-ex-search" placeholder="Tìm bài tập để thêm..." style="padding-left:32px;font-size:13px" oninput="searchWorkoutEx(this.value)">
+        </div>
+        <div id="workout-ex-results" style="display:none;max-height:160px;overflow-y:auto;border:1px solid var(--brd);border-radius:var(--r);background:var(--bg3);margin-bottom:8px"></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn bg" style="flex:1" onclick="openExLib(true)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Thư viện
+          </button>
+          <button class="btn bg bsm" style="width:auto" onclick="saveWorkoutTemplate()" title="Lưu template">💾</button>
+          <button class="btn bd bsm" style="width:auto" onclick="cancelWorkout()">Hủy</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1191,6 +1232,32 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <div id="bw-chart"></div>
       </div>
 
+      <!-- Workout Heatmap -->
+      <div class="sec-label" style="margin-top:0">Heatmap tập luyện</div>
+      <div class="chart-card" style="margin-bottom:10px">
+        <div id="workout-heatmap"></div>
+      </div>
+
+      <!-- BMI Visual -->
+      <div class="sec-label">BMI</div>
+      <div class="card" style="margin-bottom:10px">
+        <div id="bmi-indicator"></div>
+      </div>
+
+      <!-- PR Timeline -->
+      <div class="sec-label">Kỷ lục cá nhân (PR)</div>
+      <div class="card" style="margin-bottom:10px">
+        <div id="pr-timeline"></div>
+      </div>
+
+      <!-- Progressive Overload AI -->
+      <div class="sec-label">AI Progressive Overload</div>
+      <div class="card-lime" style="margin-bottom:10px">
+        <div style="font-size:10px;color:var(--lime);font-family:var(--FM);letter-spacing:.1em;margin-bottom:6px">⚡ AI COACH</div>
+        <div style="font-size:13px;color:rgba(200,241,53,.85);line-height:1.65" id="progressive-log">Nhấn để AI phân tích progressive overload...</div>
+        <button class="btn bg" style="margin-top:8px;height:34px;font-size:12px" onclick="genProgressiveOverloadLog()">Phân tích tiến độ</button>
+      </div>
+
       <!-- Charts -->
       <div class="sec-label" style="margin-top:0">Strength Progress</div>
       <div class="chart-card" id="bench-chart-card">
@@ -1264,7 +1331,10 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
             <div id="p-pro-badge" style="display:none;margin-top:5px"><span class="pro-chip">PRO</span></div>
           </div>
         </div>
-        <button class="btn bg bsm" onclick="showPW()" id="p-upgrade-btn">Pro ↑</button>
+        <div class="row" style="gap:8px">
+          <button class="btn bg bsm" onclick="openSettings()">⚙️</button>
+          <button class="btn bg bsm" onclick="showPW()" id="p-upgrade-btn">Pro ↑</button>
+        </div>
       </div>
 
       <!-- Settings -->
@@ -1381,6 +1451,87 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
     <!-- Selected day detail -->
     <div style="flex:1;overflow-y:auto;padding:12px 16px" id="sched-detail">
       <div class="xs muted">Nhấn vào ngày để xem chi tiết</div>
+    </div>
+  </div>
+
+  <!-- ── SETTINGS (bottom sheet) ── -->
+  <div id="settings-sheet" style="position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.9);display:none;align-items:flex-end;max-width:430px;margin:0 auto">
+    <div style="background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:85vh;overflow-y:auto;border-top:1px solid var(--brd2)">
+      <div style="width:36px;height:4px;background:var(--brd3);border-radius:2px;margin:12px auto 16px"></div>
+      <div class="px" style="padding-bottom:calc(24px + var(--safe-bottom))">
+        <div style="font-family:var(--FD);font-size:24px;letter-spacing:.04em;margin-bottom:16px">Cài <span style="color:var(--lime)">đặt</span></div>
+
+        <!-- Sound -->
+        <div class="sec-label" style="margin-top:0">Âm thanh & Rung</div>
+        <div class="card" style="margin-bottom:10px">
+          <div class="rb" style="padding:10px 0;border-bottom:1px solid var(--brd)">
+            <span style="font-size:13px">🔊 Âm thanh rest timer</span>
+            <div class="toggle" id="tog-sound" onclick="toggleSetting('sound')" style="width:44px;height:24px;border-radius:12px;background:var(--lime);cursor:pointer;position:relative;transition:background .2s">
+              <div style="position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:#111;transition:right .2s"></div>
+            </div>
+          </div>
+          <div class="rb" style="padding:10px 0;border-bottom:1px solid var(--brd)">
+            <span style="font-size:13px">📳 Rung khi xong set</span>
+            <div class="toggle" id="tog-haptic" onclick="toggleSetting('haptic')" style="width:44px;height:24px;border-radius:12px;background:var(--lime);cursor:pointer;position:relative;transition:background .2s">
+              <div style="position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:#111;transition:right .2s"></div>
+            </div>
+          </div>
+          <div class="rb" style="padding:10px 0">
+            <span style="font-size:13px">⏱ Tự động bắt đầu rest</span>
+            <div class="toggle" id="tog-autorest" onclick="toggleSetting('autoRest')" style="width:44px;height:24px;border-radius:12px;background:var(--lime);cursor:pointer;position:relative;transition:background .2s">
+              <div style="position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:#111;transition:right .2s"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rest timer default -->
+        <div class="sec-label">Thời gian nghỉ mặc định</div>
+        <div class="card" style="margin-bottom:10px">
+          <div class="pill-row">
+            <button class="pill" id="rest-def-60" onclick="setDefaultRest(60)">1:00</button>
+            <button class="pill on" id="rest-def-90" onclick="setDefaultRest(90)">1:30</button>
+            <button class="pill" id="rest-def-120" onclick="setDefaultRest(120)">2:00</button>
+            <button class="pill" id="rest-def-180" onclick="setDefaultRest(180)">3:00</button>
+          </div>
+        </div>
+
+        <!-- Display -->
+        <div class="sec-label">Hiển thị</div>
+        <div class="card" style="margin-bottom:10px">
+          <div class="fg" style="margin-bottom:0">
+            <label class="lbl">Cỡ chữ</label>
+            <div class="pill-row" style="margin-top:6px">
+              <button class="pill" onclick="setFontSize(14)">Nhỏ</button>
+              <button class="pill on" onclick="setFontSize(15)">Vừa</button>
+              <button class="pill" onclick="setFontSize(17)">Lớn</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workout defaults -->
+        <div class="sec-label">Workout</div>
+        <div class="card" style="margin-bottom:10px">
+          <div class="fg">
+            <label class="lbl">Số sets mặc định</label>
+            <select class="inp" id="set-default-sel" onchange="ST.settings.defaultSets=+this.value;save()">
+              <option value="3">3 sets</option>
+              <option value="4">4 sets</option>
+              <option value="5">5 sets</option>
+            </select>
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <label class="lbl">Mục tiêu nước uống (ml)</label>
+            <select class="inp" id="water-goal-sel" onchange="ST.profile.waterGoal=+this.value;save();updateWaterDisplay()">
+              <option value="1500">1500ml</option>
+              <option value="2000">2000ml</option>
+              <option value="2500">2500ml</option>
+              <option value="3000">3000ml</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn bg" onclick="closeSettings()">Đóng</button>
+      </div>
     </div>
   </div>
 
@@ -1928,6 +2079,8 @@ function save(){
     water:ST.water||0,prs:ST.prs||{},rpeHistory:ST.rpeHistory||[],
     templates:ST.templates||[],trialStart:ST.trialStart,
     bestStreak:ST.stats.bestStreak||0,
+    lastActiveDate:new Date().toLocaleDateString('vi-VN'),
+    moodLog:ST.moodLog||[],settings:ST.settings||{},
   }));}catch(e){}
 }
 function load(){
@@ -1952,9 +2105,21 @@ function load(){
     if(d.water)ST.water=d.water;
     if(d.prs)ST.prs=d.prs;
     if(d.rpeHistory)ST.rpeHistory=d.rpeHistory;
+    if(d.moodLog)ST.moodLog=d.moodLog;
+    if(d.settings)ST.settings=Object.assign({sound:true,haptic:true,autoRest:true,defaultRest:120,defaultSets:3,fontSize:15},d.settings);
     if(d.templates)ST.templates=d.templates;
     if(d.trialStart)ST.trialStart=d.trialStart;
     if(d.bestStreak)ST.stats.bestStreak=d.bestStreak;
+
+    // ── DAILY RESET — water & nutrition reset every new day ──
+    const today=new Date().toLocaleDateString('vi-VN');
+    const lastDate=d.lastActiveDate;
+    if(lastDate&&lastDate!==today){
+      // New day — reset water and nutrition
+      ST.water=0;
+      ST.nut={b:[],l:[],d:[],s:[]};
+    }
+    ST.lastActiveDate=today;
     // ── Streak reset logic ──
     // If last workout was >1 day ago, reset streak
     if(ST.lastWorkoutDate){
@@ -2038,6 +2203,8 @@ function initApp(){
   initOfflineIndicator();
   updateBestStreak();
   addTransitionCSS();
+  // Apply saved settings
+  if(ST.settings?.fontSize)document.documentElement.style.fontSize=ST.settings.fontSize+'px';
   if(ST.isPro)hidePro();
 }
 function hidePro(){
@@ -2050,6 +2217,7 @@ function hidePro(){
 // NAVIGATION
 // ════════════════════════════════════════════════════════
 function goTab(id){
+  if(navigator.vibrate)navigator.vibrate(8); // subtle haptic
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.bni').forEach(b=>b.classList.remove('on'));
   document.getElementById(id).classList.add('active');
@@ -2088,6 +2256,8 @@ function renderHome(){
   renderTodayCard();
   // Level + hours
   renderLevelHome();
+  // Mood tracker
+  renderMoodTracker();
   // Daily challenge
   renderDailyChallenge();
   // Recent
@@ -2284,7 +2454,7 @@ function addEx(name){
       <button class="btn bg bxs" onclick="finishAllSets('${id}')">✓ All</button>
       <button class="btn bg bxs" onclick="toggleRestAdj('${id}')">⏱ ±</button>
     </div>
-    <div id="${id}_rest_adj" style="display:none;margin-top:6px;display:none">
+    <div id="${id}_rest_adj" style="display:none;margin-top:6px">
       <div class="row" style="gap:6px">
         <button onclick="adjustRest(-15)" class="btn bg bxs">-15s</button>
         <button onclick="adjustRest(15)" class="btn bg bxs">+15s</button>
@@ -2312,12 +2482,23 @@ function doneSet(id,i,btn){
   if(done){
     updateVolumeDisplay();
     updateWorkoutProgress();
+    // Check PR on this set
+    const s=ST.exData[id].sets[i];
+    if(s.kg>0&&s.reps>0){
+      checkSetPR(id,i);
+      // If confirmed PR, show badge and vibrate
+      if(checkPR(ST.exData[id].name,s.kg,s.reps)){
+        const badge=document.getElementById(id+'_pr'+i);
+        if(badge)badge.style.display='block';
+        if(navigator.vibrate)navigator.vibrate([100,50,100]);
+      }
+    }
     const doneSets=ST.exData[id].sets.filter(s=>s.done&&s.reps>0);
     const nextSet=ST.exData[id].sets.find((s,idx)=>idx>i&&!s.done);
     const nextMsg=nextSet
       ?`<strong>Set ${i+2}:</strong> ${nextSet.kg||'?'}kg × ${nextSet.reps||'?'} reps · RPE ${nextSet.rpe||7}`
       :'<strong>Xong bài này!</strong> Chuyển bài tiếp theo 🎉';
-    startRest(120, nextMsg, ST.exData[id].name);
+    if(ST.settings?.autoRest!==false)startRest(ST.settings?.defaultRest||120, nextMsg, ST.exData[id].name);
     // Track RPE
     const rpeVal=ST.exData[id].sets[i]?.rpe;
     if(rpeVal)trackRPE(rpeVal);
@@ -2457,10 +2638,11 @@ function showWS(w){
   document.getElementById('ws-headline').textContent=phrases[Math.floor(Math.random()*phrases.length)];
   document.getElementById('ws-sub').textContent=w.date;
   // Stats grid
+  const calBurned=estimateCalBurned(w.dur||0);
   document.getElementById('ws-grid').innerHTML=`
     <div class="ws-box"><div class="ws-val">${w.dur}</div><div class="ws-lbl">Phút</div></div>
     <div class="ws-box"><div class="ws-val">${w.vol>999?(w.vol/1000).toFixed(1)+'k':w.vol}</div><div class="ws-lbl">kg Volume</div></div>
-    <div class="ws-box"><div class="ws-val">${w.exCount}</div><div class="ws-lbl">Bài tập</div></div>
+    <div class="ws-box"><div class="ws-val">${calBurned}</div><div class="ws-lbl">kcal đốt</div></div>
     <div class="ws-box"><div class="ws-val">${w.totalSets}</div><div class="ws-lbl">Sets done</div></div>`;
   // PRs
   const prs=[];
@@ -2734,6 +2916,9 @@ function renderNutMeals(){
     {id:'s',ico:'🍎',name:'Bữa phụ'},
   ];
   const el=document.getElementById('nut-meals');
+  // Show today's date
+  const nutDateEl=document.getElementById('nut-date');
+  if(nutDateEl)nutDateEl.textContent=new Date().toLocaleDateString('vi-VN',{weekday:'short',day:'numeric',month:'numeric'});
   let totalCal=0,totalP=0,totalC=0,totalF=0;
   el.innerHTML=MEAL_DEFS.filter(m=>currentMealFilter==='all'||m.id===currentMealFilter).map(m=>{
     const foods=ST.nut[m.id]||[];
@@ -2814,6 +2999,9 @@ function renderProgress(){
   renderMuscleVolChart();
   updateWaterDisplay();
   renderBodyWeightChart();
+  renderHeatmap();
+  renderPRTimeline();
+  renderBMIIndicator();
 }
 function renderCharts(){
   const bench=[60,62.5,65,67.5,70,72.5,75,77.5];
@@ -3119,7 +3307,7 @@ function tickRest(){
     skipRest();
     toast('✅ Hết giờ nghỉ!');
     // Vibrate
-    if(navigator.vibrate)navigator.vibrate([200,100,200]);
+    if(navigator.vibrate&&ST.settings?.haptic!==false)navigator.vibrate([200,100,200]);
     return;
   }
   const m=Math.floor(restState.remaining/60);
@@ -3655,7 +3843,8 @@ function resetWater(){
 }
 function updateWaterDisplay(){
   const w=ST.water||0;
-  const goal=ST.profile.waterGoal||2000;
+  const defaultGoal=ST.profile.sex==='female'?2000:2500;
+  const goal=ST.profile.waterGoal||defaultGoal;
   const el=document.getElementById('water-display');
   const bar=document.getElementById('water-bar');
   const goalEl=document.getElementById('water-goal');
@@ -3702,6 +3891,7 @@ function checkPR(exName,kg,reps){
 // REST TIMER SOUND (beep)
 // ════════════════════════════════════════════════════════
 function playBeep(freq=800,dur=200,vol=0.3){
+  if(ST.settings?.sound===false)return;
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
     const osc=ctx.createOscillator();
@@ -4320,6 +4510,319 @@ function shareReferral(){
   const text=`💪 Mình đang dùng FitAI — AI Workout Coach tiếng Việt!\n\nDùng code "${code}" để được 1 tháng Pro miễn phí!\nfitai.app\n\n${QUOTES[Math.floor(Math.random()*QUOTES.length)]}`;
   if(navigator.share)navigator.share({text});
   else{navigator.clipboard?.writeText(text);toast(`✅ Copy link với code ${code}!`);}
+}
+
+// ════════════════════════════════════════════════════════
+// SETTINGS SYSTEM
+// ════════════════════════════════════════════════════════
+if(!ST.settings)ST.settings={sound:true,haptic:true,autoRest:true,defaultRest:120,defaultSets:3,fontSize:15};
+function openSettings(){
+  syncSettingsUI();
+  document.getElementById('settings-sheet').style.display='flex';
+}
+function closeSettings(){document.getElementById('settings-sheet').style.display='none';}
+function syncSettingsUI(){
+  const s=ST.settings;
+  ['sound','haptic'].forEach(k=>{
+    const el=document.getElementById('tog-'+k);
+    if(!el)return;
+    const dot=el.querySelector('div');
+    if(s[k]){el.style.background='var(--lime)';if(dot)dot.style.right='2px';}
+    else{el.style.background='var(--bg4)';if(dot)dot.style.right='22px';}
+  });
+  const ar=document.getElementById('tog-autorest');
+  if(ar){
+    const dot=ar.querySelector('div');
+    if(s.autoRest){ar.style.background='var(--lime)';if(dot)dot.style.right='2px';}
+    else{ar.style.background='var(--bg4)';if(dot)dot.style.right='22px';}
+  }
+  const wg=document.getElementById('water-goal-sel');
+  if(wg)wg.value=ST.profile.waterGoal||2000;
+  const sd=document.getElementById('set-default-sel');
+  if(sd)sd.value=s.defaultSets||3;
+  // Rest default
+  [60,90,120,180].forEach(t=>{
+    const b=document.getElementById('rest-def-'+t);
+    if(b)b.classList.toggle('on',t===(s.defaultRest||120));
+  });
+}
+function toggleSetting(key){
+  if(!ST.settings)ST.settings={};
+  ST.settings[key]=!ST.settings[key];
+  syncSettingsUI();save();
+}
+function setDefaultRest(sec){
+  if(!ST.settings)ST.settings={};
+  ST.settings.defaultRest=sec;
+  [60,90,120,180].forEach(t=>{
+    const b=document.getElementById('rest-def-'+t);
+    if(b)b.classList.toggle('on',t===sec);
+  });
+  save();toast(`Rest mặc định: ${sec}s`);
+}
+function setFontSize(px){
+  document.documentElement.style.fontSize=px+'px';
+  if(!ST.settings)ST.settings={};
+  ST.settings.fontSize=px;save();
+}
+
+// ════════════════════════════════════════════════════════
+// WORKOUT PAUSE / RESUME
+// ════════════════════════════════════════════════════════
+let workoutPaused=false;
+function togglePauseWorkout(){
+  workoutPaused=!workoutPaused;
+  const btn=document.getElementById('aw-pause-btn');
+  if(workoutPaused){
+    clearInterval(ST.timerInt);
+    if(btn)btn.textContent='▶';
+    toast('⏸ Đã tạm dừng — nhấn ▶ để tiếp tục');
+  } else {
+    startTimer();
+    if(btn)btn.textContent='⏸';
+    toast('▶ Tiếp tục buổi tập!');
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// QUICK ADD EXERCISE BY MUSCLE
+// ════════════════════════════════════════════════════════
+let quickMuscleFilter='all';
+function quickAddByMuscle(muscle,btn){
+  quickMuscleFilter=muscle;
+  document.querySelectorAll('#quick-muscle-row .pill').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  // Update search results if any query
+  const q=document.getElementById('workout-ex-search')?.value||'';
+  searchWorkoutEx(q);
+}
+
+// ════════════════════════════════════════════════════════
+// EXERCISE SEARCH IN WORKOUT
+// ════════════════════════════════════════════════════════
+let exSearchTimer=null;
+function searchWorkoutEx(q){
+  const results=document.getElementById('workout-ex-results');if(!results)return;
+  clearTimeout(exSearchTimer);
+  if(!q&&quickMuscleFilter==='all'){results.style.display='none';return;}
+  exSearchTimer=setTimeout(()=>{
+    const filtered=EXERCISES.filter(e=>{
+      const mOk=quickMuscleFilter==='all'||e.muscle===quickMuscleFilter;
+      const qOk=!q||e.name.toLowerCase().includes(q.toLowerCase())||e.nameVi.toLowerCase().includes(q.toLowerCase());
+      return mOk&&qOk;
+    }).slice(0,8);
+    if(!filtered.length){results.style.display='none';return;}
+    results.style.display='block';
+    results.innerHTML=filtered.map(e=>`
+      <div onclick="addExFromSearch('${e.name}')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--brd);cursor:pointer;transition:background .15s" 
+        onmouseenter="this.style.background='var(--bg4)'" onmouseleave="this.style.background=''">
+        <span style="font-size:20px">${e.emoji}</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500">${e.nameVi}</div>
+          <div class="xxs muted">${e.muscle} · ${e.equip}</div>
+        </div>
+        <span style="color:var(--lime);font-size:18px">+</span>
+      </div>`).join('');
+  },250);
+}
+function addExFromSearch(name){
+  addEx(name);
+  const inp=document.getElementById('workout-ex-search');
+  if(inp)inp.value='';
+  const results=document.getElementById('workout-ex-results');
+  if(results)results.style.display='none';
+  toast(`✅ Đã thêm ${name}`);
+}
+
+// ════════════════════════════════════════════════════════
+// CARDIO LOGGING
+// ════════════════════════════════════════════════════════
+function addCardioEx(type='Chạy bộ'){
+  ST.exCtr++;
+  const id='e'+ST.exCtr;
+  ST.exData[id]={name:type,note:'',type:'cardio',sets:[{duration:0,distance:0,done:false}]};
+  const cont=document.getElementById('aw-exercises');
+  const wrap=document.createElement('div');
+  wrap.className='ex-block';wrap.id=id+'_b';
+  wrap.innerHTML=`
+    <div class="ex-block-header">
+      <div class="ex-block-thumb">${type==='Chạy bộ'?'🏃':'type'==='Đạp xe'?'🚴':'🏊'}</div>
+      <div style="flex:1"><div class="ex-block-name">${type}</div><div class="xxs muted">Cardio</div></div>
+      <button class="btn bg bxs" onclick="removeEx('${id}')">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+      <div class="fg" style="margin-bottom:0">
+        <label class="lbl">Thời gian (phút)</label>
+        <input class="inp" type="number" min="0" placeholder="30" id="${id}_dur" oninput="ST.exData['${id}'].sets[0].duration=+this.value">
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <label class="lbl">Khoảng cách (km)</label>
+        <input class="inp" type="number" min="0" step="0.1" placeholder="5.0" id="${id}_dist" oninput="ST.exData['${id}'].sets[0].distance=+this.value">
+      </div>
+    </div>
+    <button class="sdone" style="width:100%;margin-top:8px;border-radius:8px" id="${id}_s0" onclick="doneCardio('${id}',this)">✓ Hoàn thành</button>
+    <div class="ai-tip" id="${id}_tip"></div>`;
+  cont.appendChild(wrap);
+}
+function doneCardio(id,btn){
+  const s=ST.exData[id]?.sets[0];if(!s)return;
+  s.done=!s.done;
+  btn.classList.toggle('on',s.done);
+  if(s.done){
+    updateWorkoutProgress();
+    if(ST.settings?.autoRest!==false)startRest(60,'Cardio xong! Nghỉ ngơi.');
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// BODYWEIGHT EXERCISE TOGGLE (no kg needed)
+// ════════════════════════════════════════════════════════
+const BODYWEIGHT_EX=['Push Up','Pull-up','Dips','Plank','Glute Bridge','Dead Bug','Russian Twist','Ab Wheel','Box Jump','Battle Rope','Donkey Kicks','Walking Lunge','Sissy Squat'];
+function isBodyweightEx(name){return BODYWEIGHT_EX.includes(name)||EXERCISES.find(e=>e.name===name)?.equip==='bodyweight';}
+
+// ════════════════════════════════════════════════════════
+// PR HISTORY TIMELINE
+// ════════════════════════════════════════════════════════
+function renderPRTimeline(){
+  const el=document.getElementById('pr-timeline');if(!el)return;
+  if(!ST.prs||!Object.keys(ST.prs).length){
+    el.innerHTML='<div class="xs muted">Chưa có PR nào — bắt đầu tập để xác lập kỷ lục!</div>';return;
+  }
+  const entries=Object.entries(ST.prs).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  el.innerHTML=entries.map(([name,orm])=>`
+    <div class="rb" style="padding:9px 0;border-bottom:1px solid var(--brd)">
+      <div>
+        <div style="font-size:13px;font-weight:500">${name}</div>
+        <div class="xxs muted">Est. 1RM</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:var(--FM);font-size:15px;color:var(--lime)">${dispKg(orm)}</div>
+        <div style="font-size:9px;color:var(--txt3);font-family:var(--FM)">🏆 BEST</div>
+      </div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// MOOD TRACKER
+// ════════════════════════════════════════════════════════
+const MOODS=[
+  {val:5,emoji:'🔥',label:'Bùng cháy'},
+  {val:4,emoji:'😤',label:'Tốt'},
+  {val:3,emoji:'😐',label:'Bình thường'},
+  {val:2,emoji:'😪',label:'Mệt'},
+  {val:1,emoji:'💀',label:'Kiệt sức'},
+];
+function renderMoodTracker(){
+  const el=document.getElementById('mood-tracker');if(!el)return;
+  const today=new Date().toLocaleDateString('vi-VN');
+  const todayMood=ST.moodLog?.find(m=>m.date===today);
+  el.innerHTML=`
+    <div class="xs muted" style="margin-bottom:8px">Hôm nay cảm giác thế nào?</div>
+    <div style="display:flex;gap:6px">
+      ${MOODS.map(m=>`
+        <div onclick="logMood(${m.val})" style="flex:1;text-align:center;padding:8px 4px;border-radius:8px;cursor:pointer;transition:all .2s;border:1.5px solid ${todayMood?.val===m.val?'var(--lime)':'var(--brd2)'};background:${todayMood?.val===m.val?'var(--lime-dim)':'transparent'}">
+          <div style="font-size:20px">${m.emoji}</div>
+          <div style="font-size:9px;color:var(--txt3);margin-top:2px">${m.label}</div>
+        </div>`).join('')}
+    </div>`;
+}
+function logMood(val){
+  if(!ST.moodLog)ST.moodLog=[];
+  const today=new Date().toLocaleDateString('vi-VN');
+  const idx=ST.moodLog.findIndex(m=>m.date===today);
+  if(idx>=0)ST.moodLog[idx].val=val;
+  else ST.moodLog.push({date:today,val});
+  save();renderMoodTracker();
+  const m=MOODS.find(x=>x.val===val);
+  toast(`${m.emoji} ${m.label} — đã ghi nhận!`);
+}
+
+// ════════════════════════════════════════════════════════
+// PROGRESSIVE OVERLOAD LOG (AI)
+// ════════════════════════════════════════════════════════
+async function genProgressiveOverloadLog(){
+  const el=document.getElementById('progressive-log');if(!el)return;
+  el.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
+  // Get last 4 workouts per major exercise
+  const exMap={};
+  ST.workouts.slice(0,8).forEach(w=>{
+    Object.entries(w.exDetails||{}).forEach(([name,data])=>{
+      if(!exMap[name])exMap[name]=[];
+      exMap[name].push({date:w.date,data});
+    });
+  });
+  const top=Object.entries(exMap).slice(0,4).map(([n,logs])=>`${n}: ${logs.slice(0,3).map(l=>l.data).join(' → ')}`).join('\n');
+  if(!top){el.textContent='Chưa đủ dữ liệu.';return;}
+  const prompt=`Phân tích progressive overload cho ${ST.profile.name} (${ST.profile.level}, mục tiêu ${ST.profile.goal}):\n${top}\nNhận xét tiến độ và gợi ý weight cho buổi tới. Tiếng Việt, ngắn gọn, số liệu cụ thể.`;
+  el.innerHTML=(await ai(prompt,500)).replace(/\n/g,'<br>');
+}
+
+// ════════════════════════════════════════════════════════
+// BMI VISUAL INDICATOR
+// ════════════════════════════════════════════════════════
+function renderBMIIndicator(){
+  const el=document.getElementById('bmi-indicator');if(!el)return;
+  const p=ST.profile;
+  if(!p.kg||!p.cm){el.innerHTML='<div class="xs muted">Nhập cân nặng và chiều cao để xem BMI</div>';return;}
+  const bmi=p.kg/((p.cm/100)**2);
+  const pct=Math.min(Math.max((bmi-15)/(35-15)*100,0),100);
+  const zones=[
+    {label:'Thiếu cân',color:'#4d9fff',max:18.5},
+    {label:'Bình thường',color:'#c8f135',max:25},
+    {label:'Thừa cân',color:'#ffb84d',max:30},
+    {label:'Béo phì',color:'#ff4545',max:40},
+  ];
+  const zone=zones.find(z=>bmi<z.max)||zones[zones.length-1];
+  el.innerHTML=`
+    <div class="rb" style="margin-bottom:6px">
+      <div>
+        <span style="font-family:var(--FD);font-size:28px;color:${zone.color};letter-spacing:.04em">${bmi.toFixed(1)}</span>
+        <span class="xs muted" style="margin-left:4px">BMI</span>
+      </div>
+      <span class="tag" style="background:${zone.color}22;color:${zone.color}">${zone.label}</span>
+    </div>
+    <div style="position:relative;height:8px;background:linear-gradient(to right,#4d9fff,#c8f135,#ffb84d,#ff4545);border-radius:4px;margin-bottom:4px">
+      <div style="position:absolute;top:-3px;left:${pct}%;transform:translateX(-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid ${zone.color};box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between" class="xxs muted">
+      <span>15</span><span>18.5</span><span>25</span><span>30</span><span>35+</span>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// WORKOUT HEATMAP CALENDAR
+// ════════════════════════════════════════════════════════
+function renderHeatmap(){
+  const el=document.getElementById('workout-heatmap');if(!el)return;
+  const now=new Date();
+  const days=[];
+  for(let i=83;i>=0;i--){
+    const d=new Date(now);d.setDate(now.getDate()-i);days.push(d);
+  }
+  const workoutMap={};
+  ST.workouts.forEach(w=>{workoutMap[w.date]=(workoutMap[w.date]||0)+1;});
+  // 12 weeks × 7 days grid
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:3px">
+      ${days.map(d=>{
+        const ds=d.toLocaleDateString('vi-VN');
+        const count=workoutMap[ds]||0;
+        const isToday=ds===now.toLocaleDateString('vi-VN');
+        const col=count>0?'var(--lime)':isToday?'rgba(200,241,53,.3)':'var(--bg4)';
+        const op=count>0?Math.min(0.4+count*0.3,1):1;
+        return`<div style="aspect-ratio:1;border-radius:2px;background:${col};opacity:${op};cursor:default" title="${ds}${count?': '+count+' buổi':''}"></div>`;
+      }).join('')}
+    </div>
+    <div class="rb" style="margin-top:6px">
+      <span class="xxs muted">12 tuần qua</span>
+      <div class="row" style="gap:4px">
+        <div style="width:10px;height:10px;border-radius:2px;background:var(--bg4)"></div>
+        <span class="xxs muted">0</span>
+        <div style="width:10px;height:10px;border-radius:2px;background:var(--lime);opacity:.5"></div>
+        <div style="width:10px;height:10px;border-radius:2px;background:var(--lime)"></div>
+        <span class="xxs muted">1+</span>
+      </div>
+    </div>`;
 }
 
 // ════════════════════════════════════════════════════════
