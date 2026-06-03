@@ -1831,6 +1831,95 @@ const PLANS=[
        {day:'Thứ 2',type:'REST',exs:[]},{day:'Thứ 4',type:'REST',exs:[]},{day:'Thứ 7',type:'REST',exs:[]},
      ]},
    ]},
+
+  // ── PLANS MỚI ──
+  {id:11,name:'Beginner Full Body 3×',short:'FB3',lvl:'beginner',goal:'general',days:3,eq:'full',female:false,color:'#001a0a',acc:'#3dd9b3',
+   desc:'Plan đơn giản nhất cho người mới bắt đầu. 3 ngày/tuần, mỗi buổi tập toàn thân. Tập trung học kỹ thuật, tăng dần volume. Hoàn thành sau 8 tuần sẽ sẵn sàng cho plan trung cấp.',
+   weeks:[
+     {name:'Week 1-4 (Học kỹ thuật)',days:[
+       {day:'Thứ 2',type:'Full Body A',exs:[{n:'Barbell Squat',s:'3×5 @60%',r:'Học form'},{n:'Bench Press',s:'3×5 @60%',r:'Học form'},{n:'Barbell Row',s:'3×5',r:'RPE 6'},{n:'Overhead Press',s:'2×8',r:'RPE 6'},{n:'Plank',s:'3×30s',r:''}]},
+       {day:'Thứ 4',type:'Full Body B',exs:[{n:'Barbell Deadlift',s:'1×5 @70%',r:'Học form'},{n:'Incline DB Press',s:'3×8',r:'RPE 6'},{n:'Lat Pulldown',s:'3×8',r:'RPE 6'},{n:'DB Curl',s:'2×10',r:'RPE 6'},{n:'Dead Bug',s:'3×8/side',r:''}]},
+       {day:'Thứ 6',type:'Full Body C',exs:[{n:'Barbell Squat',s:'3×8 @55%',r:'Pump set'},{n:'Cable Fly',s:'3×12',r:'RPE 6'},{n:'Cable Row',s:'3×10',r:'RPE 6'},{n:'Lateral Raise',s:'3×12',r:'RPE 6'},{n:'Glute Bridge',s:'3×15',r:''}]},
+       {day:'Các ngày',type:'REST',exs:[]},
+     ]},
+     {name:'Week 5-8 (Tăng tải)',days:[
+       {day:'Thứ 2',type:'Full Body A',exs:[{n:'Barbell Squat',s:'3×5 @70%',r:'RPE 7'},{n:'Bench Press',s:'3×5 @70%',r:'RPE 7'},{n:'Barbell Row',s:'3×5 @70%',r:'RPE 7'},{n:'Overhead Press',s:'3×8',r:'RPE 7'},{n:'Plank',s:'3×45s',r:''}]},
+       {day:'Thứ 4',type:'Full Body B',exs:[{n:'Barbell Deadlift',s:'1×5 @80%',r:'RPE 7'},{n:'Incline DB Press',s:'3×8',r:'RPE 7'},{n:'Lat Pulldown',s:'3×10',r:'RPE 7'},{n:'DB Curl',s:'3×12',r:'RPE 7'},{n:'Dead Bug',s:'3×10/side',r:''}]},
+       {day:'Thứ 6',type:'Full Body C',exs:[{n:'Barbell Squat',s:'4×8',r:'RPE 7'},{n:'Pec Deck Fly',s:'3×12',r:'RPE 7'},{n:'Seated Cable Row',s:'3×12',r:'RPE 7'},{n:'Lateral Raise',s:'4×15',r:'RPE 7'},{n:'Hip Thrust',s:'3×15',r:'RPE 7'}]},
+       {day:'Các ngày',type:'REST',exs:[]},
+     ]},
+   ]},
+
+  {id:12,name:'Aesthetic Physique 5×',short:'AES',lvl:'intermediate',goal:'muscle',days:5,eq:'full',female:false,color:'#0d1a00',acc:'#c8f135',
+   desc:'Plan thiết kế riêng cho mục tiêu aesthetic — tỷ lệ cơ thể đẹp, vai rộng, eo thon. Kết hợp compound movements với isolation exercises theo tỷ lệ tối ưu. Được dùng bởi nhiều physique competitor.',
+   weeks:[
+     {name:'Mỗi tuần',days:[
+       {day:'Thứ 2',type:'Chest + Tricep',exs:[{n:'Bench Press',s:'4×8-10',r:'RPE 8'},{n:'Incline DB Press',s:'3×10-12',r:'RPE 8'},{n:'Cable Fly',s:'3×12-15',r:'RPE 7'},{n:'Skull Crusher',s:'3×10-12',r:'RPE 8'},{n:'Rope Pushdown',s:'3×12-15',r:'RPE 7'}]},
+       {day:'Thứ 3',type:'Back + Bicep',exs:[{n:'Pull-up',s:'4×6-10',r:'BW hoặc +weight'},{n:'Barbell Row',s:'4×8-10',r:'RPE 8'},{n:'Lat Pulldown',s:'3×10-12',r:'RPE 8'},{n:'Cable Row',s:'3×12-15',r:'RPE 7'},{n:'EZ Bar Curl',s:'3×10-12',r:'RPE 8'},{n:'Hammer Curl',s:'3×12',r:'RPE 7'}]},
+       {day:'Thứ 4',type:'Shoulders Focus',exs:[{n:'Overhead Press',s:'4×8-10',r:'RPE 8'},{n:'Lateral Raise',s:'5×15-20',r:'RPE 7-8'},{n:'Reverse Fly',s:'4×15-20',r:'RPE 7'},{n:'Cable Face Pull',s:'4×15-20',r:'RPE 7'},{n:'Dumbbell Shrug',s:'4×15',r:'RPE 7'}]},
+       {day:'Thứ 5',type:'REST/Cardio',exs:[]},
+       {day:'Thứ 6',type:'Legs Focus',exs:[{n:'Barbell Squat',s:'4×8-10',r:'RPE 8'},{n:'Romanian DL',s:'4×10-12',r:'RPE 8'},{n:'Leg Press',s:'3×12-15',r:'RPE 7'},{n:'Leg Curl',s:'3×12-15',r:'RPE 7'},{n:'Calf Raise',s:'5×15-20',r:'RPE 8'}]},
+       {day:'Thứ 7',type:'Arms + Abs',exs:[{n:'Incline Curl',s:'3×10-12',r:'RPE 8'},{n:'Spider Curl',s:'3×12-15',r:'RPE 7'},{n:'Skull Crusher',s:'3×10-12',r:'RPE 8'},{n:'Overhead Cable Tricep',s:'3×12-15',r:'RPE 7'},{n:'Cable Crunch',s:'4×15',r:'RPE 8'},{n:'Hanging Leg Raise',s:'3×12',r:''}]},
+       {day:'CN',type:'REST',exs:[]},
+     ]},
+   ]},
+
+  {id:13,name:'Nữ — Glutes & Curves',short:'GLC',lvl:'beginner',goal:'muscle',days:4,eq:'full',female:true,color:'#1a0020',acc:'#ff6eb4',
+   desc:'Plan chuyên biệt cho nữ muốn phát triển vòng 3, đùi săn chắc và tạo đường cong cơ thể. Tập trung 60% volume vào lower body. Không lo bị "to" — chỉ săn và cong.',
+   weeks:[
+     {name:'Week 1-3',days:[
+       {day:'Thứ 2',type:'Lower A — Glutes Focus',exs:[{n:'Hip Thrust',s:'4×12-15',r:'RPE 7-8'},{n:'Romanian DL',s:'3×12',r:'RPE 7'},{n:'Cable Kickback',s:'3×15/side',r:'RPE 7'},{n:'Hip Abduction',s:'3×20',r:'RPE 7'},{n:'Glute Bridge',s:'3×20',r:'BW hoặc DB'}]},
+       {day:'Thứ 3',type:'Upper A',exs:[{n:'DB Bench Press',s:'3×12',r:'RPE 7'},{n:'Lat Pulldown',s:'3×12',r:'RPE 7'},{n:'Lateral Raise',s:'4×15',r:'RPE 7'},{n:'DB Curl',s:'3×12',r:'RPE 7'},{n:'Plank',s:'3×40s',r:''}]},
+       {day:'Thứ 4',type:'REST',exs:[]},
+       {day:'Thứ 5',type:'Lower B — Quads + Ham',exs:[{n:'Barbell Squat',s:'4×10-12',r:'RPE 7'},{n:'Walking Lunge',s:'3×12/leg',r:'RPE 7'},{n:'Leg Curl',s:'4×12-15',r:'RPE 7'},{n:'Leg Extension',s:'3×15',r:'RPE 7'},{n:'Calf Raise',s:'4×20',r:'RPE 7'}]},
+       {day:'Thứ 6',type:'Upper B + Glutes',exs:[{n:'Cable Row',s:'3×12',r:'RPE 7'},{n:'Arnold Press',s:'3×12',r:'RPE 7'},{n:'Cable Fly',s:'3×15',r:'RPE 7'},{n:'Hip Thrust',s:'3×15',r:'RPE 8'},{n:'Cable Kickback',s:'3×15/side',r:'RPE 7'}]},
+       {day:'Thứ 7',type:'REST',exs:[]},{day:'CN',type:'REST',exs:[]},
+     ]},
+   ]},
+
+  {id:14,name:'HIIT + Strength Hybrid',short:'HIT',lvl:'intermediate',goal:'fat',days:4,eq:'full',female:false,color:'#1a0a00',acc:'#ff6f00',
+   desc:'Kết hợp HIIT cardio với strength training trong cùng 1 buổi. Đốt mỡ tối đa, duy trì cơ. Rest ngắn (45-60s). Tăng EPOC (afterburn effect) lên đến 24 giờ sau buổi tập.',
+   weeks:[
+     {name:'Mỗi tuần',days:[
+       {day:'Thứ 2',type:'Upper HIIT',exs:[{n:'Bench Press',s:'4×8 @70%',r:'60s'},{n:'Barbell Row',s:'4×8',r:'60s'},{n:'Overhead Press',s:'3×10',r:'45s'},{n:'Pull-up',s:'3×max',r:'60s'},{n:'Battle Rope',s:'4×30s',r:'30s'}]},
+       {day:'Thứ 3',type:'Lower HIIT',exs:[{n:'Barbell Squat',s:'4×8',r:'60s'},{n:'Romanian DL',s:'4×10',r:'60s'},{n:'Box Jump',s:'4×8',r:'45s'},{n:'Hip Thrust',s:'3×12',r:'45s'},{n:'Walking Lunge',s:'3×10/leg',r:'45s'}]},
+       {day:'Thứ 4',type:'REST',exs:[]},
+       {day:'Thứ 5',type:'Full Body Circuit',exs:[{n:'Bench Press',s:'3×10',r:'45s'},{n:'Barbell Squat',s:'3×10',r:'45s'},{n:'Barbell Row',s:'3×10',r:'45s'},{n:'Box Jump',s:'3×8',r:'45s'},{n:'Battle Rope',s:'3×30s',r:'30s'}]},
+       {day:'Thứ 6',type:'Metabolic Finisher',exs:[{n:'Hip Thrust',s:'4×15',r:'30s'},{n:'Push Up',s:'4×15-20',r:'30s'},{n:'Walking Lunge',s:'4×12/leg',r:'30s'},{n:'Pull-up',s:'3×max',r:'45s'},{n:'Plank',s:'3×45s',r:''}]},
+       {day:'Thứ 7',type:'REST',exs:[]},{day:'CN',type:'REST',exs:[]},
+     ]},
+   ]},
+
+  {id:15,name:'Calisthenics Progression',short:'CAL',lvl:'beginner',goal:'general',days:3,eq:'home',female:false,color:'#001020',acc:'#4d9fff',
+   desc:'Tập luyện hoàn toàn bằng trọng lượng cơ thể. Không cần thiết bị. Lộ trình từ beginner đến advanced: Push-up → Pike Push-up → Handstand Push-up; Squat → Pistol Squat; Pull-up → Muscle-up.',
+   weeks:[
+     {name:'Phase 1: Foundation',days:[
+       {day:'Thứ 2',type:'Push Day',exs:[{n:'Push Up',s:'4×max',r:'90s'},{n:'Pike Push-up',s:'3×10',r:'90s'},{n:'Dips',s:'3×max',r:'90s'},{n:'Plank',s:'3×45s',r:'60s'}]},
+       {day:'Thứ 4',type:'Pull + Legs',exs:[{n:'Pull-up',s:'4×max',r:'90s'},{n:'Barbell Squat',s:'4×15',r:'BW Squat'},{n:'Glute Bridge',s:'3×20',r:'60s'},{n:'Dead Bug',s:'3×10/side',r:'60s'}]},
+       {day:'Thứ 6',type:'Full Body',exs:[{n:'Push Up',s:'3×max',r:'60s'},{n:'Pull-up',s:'3×max',r:'60s'},{n:'Walking Lunge',s:'3×12/leg',r:'60s'},{n:'Hanging Leg Raise',s:'3×10',r:'60s'},{n:'Plank',s:'3×60s',r:''}]},
+       {day:'Các ngày',type:'REST',exs:[]},
+     ]},
+     {name:'Phase 2: Progression',days:[
+       {day:'Thứ 2',type:'Push Progression',exs:[{n:'Dips',s:'4×8-12',r:'90s'},{n:'Push Up',s:'4×max (wide, narrow, decline)',r:'75s'},{n:'Pike Push-up',s:'4×12-15',r:'90s'},{n:'Plank',s:'4×60s',r:''}]},
+       {day:'Thứ 4',type:'Pull Progression',exs:[{n:'Pull-up',s:'5×max',r:'120s'},{n:'Hanging Leg Raise',s:'4×12-15',r:'75s'},{n:'Glute Bridge',s:'3×25',r:'60s'},{n:'Dead Bug',s:'3×15/side',r:''}]},
+       {day:'Thứ 6',type:'Strength Circuit',exs:[{n:'Dips',s:'3×10',r:'60s'},{n:'Pull-up',s:'3×max',r:'60s'},{n:'Sissy Squat',s:'3×10',r:'60s'},{n:'Pallof Press',s:'3×12/side',r:'60s'},{n:'Box Jump',s:'3×8',r:'60s'}]},
+       {day:'Các ngày',type:'REST',exs:[]},
+     ]},
+   ]},
+
+  {id:16,name:'Upper Lower 6 Day',short:'UL6',lvl:'advanced',goal:'muscle',days:6,eq:'full',female:false,color:'#100018',acc:'#9b59b6',
+   desc:'Frequency cao nhất: tập mỗi nhóm cơ 3 lần/tuần. Volume split ra để phục hồi tốt. Dành cho lifter advanced muốn maximize hypertrophy. Cần ngủ 8h+ và nutrition đầy đủ.',
+   weeks:[
+     {name:'Mỗi tuần',days:[
+       {day:'Thứ 2',type:'Upper Heavy',exs:[{n:'Bench Press',s:'4×4-6',r:'RPE 9'},{n:'Barbell Row',s:'4×4-6',r:'RPE 9'},{n:'Overhead Press',s:'3×6-8',r:'RPE 8'},{n:'Pull-up',s:'3×6-8',r:'RPE 8'},{n:'Skull Crusher',s:'3×8-10',r:'RPE 8'},{n:'EZ Bar Curl',s:'3×8-10',r:'RPE 8'}]},
+       {day:'Thứ 3',type:'Lower Heavy',exs:[{n:'Barbell Squat',s:'4×4-6',r:'RPE 9'},{n:'Romanian DL',s:'4×6-8',r:'RPE 8'},{n:'Leg Press',s:'3×8-10',r:'RPE 8'},{n:'Leg Curl',s:'3×10-12',r:'RPE 7'},{n:'Calf Raise',s:'4×15',r:'RPE 8'}]},
+       {day:'Thứ 4',type:'Upper Volume',exs:[{n:'Incline DB Press',s:'4×8-12',r:'RPE 8'},{n:'Cable Row',s:'4×10-12',r:'RPE 7'},{n:'Lateral Raise',s:'5×15-20',r:'RPE 7'},{n:'Cable Fly',s:'3×12-15',r:'RPE 7'},{n:'Rope Pushdown',s:'3×12-15',r:'RPE 7'},{n:'Hammer Curl',s:'3×12-15',r:'RPE 7'}]},
+       {day:'Thứ 5',type:'Lower Volume',exs:[{n:'Hack Squat',s:'4×10-12',r:'RPE 8'},{n:'Hip Thrust',s:'4×10-12',r:'RPE 8'},{n:'Leg Extension',s:'4×12-15',r:'RPE 7'},{n:'Seated Leg Curl',s:'4×12-15',r:'RPE 7'},{n:'Hip Abduction',s:'3×20',r:'RPE 7'}]},
+       {day:'Thứ 6',type:'Upper Pump',exs:[{n:'Pec Deck Fly',s:'3×12-15',r:'RPE 7'},{n:'Straight Arm Pulldown',s:'3×15',r:'RPE 7'},{n:'Cable Face Pull',s:'4×20',r:'RPE 7'},{n:'Incline Curl',s:'3×12-15',r:'RPE 7'},{n:'Overhead Cable Tricep',s:'3×12-15',r:'RPE 7'},{n:'Cable Crossover',s:'3×15',r:'RPE 7'}]},
+       {day:'Thứ 7',type:'Lower Pump + Core',exs:[{n:'Walking Lunge',s:'3×12/leg',r:'RPE 7'},{n:'Cable Kickback',s:'3×15/side',r:'RPE 7'},{n:'Calf Raise',s:'5×20',r:'RPE 8'},{n:'Cable Crunch',s:'4×15',r:'RPE 8'},{n:'Hanging Leg Raise',s:'3×15',r:'RPE 7'}]},
+       {day:'CN',type:'REST',exs:[]},
+     ]},
+   ]},
 ];
 
 const EXERCISES=[
@@ -2790,11 +2879,8 @@ function doneSet(id,i,btn){
     const rpeVal=+ST.exData[id].sets[i]?.rpe||0;
     if(rpeVal>=1&&rpeVal<=10)trackRPE(rpeVal);
     if(doneSets.length===2){
-      const prompt=`${ST.profile.level} ${ST.profile.kg}kg, ${ST.profile.goal}. Vừa tập ${ST.exData[id].name}: ${doneSets.map(s=>`${s.kg}kg×${s.reps}reps RPE${s.rpe||7}`).join(', ')}. Gợi ý set tiếp theo (1-2 câu tiếng Việt, số kg cụ thể).`;
-      ai(prompt,180).then(r=>{
-        const tip=document.getElementById(id+'_tip');
-        if(tip){tip.textContent=r;tip.classList.add('show');}
-      });
+      // Show local coaching tip after 2 sets done
+      setTimeout(()=>openAITip(id,ST.exData[id].name),300);
     }
   }
 }
@@ -2989,10 +3075,8 @@ function showWS(w){
   document.getElementById('ws-ex-list').innerHTML=Object.entries(w.exDetails).map(([n,d])=>`
     <div class="ws-ex-item"><span>${n}</span><span class="xs muted">${d}</span></div>`).join('');
   // AI analysis
-  const aiTxt=document.getElementById('ws-summary-txt');
-  aiTxt.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
-  ai(`${ST.profile.name} vừa tập: ${w.dur}ph, ${w.vol}kg volume, ${w.exCount} bài, ${w.totalSets} sets. Trình độ ${ST.profile.level}, mục tiêu ${ST.profile.goal}. Nhận xét ngắn (2 câu tiếng Việt) và 1 gợi ý cho buổi tiếp theo.`,200)
-    .then(r=>{aiTxt.textContent=r;});
+  // Local workout summary
+  showLocalWeeklyReview();
   // Achievements
   renderAchievements();
 }
@@ -3208,8 +3292,10 @@ function openExDetail(id){
   }
   // AI tip
   const aiEl=document.getElementById('ex-detail-ai');
-  aiEl.innerHTML='<span class="td"></span><span class="td"></span><span class="td"></span>';
-  ai(`Coaching tip ngắn gọn (2 câu tiếng Việt) về bài ${ex.nameVi}: lỗi phổ biến nhất và cách fix ngay lập tức.`,160).then(r=>{aiEl.textContent=r;});
+  if(aiEl&&ex.cues?.length){
+    aiEl.textContent='💡 '+ex.cues[0];
+    aiEl.classList.add('show');
+  }
 }
 function playYT(){
   const ex=ST.currentExDetail;if(!ex?.ytId)return;
@@ -3329,47 +3415,149 @@ function removeFood(meal,i){ST.nut[meal].splice(i,1);renderNutMeals();save();}
 function genMealPlan(){
   const targets=calcMacroTargets();
   const goal=ST.profile.goal;
-  // Local meal plan suggestions based on goal
-  const plans={
+  const sex=ST.profile.sex||'male';
+  const day=new Date().getDay(); // 0-6, rotate daily
+
+  // 7-day meal rotation per goal
+  const rotations={
     muscle:[
-      {time:'Sáng 7h',foods:['Bột yến mạch 50g','Trứng luộc 3 quả','Sữa tươi 200ml'],cal:420,p:28},
-      {time:'Bữa phụ 10h',foods:['Chuối 1 quả','Hạt điều 30g'],cal:274,p:6},
-      {time:'Trưa 12h',foods:['Cơm trắng 200g','Ức gà 200g','Rau xào'],cal:520,p:47},
-      {time:'Pre-workout 4h',foods:['Chuối 1 quả','Whey protein 1 scoop'],cal:209,p:25},
-      {time:'Tối 7h',foods:['Cơm trắng 150g','Cá hồi 150g','Rau luộc'],cal:500,p:35},
+      // Day 0 - CN
+      [{time:'Sáng',foods:['Bột yến mạch 50g','Trứng luộc 3 quả','Chuối 1 quả'],cal:468,p:30},
+       {time:'Bữa phụ',foods:['Sữa chua Hy Lạp 150g','Hạt điều 30g'],cal:315,p:20},
+       {time:'Trưa',foods:['Cơm trắng 200g','Ức gà 200g','Rau xào'],cal:520,p:47},
+       {time:'Pre-workout',foods:['Chuối 1 quả','Whey protein 1 scoop'],cal:209,p:25},
+       {time:'Tối',foods:['Cơm gạo lứt 200g','Cá hồi 150g','Rau luộc'],cal:500,p:37}],
+      // Day 1 - T2
+      [{time:'Sáng',foods:['Yến mạch + chuối + sữa','Trứng chiên 2 quả'],cal:565,p:27},
+       {time:'Bữa phụ',foods:['Whey protein 1 scoop','Táo 1 quả'],cal:192,p:25},
+       {time:'Trưa',foods:['Cơm trắng 200g','Thịt bò nạc 150g','Rau xào'],cal:535,p:44},
+       {time:'Pre-workout',foods:['Bánh gạo lứt 3 cái','Bơ đậu phộng 2 muỗng'],cal:295,p:11},
+       {time:'Tối',foods:['Bún bò Nam Bộ'],cal:420,p:26}],
+      // Day 2 - T3
+      [{time:'Sáng',foods:['Bánh mì nguyên cám 2 lát','Trứng luộc 2 quả','Bơ đậu phộng 2 muỗng'],cal:514,p:28},
+       {time:'Bữa phụ',foods:['Sữa chua Hy Lạp 150g','Granola 50g'],cal:350,p:20},
+       {time:'Trưa',foods:['Cơm trắng 200g','Tôm sú 200g','Rau luộc'],cal:526,p:47},
+       {time:'Pre-workout',foods:['Chuối 1 quả','Sữa tươi không đường 200ml'],cal:209,p:8},
+       {time:'Tối',foods:['Cơm trắng 150g','Cá basa 150g','Rau xào'],cal:430,p:31}],
+      // Day 3 - T4
+      [{time:'Sáng',foods:['Phở gà 1 tô'],cal:380,p:28},
+       {time:'Bữa phụ',foods:['Protein bar 1 thanh'],cal:200,p:20},
+       {time:'Trưa',foods:['Cơm tấm sườn trứng'],cal:580,p:26},
+       {time:'Pre-workout',foods:['Whey protein 1 scoop','Khoai lang 100g'],cal:206,p:25},
+       {time:'Tối',foods:['Cơm gạo lứt 200g','Ức gà 250g','Rau xào'],cal:507,p:57}],
+      // Day 4 - T5
+      [{time:'Sáng',foods:['Bột yến mạch 50g','Trứng luộc 3 quả','Sữa chua Hy Lạp 150g'],cal:468,p:38},
+       {time:'Bữa phụ',foods:['Hạt óc chó 30g','Chuối 1 quả'],cal:285,p:6},
+       {time:'Trưa',foods:['Xôi gà 1 phần'],cal:480,p:24},
+       {time:'Pre-workout',foods:['Whey protein 1 scoop','Táo 1 quả'],cal:192,p:25},
+       {time:'Tối',foods:['Phở bò 1 tô'],cal:420,p:25}],
+      // Day 5 - T6
+      [{time:'Sáng',foods:['Bún bò Nam Bộ'],cal:420,p:26},
+       {time:'Bữa phụ',foods:['Phô mai que 1 cái','Hạt điều 30g'],cal:265,p:11},
+       {time:'Trưa',foods:['Cơm trắng 200g','Thịt heo nạc 100g','Đậu phụ chiên 100g'],cal:498,p:35},
+       {time:'Pre-workout',foods:['Chuối 1 quả','Whey protein 1 scoop'],cal:209,p:25},
+       {time:'Tối',foods:['Cơm gà Hội An'],cal:540,p:30}],
+      // Day 6 - T7
+      [{time:'Sáng',foods:['Bánh mì chả lụa','Trứng luộc 2 quả'],cal:486,p:27},
+       {time:'Bữa phụ',foods:['Sữa tươi không đường 200ml','Granola 50g'],cal:340,p:13},
+       {time:'Trưa',foods:['Gỏi cuốn 2 cuốn','Bún thịt nướng'],cal:670,p:40},
+       {time:'Pre-workout',foods:['Bơ đậu phộng 2 muỗng','Bánh gạo 2 cái'],cal:260,p:9},
+       {time:'Tối',foods:['Cơm trắng 200g','Cá thu 150g','Rau luộc'],cal:482,p:37}],
     ],
     fat:[
-      {time:'Sáng 7h',foods:['Trứng chiên 2 quả','Rau xào','Phô mai 30g'],cal:355,p:21},
-      {time:'Trưa 12h',foods:['Ức gà 200g','Salad rau','Bơ 100g'],cal:540,p:43},
-      {time:'Bữa phụ 4h',foods:['Sữa chua Hy Lạp 150g'],cal:130,p:15},
-      {time:'Tối 7h',foods:['Cá ngừ đóng hộp 100g','Rau luộc','Khoai lang 100g'],cal:292,p:28},
+      [{time:'Sáng',foods:['Trứng chiên 2 quả','Rau xào','Bơ 100g'],cal:355,p:21},
+       {time:'Trưa',foods:['Ức gà 200g','Salad rau trộn','Bơ 100g'],cal:540,p:43},
+       {time:'Bữa phụ',foods:['Sữa chua Hy Lạp 150g'],cal:130,p:15},
+       {time:'Tối',foods:['Cá ngừ đóng hộp 100g','Rau luộc','Khoai lang 100g'],cal:292,p:28}],
+      [{time:'Sáng',foods:['Trứng luộc 3 quả','Rau xào','Phô mai 30g'],cal:454,p:28},
+       {time:'Trưa',foods:['Cá basa 150g','Rau luộc','Khoai lang 100g'],cal:377,p:26},
+       {time:'Bữa phụ',foods:['Protein bar 1 thanh'],cal:200,p:20},
+       {time:'Tối',foods:['Tôm luộc 100g','Salad rau trộn','Bơ 100g'],cal:305,p:20}],
+      [{time:'Sáng',foods:['Bột yến mạch 50g','Trứng luộc 2 quả'],cal:346,p:19},
+       {time:'Trưa',foods:['Ức gà 250g','Salad rau trộn'],cal:335,p:54},
+       {time:'Bữa phụ',foods:['Sữa chua Hy Lạp 150g','Táo 1 quả'],cal:202,p:15},
+       {time:'Tối',foods:['Cá thu 150g','Rau luộc','Cà chua'],cal:282,p:27}],
+      [{time:'Sáng',foods:['Bún chả 1 suất (nhỏ)','Rau sống'],cal:460,p:26},
+       {time:'Trưa',foods:['Thịt bò nạc 150g','Rau xào dầu ít','Khoai lang 100g'],cal:411,p:41},
+       {time:'Bữa phụ',foods:['Whey protein 1 scoop','Nước ép cà chua 200ml'],cal:160,p:25},
+       {time:'Tối',foods:['Cá hồi 150g','Rau luộc'],cal:280,p:30}],
+      [{time:'Sáng',foods:['Trứng luộc 2 quả','Bơ đậu phộng 2 muỗng','Bánh mì nguyên cám 1 lát'],cal:447,p:22},
+       {time:'Trưa',foods:['Gỏi cuốn 2 cuốn (ít bún)','Ức gà 150g'],cal:345,p:43},
+       {time:'Bữa phụ',foods:['Sữa chua Hy Lạp 150g'],cal:130,p:15},
+       {time:'Tối',foods:['Cá basa 150g','Khoai lang 100g','Rau xào'],cal:231,p:24}],
+      [{time:'Sáng',foods:['Bột yến mạch 50g','Sữa đậu nành không đường 200ml','Chuối 1 quả'],cal:359,p:15},
+       {time:'Trưa',foods:['Cơm gạo lứt 100g','Tôm sú 200g','Rau luộc'],cal:278,p:37},
+       {time:'Bữa phụ',foods:['Protein bar 1 thanh'],cal:200,p:20},
+       {time:'Tối',foods:['Thịt heo nạc 100g','Đậu phụ 100g','Rau xào'],cal:298,p:30}],
+      [{time:'Sáng',foods:['Trứng chiên 2 quả','Phô mai 30g','Rau xào'],cal:295,p:19},
+       {time:'Trưa',foods:['Cá hồi 150g','Salad rau trộn','Bơ 100g'],cal:440,p:32},
+       {time:'Bữa phụ',foods:['Sữa chua Hy Lạp 150g','Hạt chia 15g'],cal:203,p:17},
+       {time:'Tối',foods:['Ức gà 200g','Rau luộc','Khoai lang 100g'],cal:306,p:43}],
     ],
     general:[
-      {time:'Sáng 7h',foods:['Phở gà 1 tô'],cal:380,p:28},
-      {time:'Trưa 12h',foods:['Cơm sườn'],cal:480,p:22},
-      {time:'Bữa phụ 4h',foods:['Chuối 1 quả','Sữa chua 1 hũ'],cal:189,p:7},
-      {time:'Tối 7h',foods:['Cơm trắng 150g','Thịt heo nạc 100g','Rau xào'],cal:427,p:26},
+      [{time:'Sáng',foods:['Phở gà 1 tô'],cal:380,p:28},
+       {time:'Trưa',foods:['Cơm sườn'],cal:480,p:22},
+       {time:'Bữa phụ',foods:['Chuối 1 quả','Sữa chua 1 hũ'],cal:189,p:7},
+       {time:'Tối',foods:['Bún bò Huế 1 tô'],cal:420,p:24}],
+      [{time:'Sáng',foods:['Bánh mì trứng'],cal:320,p:14},
+       {time:'Trưa',foods:['Cơm tấm sườn trứng'],cal:580,p:26},
+       {time:'Bữa phụ',foods:['Táo 1 quả','Hạt điều 30g'],cal:257,p:6},
+       {time:'Tối',foods:['Phở bò 1 tô'],cal:420,p:25}],
+      [{time:'Sáng',foods:['Bún bò Huế 1 tô'],cal:420,p:24},
+       {time:'Trưa',foods:['Cơm gà xối mỡ'],cal:520,p:28},
+       {time:'Bữa phụ',foods:['Chuối 1 quả','Sữa tươi 200ml'],cal:209,p:8},
+       {time:'Tối',foods:['Cơm trắng 200g','Cá hồi 150g','Rau xào'],cal:540,p:35}],
+      [{time:'Sáng',foods:['Xôi gà 1 phần'],cal:480,p:24},
+       {time:'Trưa',foods:['Bún thịt nướng'],cal:490,p:28},
+       {time:'Bữa phụ',foods:['Hạt điều 30g','Nước dừa tươi 300ml'],cal:245,p:6},
+       {time:'Tối',foods:['Hủ tiếu Nam Vang'],cal:440,p:22}],
+      [{time:'Sáng',foods:['Phở bò 1 tô'],cal:420,p:25},
+       {time:'Trưa',foods:['Cơm chiên dương châu'],cal:450,p:14},
+       {time:'Bữa phụ',foods:['Bột yến mạch 50g','Chuối 1 quả'],cal:279,p:8},
+       {time:'Tối',foods:['Cơm sườn'],cal:480,p:22}],
+      [{time:'Sáng',foods:['Bánh mì thịt'],cal:350,p:16},
+       {time:'Trưa',foods:['Bún chả 1 suất'],cal:460,p:26},
+       {time:'Bữa phụ',foods:['Chuối 1 quả','Phô mai que 1 cái'],cal:169,p:7},
+       {time:'Tối',foods:['Cơm trắng 200g','Thịt heo nạc 100g','Rau xào'],cal:422,p:27}],
+      [{time:'Sáng',foods:['Cháo gà 1 tô'],cal:280,p:18},
+       {time:'Trưa',foods:['Mì xào giòn'],cal:520,p:18},
+       {time:'Bữa phụ',foods:['Sinh tố bơ 300ml'],cal:320,p:4},
+       {time:'Tối',foods:['Cơm gạo lứt 200g','Ức gà 150g','Rau luộc'],cal:377,p:38}],
     ],
   };
-  const selected=plans[goal]||plans.general;
-  const totalCal=selected.reduce((t,m)=>t+m.cal,0);
-  const totalP=selected.reduce((t,m)=>t+m.p,0);
+
+  const goalRotation=rotations[goal]||rotations.general;
+  const todayPlan=goalRotation[day%goalRotation.length];
+  const totalCal=todayPlan.reduce((t,m)=>t+m.cal,0);
+  const totalP=todayPlan.reduce((t,m)=>t+m.p,0);
+
   const wrap=document.getElementById('nut-ai-wrap');
   const el=document.getElementById('nut-ai-txt');
   if(wrap)wrap.style.display='block';
   if(el)el.innerHTML=`
-    <div style="margin-bottom:8px;font-size:11px;color:var(--lime);font-family:var(--FM)">
-      MỤC TIÊU: ${targets.cal}kcal · ${targets.protein}g protein
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="font-size:11px;color:var(--lime);font-family:var(--FM)">
+        MỤC TIÊU: ${targets.cal}kcal · ${targets.protein}g P
+      </div>
+      <div style="font-size:10px;color:var(--txt3)">
+        ${['CN','T2','T3','T4','T5','T6','T7'][day]}
+      </div>
     </div>
-    ${selected.map(m=>`
-      <div style="padding:7px 0;border-bottom:1px solid rgba(200,241,53,.15)">
-        <div style="font-size:11px;color:var(--lime);font-family:var(--FM);margin-bottom:3px">${m.time}</div>
-        <div style="font-size:12.5px;color:rgba(200,241,53,.85)">${m.foods.join(' · ')}</div>
-        <div style="font-size:10px;color:rgba(200,241,53,.5);margin-top:2px">${m.cal}kcal · ${m.p}g P</div>
+    ${todayPlan.map(m=>`
+      <div style="padding:8px 0;border-bottom:1px solid rgba(200,241,53,.12)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <div style="font-size:11px;color:var(--lime);font-family:var(--FM)">${m.time.toUpperCase()}</div>
+          <div style="font-size:10px;color:rgba(200,241,53,.5)">${m.cal}kcal · ${m.p}g P</div>
+        </div>
+        <div style="font-size:13px;color:rgba(200,241,53,.85)">${m.foods.join(' · ')}</div>
       </div>`).join('')}
-    <div style="margin-top:8px;font-size:12px;color:var(--lime)">
-      Tổng: ~${totalCal}kcal · ~${totalP}g protein
-    </div>`;
+    <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(200,241,53,.2);display:flex;justify-content:space-between">
+      <span style="font-size:12px;color:var(--lime)">Tổng hôm nay</span>
+      <span style="font-size:12px;color:var(--lime);font-family:var(--FM)">~${totalCal}kcal · ~${totalP}g P</span>
+    </div>
+    <button class="btn bg" style="margin-top:10px;height:36px;font-size:12px;width:100%" onclick="genMealPlan()">
+      🔄 Hôm khác / Xem ngày tiếp
+    </button>`;
 }
 function renderProgress(){
   try{
@@ -3422,14 +3610,17 @@ function drawChart(key,data,lbls){
   const W=320,H=80,pad=12;
   const min=Math.min(...data)-3,max=Math.max(...data)+3;
   const pts=data.map((v,i)=>({x:pad+(i/(data.length-1))*(W-2*pad),y:pad+(1-(v-min)/(max-min))*(H-2*pad)}));
-  const line=pts.map((p,i)=>i===0?`M${p.x},${p.y}`:`L${p.x},${p.y}`).join(' ');
-  const area=line+` L${pts[pts.length-1].x},${H} L${pts[0].x},${H} Z`;
+  const line=pts.map((p,i)=>(i===0?'M':'L')+p.x+','+p.y).join(' ');
+  const area=line+' L'+pts[pts.length-1].x+','+H+' L'+pts[0].x+','+H+' Z';
   document.getElementById(key+'-area').setAttribute('d',area);
   document.getElementById(key+'-line').setAttribute('d',line);
-  document.getElementById(key+'-dots').innerHTML=pts.map((p,i)=>`
-    <circle cx="${p.x}" cy="${p.y}" r="${i===pts.length-1?4:2.5}" fill="${i===pts.length-1?'#c8f135':'#1a2800'}" stroke="var(--lime)" stroke-width="1.5"/>
-    ${i===pts.length-1?`<text x="${p.x}" y="${p.y-7}" text-anchor="middle" font-size="8.5" fill="var(--lime)" font-family="JetBrains Mono,Courier New,monospace">${data[i]}kg</text>`:''}`).join('');
-  document.getElementById(key+'-lbls').innerHTML=lbls.map(l=>`<span>${l}</span>`).join('');
+  document.getElementById(key+'-dots').innerHTML=pts.map((p,i)=>{
+    const isLast=i===pts.length-1;
+    const r=isLast?4:2.5;
+    const txt=isLast?'<text x="'+p.x+'" y="'+(p.y-7)+'" text-anchor="middle" font-size="8.5" fill="var(--lime)" font-family="JetBrains Mono,monospace">'+data[i]+'kg</text>':'';
+    return '<circle cx="'+p.x+'" cy="'+p.y+'" r="'+r+'" fill="'+col+'" stroke="var(--lime)" stroke-width="1.5"/>'+txt;
+  }).join('');
+  document.getElementById(key+'-lbls').innerHTML=lbls.map(l=>'<span>'+l+'</span>').join('');
 }
 function renderMeas(){
   const last=ST.measurements[ST.measurements.length-1];
@@ -3467,11 +3658,10 @@ function renderAchievements(){
   const el=document.getElementById('ach-grid');if(!el)return;
   el.innerHTML=ACHIEVEMENTS.map(a=>{
     const on=a.fn(ST.stats);
-    return`<div class="ach-card ${on?'on':'off'}" ${on?`onclick="shareAchievement({ico:'${a.ico}',name:'${a.name}',desc:'${a.desc}'})" title="Nhấn để share"`:''}>
-      <div class="ach-ico">${a.ico}</div>
-      <div class="ach-name">${a.name}</div>
-      <div class="ach-desc">${on?a.desc+'<br><span style="font-size:9px;color:var(--lime)">Tap to share ↗</span>':'???'}</div>
-    </div>`;
+    const cls='ach-card '+(on?'on':'off');
+    const shareAttr='';
+    const desc=on?a.desc+'<br><span style="font-size:9px;color:var(--lime)">Tap to share ↗</span>':'???';
+    return'<div class="'+cls+'" '+shareAttr+'><div class="ach-ico">'+a.ico+'</div><div class="ach-name">'+a.name+'</div><div class="ach-desc">'+desc+'</div></div>';
   }).join('');
 }
 
@@ -3518,7 +3708,7 @@ function updateProfileDisplay(){
   }
   const nd=document.getElementById('p-name-disp');if(nd)nd.textContent=p.name||'Lifter';
   const ta=calcTrainingAge();
-  const md=document.getElementById('p-meta-disp');if(md)md.textContent=`${p.kg}kg · ${p.cm}cm · BMI ${bmi}${bmiCat} · ${ta.emoji}${ta.label}`;
+  const md=document.getElementById('p-meta-disp');if(md){md.textContent=''+p.kg+'kg · '+p.cm+'cm · BMI '+bmi+''+bmiCat+' · '+ta.emoji+''+ta.label+'';}
   if(ST.isPro){
     const pb=document.getElementById('p-pro-badge');if(pb)pb.style.display='block';
     const ub=document.getElementById('p-upgrade-btn');if(ub)ub.style.display='none';
@@ -3578,8 +3768,17 @@ let aiStatus='unknown'; // 'ok' | 'no-key' | 'error'
 let notifTimer=null;
 function notif(ico,title,msg,dur=3500){
   clearTimeout(notifTimer);
-  document.getElementById('notif').innerHTML=`<div class="notif-bar"><span class="notif-ico">${ico}</span><div><div class="notif-ttl">${title}</div><div class="notif-msg">${msg}</div></div><span class="notif-x" onclick="this.parentElement.parentElement.innerHTML=''">✕</span></div>`;
-  notifTimer=setTimeout(()=>{document.getElementById('notif').innerHTML='';},dur);
+  const nb=document.getElementById('notif');
+  if(!nb)return;
+  nb.innerHTML='';
+  const bar=document.createElement('div');
+  bar.className='notif-bar';
+  bar.innerHTML='<span class="notif-ico">'+ico+'</span><div><div class="notif-ttl">'+title+'</div><div class="notif-msg">'+msg+'</div></div>';
+  const x=document.createElement('span');
+  x.className='notif-x';x.textContent='✕';
+  x.onclick=function(){nb.innerHTML='';};
+  bar.appendChild(x);nb.appendChild(bar);
+  notifTimer=setTimeout(()=>{nb.innerHTML='';},dur);
 }
 function toast(msg){
   const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');
@@ -3601,37 +3800,40 @@ function lookupFood(){
   wrap.style.display='block';
   if(found.length>0){
     foodAIResult={name:found[0].name,serving:'1 khẩu phần',cal:found[0].cal,protein:found[0].p,carbs:found[0].c,fat:found[0].f};
-    txt.innerHTML=`<strong>${found[0].name}</strong><br>${found[0].cal} kcal · ${found[0].p}g P · ${found[0].c}g C · ${found[0].f}g F`;
+    txt.innerHTML='<strong>'+found[0].name+'</strong><br>'+found[0].cal+' kcal · '+found[0].p+'g P · '+found[0].c+'g C · '+found[0].f+'g F';
     document.getElementById('food-ai-add-btn').style.display='block';
   } else {
     // Manual entry mode
-    txt.innerHTML=`Không có trong database. <button class="btn bg bxs" onclick="manualAddFood('${name}')">Nhập tay</button>`;
+    txt.innerHTML='Không có trong database. <button class="btn bg bxs" id="manual-fb">Nhập tay</button>';
+    const fb=document.getElementById('manual-fb');if(fb)fb.onclick=function(){manualAddFood(document.getElementById('food-custom-name').value);};
     document.getElementById('food-ai-add-btn').style.display='none';
   }
 }
 function manualAddFood(name){
-  // Show manual form
-  const wrap=document.getElementById('food-ai-result');
-  wrap.innerHTML=`
-    <div style="font-size:10px;color:var(--lime);font-family:var(--FM);margin-bottom:8px">✏️ NHẬP THỦ CÔNG</div>
-    <div class="g2" style="gap:6px;margin-bottom:8px">
-      <div class="fg" style="margin-bottom:0"><label class="lbl">Calo</label><input class="inp" id="manual-cal" type="number" placeholder="250" style="padding:6px 8px;font-size:12px"></div>
-      <div class="fg" style="margin-bottom:0"><label class="lbl">Protein (g)</label><input class="inp" id="manual-p" type="number" placeholder="15" style="padding:6px 8px;font-size:12px"></div>
-      <div class="fg" style="margin-bottom:0"><label class="lbl">Carbs (g)</label><input class="inp" id="manual-c" type="number" placeholder="30" style="padding:6px 8px;font-size:12px"></div>
-      <div class="fg" style="margin-bottom:0"><label class="lbl">Fat (g)</label><input class="inp" id="manual-f" type="number" placeholder="8" style="padding:6px 8px;font-size:12px"></div>
-    </div>
-    <button class="btn bl" style="height:34px;font-size:12px" onclick="addManualFood('${name}')">+ Thêm vào</button>`;
+  const w=document.getElementById('food-ai-result');
+  if(!w)return;
+  const fields=[['Calo','manual-cal',250],['Protein (g)','manual-p',15],['Carbs (g)','manual-c',30],['Fat (g)','manual-f',8]];
+  let h='<div style="font-size:10px;color:var(--lime);font-family:var(--FM);margin-bottom:8px">NHAP THU CONG</div>';
+  h+='<div class="g2" style="gap:6px;margin-bottom:8px">';
+  fields.forEach(([lbl,id,ph])=>{
+    h+='<div class="fg" style="margin-bottom:0"><label class="lbl">'+lbl+'</label>';
+    h+='<input class="inp" id="'+id+'" type="number" inputmode="decimal" placeholder="'+ph+'" style="padding:6px 8px;font-size:12px"></div>';
+  });
+  h+='</div><button class="btn bl" style="height:34px;font-size:12px" id="manual-add-btn">+ Them vao</button>';
+  w.innerHTML=h;
+  document.getElementById('manual-add-btn').onclick=function(){
+    const cal=+document.getElementById('manual-cal').value||0;
+    const p=+document.getElementById('manual-p').value||0;
+    const c=+document.getElementById('manual-c').value||0;
+    const f=+document.getElementById('manual-f').value||0;
+    if(!cal)return toast('Nhap calo!');
+    if(!ST.addFoodMeal)return;
+    ST.nut[ST.addFoodMeal].push({name,cal,p,c,f});
+    cancelAddFood();save();renderNutMeals();
+    toast('Da them '+name+'!');
+  };
 }
-function addManualFood(name){
-  const cal=+document.getElementById('manual-cal')?.value||0;
-  const p=+document.getElementById('manual-p')?.value||0;
-  const c=+document.getElementById('manual-c')?.value||0;
-  const f=+document.getElementById('manual-f')?.value||0;
-  if(!ST.addFoodMeal)return;
-  ST.nut[ST.addFoodMeal].push({name,cal,p,c,f});
-  cancelAddFood();save();renderNutMeals();
-  toast(`✅ Đã thêm ${name}`);
-}
+// end manualAddFood
 function addFoodFromAI(){
   if(!foodAIResult||!ST.addFoodMeal)return;
   ST.nut[ST.addFoodMeal].push({
@@ -4591,7 +4793,7 @@ function renderBodyWeightChart(){
   const W=290,H=60,pad=8;
   const min=Math.min(...data)-1,max=Math.max(...data)+1;
   const pts=data.map((v,i)=>({x:pad+(i/(data.length-1))*(W-2*pad),y:pad+(1-(v-min)/(max-min))*(H-2*pad)}));
-  const line=pts.map((p,i)=>i===0?`M${p.x},${p.y}`:`L${p.x},${p.y}`).join(' ');
+  const line=pts.map((p,i)=>(i===0?'M':'L')+p.x+','+p.y).join(' ');
   const trend=data[data.length-1]-data[0];
   const col=trend<0?'var(--lime)':trend>0?'var(--red)':'var(--amber)';
   el.innerHTML=`
@@ -4600,7 +4802,7 @@ function renderBodyWeightChart(){
       <span class="tag" style="background:${trend<0?'#1a2800':trend>0?'#2a0a0a':'#2a1800'};color:${col}">${trend>=0?'+':''}${trend.toFixed(1)}kg</span>
     </div>
     <svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" style="overflow:visible">
-      <path d="${line} L${pts[pts.length-1].x},${H} L${pts[0].x},${H} Z" fill="${col}" opacity=".1"/>
+      <path d=""+(line+' L'+pts[pts.length-1].x+','+H+' L'+pts[0].x+','+H+' Z') fill="${col}" opacity=".1"/>
       <path d="${line}" fill="none" stroke="${col}" stroke-width="2" stroke-linecap="round"/>
       ${pts.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="${i===pts.length-1?4:2.5}" fill="${col}" stroke="var(--bg2)" stroke-width="1.5"/>`).join('')}
     </svg>
@@ -5528,11 +5730,13 @@ function showExHistory(exName){
   const vals=data.map(d=>d.orm);
   const min=Math.min(...vals)-5,max=Math.max(...vals)+5;
   const pts=vals.map((v,i)=>({x:pad+i/(data.length-1)*(W-2*pad),y:pad+(1-(v-min)/(max-min))*(H-2*pad)}));
-  const line=pts.map((p,i)=>i===0?`M${p.x},${p.y}`:`L${p.x},${p.y}`).join(' ');
+  const line=pts.map((p,i)=>(i===0?'M':'L')+p.x+','+p.y).join(' ');
   const trend=vals[vals.length-1]-vals[0];
   const col=trend>=0?'var(--lime)':'var(--red)';
   // Show in AI tip area of the last exercise block
   const modal=document.getElementById('meas-modal');
+  const area=line+' L'+pts[pts.length-1].x+','+H+' L'+pts[0].x+','+H+' Z';
+  const dots=pts.map((p,i)=>{const r=i===pts.length-1?5:3;return '<circle cx="'+p.x+'" cy="'+p.y+'" r="'+r+'" fill="'+col+'" stroke="var(--bg2)" stroke-width="1.5"/>'+(i===pts.length-1?'<text x="'+p.x+'" y="'+(p.y-8)+'" text-anchor="middle" font-size="9" fill="'+col+'" font-family="var(--FM)">'+vals[i]+'</text>':'');}).join('');
   modal.innerHTML=`
     <div class="meas-sheet">
       <div class="rb" style="margin-bottom:12px">
@@ -5544,10 +5748,9 @@ function showExHistory(exName){
         <span class="tag" style="background:${trend>=0?'#1a2800':'#2a0a0a'};color:${col}">${trend>=0?'+':''}${trend.toFixed(0)}kg</span>
       </div>
       <svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" style="overflow:visible">
-        <path d="${line} L${pts[pts.length-1].x},${H} L${pts[0].x},${H} Z" fill="${col}" opacity=".12"/>
+        <path d="${area}" fill="${col}" opacity=".12"/>
         <path d="${line}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linecap="round"/>
-        ${pts.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="${i===pts.length-1?5:3}" fill="${col}" stroke="var(--bg2)" stroke-width="1.5"/>
-          <text x="${p.x}" y="${p.y-8}" text-anchor="middle" font-size="9" fill="${col}" font-family="var(--FM)">${vals[i]}</text>`).join('')}
+        ${dots}
       </svg>
       <div style="display:flex;justify-content:space-between;margin-top:4px">
         <span class="xxs muted">${data[0].date}</span>
