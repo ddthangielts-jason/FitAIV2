@@ -1251,7 +1251,7 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
       <div class="card-lime" style="margin-bottom:10px">
         <div style="font-size:10px;color:var(--lime);font-family:var(--FM);letter-spacing:.1em;margin-bottom:6px">⚡ AI COACH</div>
         <div style="font-size:13px;color:rgba(200,241,53,.85);line-height:1.65" id="progressive-log">Nhấn để AI phân tích progressive overload...</div>
-        <button class="btn bg" style="margin-top:8px;height:34px;font-size:12px" onclick="genProgressiveOverloadLog()">Phân tích tiến độ</button>
+        <button class="btn bg" style="margin-top:8px;height:34px;font-size:12px" onclick="renderProgress()">Phân tích tiến độ</button>
       </div>
 
       <!-- Charts -->
@@ -1325,8 +1325,8 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <div style="font-size:10px;color:var(--lime);font-family:var(--FM);letter-spacing:.1em;margin-bottom:7px">⚡ AI COACH</div>
         <div style="font-size:13px;color:rgba(200,241,53,.85);line-height:1.65" id="weekly-review-txt">Nhấn để AI phân tích tuần tập luyện...</div>
         <div style="display:flex;gap:7px;margin-top:10px">
-          <button class="btn bg" style="flex:1;height:34px;font-size:12px" onclick="loadWeeklyReview()">Review tuần</button>
-          <button class="btn bg" style="flex:1;height:34px;font-size:12px" onclick="genMonthlySummary()">Tóm tắt tháng</button>
+          <button class="btn bg" style="flex:1;height:34px;font-size:12px" onclick="renderProgress()">Review tuần</button>
+          <button class="btn bg" style="flex:1;height:34px;font-size:12px" onclick="renderProgress()">Tóm tắt tháng</button>
         </div>
       </div>
     </div>
@@ -2164,7 +2164,7 @@ const ST={
   workouts:[],
   activeW:null,timerInt:null,timerSec:0,
   exCtr:0,exData:{},
-  chatHist:[],
+
   currentPlan:null,currentDetailPlan:null,currentDetailWeek:0,
   measurements:[],
   stats:{streak:0,total:0,volume:0},
@@ -5082,18 +5082,7 @@ function renderStrengthStandards(){
 // ════════════════════════════════════════════════════════
 // AI CHAT WITH WORKOUT CONTEXT
 // ════════════════════════════════════════════════════════
-function buildAIChatSystem(){
-  const p=ST.profile;
-  const lv=getLevel();
-  const recent=ST.workouts.slice(0,3).map(w=>`${w.date}: ${w.title} (${w.vol}kg vol, ${w.dur}ph)`).join('; ');
-  const prs=Object.entries(ST.prs||{}).slice(0,5).map(([n,v])=>`${n}:${v}kg`).join(', ');
-  return `Bạn là AI Coach gym cá nhân, tiếng Việt hoàn toàn. 
-Hồ sơ: ${p.name||'User'}, ${p.kg}kg, ${p.cm}cm, ${p.age}t, ${p.sex==='female'?'nữ':'nam'}, ${p.level}, mục tiêu ${p.goal}, ${p.days}x/tuần, thiết bị ${p.equip}.
-Level: ${lv.emoji} ${lv.name} (${lv.xp} XP). Streak: ${ST.stats.streak} ngày. Tổng: ${ST.stats.total} buổi.
-3 buổi gần nhất: ${recent||'chưa có'}.
-PR hiện tại: ${prs||'chưa có'}.
-Trả lời tiếng Việt, thực tế, số liệu cụ thể, ngắn gọn.`;
-}
+
 
 // ════════════════════════════════════════════════════════
 // AI FOOD PHOTO ANALYSIS
@@ -5650,13 +5639,14 @@ window.onload=async()=>{
     document.getElementById('onboarding').classList.add('show');
     document.getElementById('app').style.display='none';
   }
-  setTimeout(testAIConnection,3000);
   // Request notification permission
   setTimeout(async()=>{
-    if('Notification' in window&&Notification.permission==='default'){
-      const ok=await requestNotifPermission();
-      if(ok)toast('🔔 Thông báo đã bật!');
-    }
+    try{
+      if('Notification' in window&&Notification.permission==='default'){
+        const ok=await Notification.requestPermission();
+        if(ok==='granted')toast('🔔 Thông báo đã bật!');
+      }
+    }catch(e){}
   },5000);
 };
 </script>
