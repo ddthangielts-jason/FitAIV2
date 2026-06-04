@@ -1350,12 +1350,10 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
         <div id="macro-pie"></div>
       </div>
 
-      <div style="display:flex;gap:8px;margin-bottom:14px">
-        <button class="btn bl" style="flex:1" onclick="genMealPlan()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Gợi ý meal plan hôm nay
-        </button>
-        <button class="btn bg" style="flex:1" onclick="showNutHistory()">📅 Lịch sử</button>
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <button class="btn bl" style="flex:2;height:40px;font-size:13px" onclick="genMealPlan()">⚡ Gợi ý Meal Plan</button>
+        <button class="btn bg" style="flex:1;height:40px;font-size:13px" onclick="showNutHistory()">📅 Lịch sử</button>
+        <button class="btn bg" style="height:40px;width:40px;padding:0;flex-shrink:0" onclick="showCustomCalModal()" title="Tùy chỉnh mục tiêu calo">⚙️</button>
       </div>
 
       <!-- Water + Custom Cal Goal -->
@@ -1802,8 +1800,6 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
       Dinh dưỡng
     </button>
   </nav>
-</div>
-
 <script>
 // ════════════════════════════════════════════════════════
 // DATA
@@ -3801,14 +3797,15 @@ function calcTDEE(){
   return Math.round(bmr*[1.2,1.375,1.375,1.55,1.55,1.725,1.725,1.9][days||4]);
 }
 function calcMacroTargets(){
+  const cc=ST.settings?.customCal||{};
   const kg=ST.profile.kg||70,goal=ST.profile.goal;
   const tdee=calcTDEE();
-  const protein=Math.round(goal==='muscle'?kg*2.2:goal==='fat'?kg*2.0:kg*1.8);
-  const calTarget=goal==='fat'?Math.round(tdee*0.85):goal==='muscle'?Math.round(tdee*1.1):tdee;
+  const protein=cc.protein||(Math.round(goal==='muscle'?kg*2.2:goal==='fat'?kg*2.0:kg*1.8));
+  const calTarget=cc.cal||(goal==='fat'?Math.round(tdee*0.85):goal==='muscle'?Math.round(tdee*1.1):tdee);
   const fatCal=Math.round(calTarget*0.25);
   const fat=Math.round(fatCal/9);
   const carbsCal=calTarget-(protein*4)-(fat*9);
-  const carbs=Math.max(0,Math.round(carbsCal/4));
+  const carbs=cc.carbs||Math.max(0,Math.round(carbsCal/4));
   return{cal:calTarget,protein,carbs,fat};
 }
 function openAddFood(meal,mealName){
@@ -5578,6 +5575,62 @@ const MOODS=[
   {val:3,emoji:'😐',label:'Bình thường'},
   {val:2,emoji:'😪',label:'Mệt'},
   {val:1,emoji:'💀',label:'Kiệt sức'},
+  // ── THÊM NHIỀU MÓN HƠN ──
+  // Bữa sáng phổ biến
+  {name:'Bánh mì ốp la 1 cái',cal:280,p:12,c:32,f:12},
+  {name:'Phở chay 1 tô',cal:320,p:10,c:58,f:6},
+  {name:'Bánh flan 1 cái',cal:180,p:5,c:28,f:6},
+  {name:'Xôi đậu xanh 1 phần',cal:380,p:10,c:72,f:5},
+  {name:'Cháo trắng 1 tô',cal:160,p:3,c:36,f:0.5},
+  {name:'Bánh tiêu 2 cái',cal:260,p:5,c:40,f:9},
+  {name:'Hủ tiếu khô 1 tô',cal:460,p:22,c:58,f:14},
+  // Cơm & bún & mì
+  {name:'Cơm rang thịt bò',cal:560,p:24,c:72,f:18},
+  {name:'Bún bò bắp',cal:440,p:28,c:52,f:12},
+  {name:'Phở gà 1 tô',cal:380,p:28,c:48,f:8},
+  {name:'Cao lầu Hội An',cal:480,p:24,c:64,f:14},
+  {name:'Mì bò viên 1 tô',cal:450,p:24,c:56,f:14},
+  {name:'Bánh mì đặc biệt',cal:420,p:18,c:50,f:16},
+  {name:'Cơm sườn bí đao',cal:460,p:24,c:62,f:12},
+  {name:'Bún chả Hà Nội',cal:480,p:28,c:52,f:16},
+  // Protein sources
+  {name:'Cá tra phi lê 200g',cal:180,p:36,c:0,f:4},
+  {name:'Thịt thỏ 200g',cal:260,p:44,c:0,f:8},
+  {name:'Tôm thẻ luộc 200g',cal:160,p:34,c:0,f:1.6},
+  {name:'Cá ngừ tươi 200g',cal:264,p:44,c:0,f:9},
+  {name:'Thịt nai nạc 150g',cal:195,p:34,c:0,f:6},
+  {name:'Bạch tuộc luộc 150g',cal:141,p:25,c:4,f:2},
+  {name:'Nghêu hấp 200g',cal:120,p:18,c:6,f:2},
+  {name:'Cua biển 200g',cal:160,p:32,c:0,f:3},
+  // Thực phẩm healthy
+  {name:'Quinoa 100g khô',cal:368,p:14,c:64,f:6},
+  {name:'Yến mạch cán mỏng 50g',cal:187,p:6.5,c:33,f:3.5},
+  {name:'Hạt lanh 20g',cal:107,p:3.7,c:5.8,f:8.5},
+  {name:'Hạt bí ngô 30g',cal:163,p:8.5,c:5,f:14},
+  {name:'Táo tàu 5 quả',cal:120,p:1.5,c:31,f:0.2},
+  {name:'Nho khô 30g',cal:90,p:0.9,c:24,f:0.1},
+  {name:'Quả sung tươi 100g',cal:74,p:0.8,c:19,f:0.3},
+  {name:'Thanh long 200g',cal:100,p:2,c:24,f:0.4},
+  {name:'Ổi 200g',cal:68,p:2.6,c:14,f:0.9},
+  {name:'Măng cụt 100g',cal:73,p:0.4,c:18,f:0.6},
+  {name:'Sầu riêng 100g',cal:147,p:1.5,c:27,f:5},
+  // Đồ uống
+  {name:'Kombucha 330ml',cal:36,p:0,c:9,f:0},
+  {name:'Sữa hạnh nhân 200ml',cal:60,p:2,c:8,f:2.5},
+  {name:'Sinh tố rau má 300ml',cal:80,p:2,c:18,f:0.5},
+  {name:'Nước detox dưa leo chanh',cal:20,p:0.5,c:4,f:0},
+  {name:'Trà gừng mật ong 300ml',cal:90,p:0,c:24,f:0},
+  {name:'Nước ép củ dền 200ml',cal:84,p:2,c:20,f:0.2},
+  // Fast food & đặc sản
+  {name:'Cơm gà Hội An 1 phần',cal:540,p:30,c:64,f:18},
+  {name:'Bánh xèo miền Trung',cal:420,p:16,c:48,f:18},
+  {name:'Chả giò chay 3 cái',cal:240,p:6,c:30,f:12},
+  {name:'Sushi 8 miếng',cal:350,p:16,c:60,f:6},
+  {name:'Ramen thịt heo 1 tô',cal:520,p:26,c:64,f:18},
+  {name:'Tteokbokki 1 phần',cal:380,p:10,c:72,f:6},
+  {name:'Chicken rice Singapore',cal:580,p:32,c:68,f:20},
+  {name:'Tom yum kung 1 tô',cal:280,p:22,c:20,f:12},
+
 ];
 function renderMoodTracker(){
   const el=document.getElementById('mood-tracker');if(!el)return;
@@ -5786,16 +5839,22 @@ function renderNutHistory(){
 }
 function saveNutHistory(){
   if(!ST.nutHistory)ST.nutHistory=[];
-  // Calculate today's totals
   let cal=0,p=0,c=0,f=0;
-  ['b','l','d','s'].forEach(m=>(ST.nut[m]||[]).forEach(food=>{cal+=food.cal||0;p+=food.p||0;c+=food.c||0;f+=food.f||0;}));
+  const foods={b:[],l:[],d:[],s:[]};
+  ['b','l','d','s'].forEach(m=>{
+    (ST.nut[m]||[]).forEach(food=>{
+      cal+=food.cal||0;p+=food.p||0;c+=food.c||0;f+=food.f||0;
+      foods[m].push({name:food.name,cal:food.cal,p:food.p,c:food.c,f:food.f});
+    });
+  });
   if(!cal)return;
   const today=new Date().toLocaleDateString('vi-VN');
   const idx=ST.nutHistory.findIndex(h=>h.date===today);
-  const entry={date:today,cal:Math.round(cal),p:Math.round(p),c:Math.round(c),f:Math.round(f)};
+  const entry={date:today,cal:Math.round(cal),p:Math.round(p),c:Math.round(c),f:Math.round(f),foods};
   if(idx>=0)ST.nutHistory[idx]=entry;
   else ST.nutHistory.unshift(entry);
   ST.nutHistory=ST.nutHistory.slice(0,30);
+  save();
 }
 
 // ════════════════════════════════════════════════════════
@@ -6249,28 +6308,62 @@ function renderQuickStats(){
 // NUT HISTORY SCREEN
 // ════════════════════════════════════════════════════════
 function showNutHistory(){
-  // Hide meal plan, show history
   const aiWrap=document.getElementById('nut-ai-wrap');
   if(aiWrap)aiWrap.style.display='none';
   const wrap=document.getElementById('nut-history-wrap');
   if(wrap)wrap.style.display='block';
   const el=document.getElementById('nut-history');
   if(!el)return;
+  // Save today first
+  saveNutHistory();
   if(!ST.nutHistory?.length){
-    el.innerHTML='<div style="text-align:center;padding:20px;color:var(--txt3)"><div style="font-size:32px;margin-bottom:8px">📊</div><div>Chưa có lịch sử. Hãy ghi chép dinh dưỡng hàng ngày!</div></div>';
+    el.innerHTML='<div style="text-align:center;padding:24px;color:var(--txt3)"><div style="font-size:36px;margin-bottom:10px">📊</div><div style="font-size:14px">Chưa có lịch sử dinh dưỡng</div><div style="font-size:12px;margin-top:6px">Ghi chép hàng ngày để xem lịch sử</div></div>';
     return;
   }
-  el.innerHTML=ST.nutHistory.slice(0,14).map(h=>`
-    <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--brd);align-items:center">
-      <div>
-        <div style="font-size:12.5px;font-weight:500">${h.date}</div>
-        <div style="font-size:10px;color:var(--txt3);font-family:var(--FM);margin-top:2px">P${h.p}g · C${h.c||0}g · F${h.f||0}g</div>
+  const targets=calcMacroTargets();
+  el.innerHTML=ST.nutHistory.slice(0,14).map((h,idx)=>{
+    const MEAL_NAMES={b:'🌅 Sáng',l:'☀️ Trưa',d:'🌙 Tối',s:'🍎 Phụ'};
+    const expanded=`hist-${idx}`;
+    const pct=Math.round(h.cal/targets.cal*100);
+    const foods=h.foods||{};
+    const allFoods=[...(foods.b||[]),...(foods.l||[]),...(foods.d||[]),...(foods.s||[])];
+    return`
+    <div style="background:var(--bg3);border-radius:12px;margin-bottom:8px;overflow:hidden">
+      <div onclick="toggleHistDay('${expanded}')" style="display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer">
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600">${h.date}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+            <div style="flex:1;height:3px;background:var(--bg4);border-radius:2px;overflow:hidden">
+              <div style="width:${pct}%;height:100%;background:${h.cal>targets.cal?'var(--red)':'var(--lime)'};border-radius:2px"></div>
+            </div>
+            <span style="font-size:10px;color:${h.cal>targets.cal?'var(--red)':'var(--lime)'};font-family:var(--FM)">${pct}%</span>
+          </div>
+          <div style="font-size:10px;color:var(--txt3);font-family:var(--FM);margin-top:3px">P${h.p}g · C${h.c||0}g · F${h.f||0}g</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--FD);font-size:22px;color:${h.cal>targets.cal?'var(--red)':'var(--lime)'}">${h.cal}</div>
+          <div style="font-size:9px;color:var(--txt3)">kcal</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--txt3)" stroke-width="2" id="chev-${expanded}" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
-      <div style="text-align:right">
-        <div style="font-family:var(--FD);font-size:20px;color:${h.cal>calcMacroTargets().cal?'var(--amber)':'var(--lime)'}">${h.cal}</div>
-        <div style="font-size:9px;color:var(--txt3)">kcal</div>
+      <div id="${expanded}" style="display:none;border-top:1px solid var(--brd);padding:10px 14px">
+        ${allFoods.length?allFoods.map(f=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--brd)">
+            <div style="font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</div>
+            <div style="font-size:10px;color:var(--txt3);font-family:var(--FM);text-align:right;flex-shrink:0;margin-left:8px">${f.cal}kcal · P${f.p}g</div>
+          </div>`).join(''):
+          '<div style="font-size:12px;color:var(--txt3);text-align:center;padding:8px">Chưa có thông tin chi tiết</div>'}
+        ${Object.entries(foods).filter(([k,v])=>v?.length).map(([k,v])=>`
+          <div style="margin-top:8px;font-size:10px;color:var(--txt3);font-family:var(--FM)">${{b:'☀️ SÁNG',l:'🌤️ TRƯA',d:'🌙 TỐI',s:'🍎 PHỤ'}[k]}: ${v.map(f=>f.name).join(', ')}</div>`).join('')}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+function toggleHistDay(id){
+  const el=document.getElementById(id);
+  const chev=document.getElementById('chev-'+id);
+  if(el){el.style.display=el.style.display==='none'?'block':'none';}
+  if(chev)chev.style.transform=el?.style.display==='none'?'':'rotate(180deg)';
 }
 
 
@@ -6363,51 +6456,144 @@ const MUSCLE_MAP={
   chest:{
     primary:['f-pec-upper-l','f-pec-upper-r','f-pec-lower-l','f-pec-lower-r'],
     secondary:['f-fdelt-l','f-fdelt-r'],
-    color:'#e84040',secondColor:'rgba(232,64,64,.4)',
+    color:'#e84040',secondColor:'rgba(232,64,64,.35)',
     label:'Ngực (Pectoralis)',subLabel:'Upper & Lower Pec'
   },
   back:{
     primary:['b-lat-upper-l','b-lat-upper-r','b-lat-lower-l','b-lat-lower-r'],
     secondary:['b-trap-upper-l','b-trap-upper-r','b-rhomboid','b-erector-l','b-erector-r'],
-    color:'#4d9fff',secondColor:'rgba(77,159,255,.4)',
+    color:'#4d9fff',secondColor:'rgba(77,159,255,.35)',
     label:'Lưng (Latissimus)',subLabel:'Lat, Trap, Erector'
   },
   legs:{
     primary:['f-quad-rect-l','f-quad-rect-r','b-ham-bic-l','b-ham-bic-r'],
     secondary:['f-quad-vas-l','f-quad-vas-r','b-ham-semi-l','b-ham-semi-r','b-calf-l','b-calf-r'],
-    color:'#3dd9b3',secondColor:'rgba(61,217,179,.4)',
+    color:'#3dd9b3',secondColor:'rgba(61,217,179,.35)',
     label:'Chân (Quads & Hams)',subLabel:'Rectus Femoris, Hamstring'
   },
   shoulders:{
     primary:['f-fdelt-l','f-fdelt-r','f-mdelt-l','f-mdelt-r'],
     secondary:['b-rdelt-l','b-rdelt-r','b-trap-upper-l','b-trap-upper-r'],
-    color:'#ffb84d',secondColor:'rgba(255,184,77,.4)',
+    color:'#ffb84d',secondColor:'rgba(255,184,77,.35)',
     label:'Vai (Deltoids)',subLabel:'Front, Side & Rear Delt'
   },
   arms:{
     primary:['f-bicep-l','f-bicep-r'],
     secondary:['b-tricep-long-l','b-tricep-long-r','f-forearm-l','f-forearm-r'],
-    color:'#c8f135',secondColor:'rgba(200,241,53,.4)',
+    color:'#c8f135',secondColor:'rgba(200,241,53,.35)',
     label:'Tay (Arms)',subLabel:'Biceps & Triceps'
   },
   core:{
     primary:['f-abs1-l','f-abs1-r','f-abs2-l','f-abs2-r','f-abs3-l','f-abs3-r'],
     secondary:['f-oblique-l','f-oblique-r','f-serratus-l','f-serratus-r'],
-    color:'#9b59b6',secondColor:'rgba(155,89,182,.4)',
+    color:'#9b59b6',secondColor:'rgba(155,89,182,.35)',
     label:'Core (Abs)',subLabel:'Rectus Abdominis, Obliques'
   },
   glutes:{
     primary:['b-glute-max-l','b-glute-max-r'],
     secondary:['b-glute-med-l','b-glute-med-r','b-ham-bic-l','b-ham-bic-r'],
-    color:'#ff6eb4',secondColor:'rgba(255,110,180,.4)',
+    color:'#ff6eb4',secondColor:'rgba(255,110,180,.35)',
     label:'Mông (Glutes)',subLabel:'Gluteus Maximus & Medius'
   },
   cardio:{
     primary:['f-quad-rect-l','f-quad-rect-r','b-calf-l','b-calf-r'],
     secondary:['f-bicep-l','f-bicep-r','f-abs1-l','f-abs1-r'],
-    color:'#ff6f00',secondColor:'rgba(255,111,0,.4)',
+    color:'#ff6f00',secondColor:'rgba(255,111,0,.35)',
     label:'Cardio',subLabel:'Full body activation'
   },
+};
+
+// Per-exercise specific muscle highlight overrides
+// Each exercise has its own PRIMARY + SECONDARY focus
+const EXERCISE_MUSCLE_MAP={
+  // ── BACK ──
+  'Pull-up':          {primary:['b-lat-upper-l','b-lat-upper-r'],secondary:['b-trap-mid-l','b-trap-mid-r','f-bicep-l','f-bicep-r'],label:'Lat (Upper) · Bicep'},
+  'Xà đơn':          {primary:['b-lat-upper-l','b-lat-upper-r'],secondary:['b-trap-mid-l','b-trap-mid-r','f-bicep-l','f-bicep-r'],label:'Lat (Upper) · Bicep'},
+  'Lat Pulldown':     {primary:['b-lat-upper-l','b-lat-upper-r','b-lat-lower-l','b-lat-lower-r'],secondary:['f-bicep-l','f-bicep-r'],label:'Lat · Bicep'},
+  'Reverse Grip Pulldown':{primary:['b-lat-lower-l','b-lat-lower-r'],secondary:['f-bicep-l','f-bicep-r','b-lat-upper-l','b-lat-upper-r'],label:'Lower Lat · Bicep'},
+  'Reverse Grip Lat Pulldown':{primary:['b-lat-lower-l','b-lat-lower-r'],secondary:['f-bicep-l','f-bicep-r'],label:'Lower Lat · Bicep'},
+  'Straight Arm Pulldown':{primary:['b-lat-upper-l','b-lat-upper-r','b-lat-lower-l','b-lat-lower-r'],secondary:['f-serratus-l','f-serratus-r'],label:'Lat · Serratus'},
+  'Barbell Row':      {primary:['b-lat-upper-l','b-lat-upper-r','b-rhomboid'],secondary:['b-trap-mid-l','b-trap-mid-r','b-erector-l','b-erector-r'],label:'Mid Back · Rhomboid'},
+  'Pendlay Row':      {primary:['b-lat-upper-l','b-lat-upper-r','b-rhomboid'],secondary:['b-trap-upper-l','b-trap-upper-r','b-erector-l','b-erector-r'],label:'Mid Back · Traps'},
+  'T-Bar Row':        {primary:['b-lat-upper-l','b-lat-upper-r','b-rhomboid'],secondary:['b-trap-mid-l','b-trap-mid-r'],label:'Mid Back · Rhomboid'},
+  'Seated Cable Row': {primary:['b-rhomboid','b-trap-mid-l','b-trap-mid-r'],secondary:['b-lat-upper-l','b-lat-upper-r','f-bicep-l','f-bicep-r'],label:'Rhomboid · Mid Trap'},
+  'Cable Row ngồi':   {primary:['b-rhomboid','b-trap-mid-l','b-trap-mid-r'],secondary:['b-lat-upper-l','b-lat-upper-r'],label:'Rhomboid · Mid Trap'},
+  'Rowing Machine ngồi':{primary:['b-rhomboid','b-trap-mid-l','b-trap-mid-r'],secondary:['b-lat-upper-l','b-lat-upper-r'],label:'Rhomboid · Mid Trap'},
+  'Single Arm DB Row':{primary:['b-lat-upper-l','b-lat-upper-r','b-lat-lower-l','b-lat-lower-r'],secondary:['b-rhomboid'],label:'Lat Full · Rhomboid'},
+  'Bent Over DB Row 1 tay':{primary:['b-lat-upper-l','b-lat-upper-r'],secondary:['b-rhomboid'],label:'Lat · Rhomboid'},
+  'Single Arm Row':   {primary:['b-lat-upper-l','b-lat-upper-r'],secondary:['b-rhomboid','b-lat-lower-l','b-lat-lower-r'],label:'Lat · Rhomboid'},
+  'Chest Supported Row':{primary:['b-rhomboid','b-trap-mid-l','b-trap-mid-r'],secondary:['b-rdelt-l','b-rdelt-r'],label:'Rhomboid · Rear Delt'},
+  'Meadows Row':      {primary:['b-lat-upper-l','b-lat-upper-r'],secondary:['b-lat-lower-l','b-lat-lower-r','b-trap-mid-l','b-trap-mid-r'],label:'Lat (Stretch) · Mid Back'},
+  'Barbell Deadlift': {primary:['b-erector-l','b-erector-r','b-glute-max-l','b-glute-max-r'],secondary:['b-lat-upper-l','b-lat-upper-r','b-ham-bic-l','b-ham-bic-r'],label:'Erector · Glute · Hamstring'},
+  'Deadlift Barbell': {primary:['b-erector-l','b-erector-r','b-glute-max-l','b-glute-max-r'],secondary:['b-lat-upper-l','b-lat-upper-r','b-ham-bic-l','b-ham-bic-r'],label:'Erector · Glute · Hamstring'},
+  'Band Pull Apart':  {primary:['b-rdelt-l','b-rdelt-r'],secondary:['b-rhomboid','b-trap-mid-l','b-trap-mid-r'],label:'Rear Delt · Rhomboid'},
+  // ── CHEST ──
+  'Bench Press':      {primary:['f-pec-lower-l','f-pec-lower-r'],secondary:['f-pec-upper-l','f-pec-upper-r','b-tricep-long-l','b-tricep-long-r'],label:'Lower Pec · Tricep'},
+  'Bench Press Barbell':{primary:['f-pec-lower-l','f-pec-lower-r'],secondary:['f-pec-upper-l','f-pec-upper-r','b-tricep-long-l','b-tricep-long-r'],label:'Lower Pec · Tricep'},
+  'Incline DB Press': {primary:['f-pec-upper-l','f-pec-upper-r'],secondary:['f-fdelt-l','f-fdelt-r','b-tricep-long-l','b-tricep-long-r'],label:'Upper Pec · Front Delt'},
+  'Incline Dumbbell Press':{primary:['f-pec-upper-l','f-pec-upper-r'],secondary:['f-fdelt-l','f-fdelt-r'],label:'Upper Pec · Front Delt'},
+  'Cable Fly':        {primary:['f-pec-lower-l','f-pec-lower-r','f-pec-upper-l','f-pec-upper-r'],secondary:['f-fdelt-l','f-fdelt-r'],label:'Pec Full · Front Delt'},
+  'Pec Deck Fly':     {primary:['f-pec-lower-l','f-pec-lower-r'],secondary:['f-pec-upper-l','f-pec-upper-r'],label:'Inner Pec'},
+  'Dips':             {primary:['f-pec-lower-l','f-pec-lower-r'],secondary:['b-tricep-long-l','b-tricep-long-r','f-fdelt-l','f-fdelt-r'],label:'Lower Pec · Tricep'},
+  'Push Up':          {primary:['f-pec-lower-l','f-pec-lower-r'],secondary:['f-fdelt-l','f-fdelt-r','b-tricep-long-l','b-tricep-long-r'],label:'Pec · Tricep'},
+  'Cable Crossover':  {primary:['f-pec-lower-l','f-pec-lower-r','f-pec-upper-l','f-pec-upper-r'],secondary:['f-fdelt-l','f-fdelt-r'],label:'Pec Inner · Squeeze'},
+  // ── SHOULDERS ──
+  'Overhead Press':   {primary:['f-fdelt-l','f-fdelt-r','f-mdelt-l','f-mdelt-r'],secondary:['b-trap-upper-l','b-trap-upper-r','b-tricep-long-l','b-tricep-long-r'],label:'Front+Lat Delt · Trap'},
+  'Overhead Press Barbell':{primary:['f-fdelt-l','f-fdelt-r','f-mdelt-l','f-mdelt-r'],secondary:['b-trap-upper-l','b-trap-upper-r'],label:'Front+Lat Delt · Trap'},
+  'Lateral Raise':    {primary:['f-mdelt-l','f-mdelt-r'],secondary:['b-trap-upper-l','b-trap-upper-r'],label:'Lateral Delt'},
+  'Reverse Fly':      {primary:['b-rdelt-l','b-rdelt-r'],secondary:['b-rhomboid','b-trap-mid-l','b-trap-mid-r'],label:'Rear Delt'},
+  'Cable Face Pull':  {primary:['b-rdelt-l','b-rdelt-r'],secondary:['b-trap-mid-l','b-trap-mid-r','b-rhomboid'],label:'Rear Delt · External Rot'},
+  'Arnold Press':     {primary:['f-fdelt-l','f-fdelt-r','f-mdelt-l','f-mdelt-r','b-rdelt-l','b-rdelt-r'],secondary:['b-trap-upper-l','b-trap-upper-r'],label:'All 3 Delt Heads'},
+  'Dumbbell Shrug':   {primary:['b-trap-upper-l','b-trap-upper-r'],secondary:['b-rdelt-l','b-rdelt-r'],label:'Upper Trap'},
+  'Upright Row':      {primary:['b-trap-upper-l','b-trap-upper-r','f-mdelt-l','f-mdelt-r'],secondary:['f-bicep-l','f-bicep-r'],label:'Trap · Lat Delt'},
+  // ── ARMS ──
+  'Barbell Curl':     {primary:['f-bicep-l','f-bicep-r'],secondary:['f-forearm-l','f-forearm-r'],label:'Biceps Long+Short Head'},
+  'Barbell Bicep Curl':{primary:['f-bicep-l','f-bicep-r'],secondary:['f-forearm-l','f-forearm-r'],label:'Biceps'},
+  'EZ Bar Curl':      {primary:['f-bicep-l','f-bicep-r'],secondary:['f-forearm-l','f-forearm-r'],label:'Biceps (inner)'},
+  'Hammer Curl':      {primary:['f-bicep-l','f-bicep-r','f-forearm-l','f-forearm-r'],secondary:[],label:'Biceps · Brachialis'},
+  'Hammer Curl Dumbbell':{primary:['f-bicep-l','f-bicep-r','f-forearm-l','f-forearm-r'],secondary:[],label:'Biceps · Brachialis'},
+  'Preacher Curl':    {primary:['f-bicep-l','f-bicep-r'],secondary:[],label:'Biceps (peak)'},
+  'Concentration Curl':{primary:['f-bicep-l','f-bicep-r'],secondary:[],label:'Biceps (peak)'},
+  'Spider Curl':      {primary:['f-bicep-l','f-bicep-r'],secondary:[],label:'Biceps Long Head'},
+  'Cable Curl':       {primary:['f-bicep-l','f-bicep-r'],secondary:['f-forearm-l','f-forearm-r'],label:'Biceps (constant tension)'},
+  'Bicep Curl Cable': {primary:['f-bicep-l','f-bicep-r'],secondary:['f-forearm-l','f-forearm-r'],label:'Biceps (constant tension)'},
+  'Skull Crusher':    {primary:['b-tricep-long-l','b-tricep-long-r'],secondary:[],label:'Triceps All Heads'},
+  'Rope Pushdown':    {primary:['b-tricep-long-l','b-tricep-long-r'],secondary:['f-forearm-l','f-forearm-r'],label:'Triceps Lateral Head'},
+  'Overhead Cable Tricep':{primary:['b-tricep-long-l','b-tricep-long-r'],secondary:[],label:'Triceps Long Head'},
+  'Close Grip Bench Press':{primary:['b-tricep-long-l','b-tricep-long-r'],secondary:['f-pec-lower-l','f-pec-lower-r'],label:'Triceps · Inner Chest'},
+  // ── LEGS ──
+  'Barbell Squat':    {primary:['f-quad-rect-l','f-quad-rect-r','f-quad-vas-l','f-quad-vas-r'],secondary:['b-glute-max-l','b-glute-max-r','b-ham-bic-l','b-ham-bic-r'],label:'Quad Full · Glute'},
+  'Romanian Deadlift':{primary:['b-ham-bic-l','b-ham-bic-r','b-ham-semi-l','b-ham-semi-r'],secondary:['b-glute-max-l','b-glute-max-r','b-erector-l','b-erector-r'],label:'Hamstring · Glute'},
+  'Hip Thrust':       {primary:['b-glute-max-l','b-glute-max-r'],secondary:['b-ham-bic-l','b-ham-bic-r','b-glute-med-l','b-glute-med-r'],label:'Glute Max'},
+  'Walking Lunge':    {primary:['f-quad-rect-l','f-quad-rect-r'],secondary:['b-glute-max-l','b-glute-max-r','b-ham-bic-l','b-ham-bic-r'],label:'Quad · Glute'},
+  'Leg Press':        {primary:['f-quad-rect-l','f-quad-rect-r','f-quad-vas-l','f-quad-vas-r'],secondary:['b-glute-max-l','b-glute-max-r'],label:'Quad Full'},
+  'Leg Extension':    {primary:['f-quad-rect-l','f-quad-rect-r'],secondary:['f-quad-vas-l','f-quad-vas-r'],label:'Rectus Femoris'},
+  'Leg Curl':         {primary:['b-ham-bic-l','b-ham-bic-r','b-ham-semi-l','b-ham-semi-r'],secondary:[],label:'Hamstring Full'},
+  'Calf Raise':       {primary:['b-calf-l','b-calf-r'],secondary:['f-shin-l','f-shin-r'],label:'Gastrocnemius'},
+  'Seated Calf Raise':{primary:['b-calf-l','b-calf-r'],secondary:[],label:'Soleus (deep calf)'},
+  'Front Squat':      {primary:['f-quad-rect-l','f-quad-rect-r'],secondary:['f-quad-vas-l','f-quad-vas-r','b-glute-max-l','b-glute-max-r'],label:'Quad Focus'},
+  'Sumo Deadlift':    {primary:['b-glute-max-l','b-glute-max-r','b-ham-bic-l','b-ham-bic-r'],secondary:['f-quad-vas-l','f-quad-vas-r','b-erector-l','b-erector-r'],label:'Glute · Ham · Quad'},
+  'Nordic Hamstring Curl':{primary:['b-ham-bic-l','b-ham-bic-r','b-ham-semi-l','b-ham-semi-r'],secondary:[],label:'Hamstring Eccentric'},
+  'Bulgarian Split Squat':{primary:['f-quad-rect-l','f-quad-rect-r'],secondary:['b-glute-max-l','b-glute-max-r','b-ham-bic-l','b-ham-bic-r'],label:'Quad · Glute'},
+  'Goblet Squat':     {primary:['f-quad-rect-l','f-quad-rect-r','f-quad-vas-l','f-quad-vas-r'],secondary:['b-glute-max-l','b-glute-max-r'],label:'Quad Full · Glute'},
+  'Hack Squat Machine':{primary:['f-quad-rect-l','f-quad-rect-r'],secondary:['f-quad-vas-l','f-quad-vas-r'],label:'Quad Focus'},
+  // ── GLUTES ──
+  'Cable Kickback':   {primary:['b-glute-max-l','b-glute-max-r'],secondary:['b-ham-bic-l','b-ham-bic-r'],label:'Glute Max'},
+  'Glute Kickback Cable':{primary:['b-glute-max-l','b-glute-max-r'],secondary:['b-ham-bic-l','b-ham-bic-r'],label:'Glute Max'},
+  'Glute Bridge':     {primary:['b-glute-max-l','b-glute-max-r'],secondary:['b-ham-bic-l','b-ham-bic-r'],label:'Glute Max · Ham'},
+  'Hip Abduction':    {primary:['b-glute-med-l','b-glute-med-r'],secondary:['b-glute-max-l','b-glute-max-r'],label:'Glute Medius'},
+  'Cable Pull Through':{primary:['b-glute-max-l','b-glute-max-r'],secondary:['b-ham-bic-l','b-ham-bic-r','b-erector-l','b-erector-r'],label:'Glute · Hip Extension'},
+  'Smith Hip Thrust': {primary:['b-glute-max-l','b-glute-max-r'],secondary:['b-glute-med-l','b-glute-med-r','b-ham-bic-l','b-ham-bic-r'],label:'Glute Max (peak)'},
+  // ── CORE ──
+  'Plank':            {primary:['f-abs1-l','f-abs1-r','f-abs2-l','f-abs2-r'],secondary:['f-oblique-l','f-oblique-r'],label:'Transversus · Anti-Gravity'},
+  'Cable Crunch':     {primary:['f-abs1-l','f-abs1-r','f-abs2-l','f-abs2-r','f-abs3-l','f-abs3-r'],secondary:[],label:'Rectus Abdominis Full'},
+  'Hanging Leg Raise':{primary:['f-abs3-l','f-abs3-r'],secondary:['f-abs2-l','f-abs2-r','f-oblique-l','f-oblique-r'],label:'Lower Abs'},
+  'Ab Rollout':       {primary:['f-abs1-l','f-abs1-r','f-abs2-l','f-abs2-r','f-abs3-l','f-abs3-r'],secondary:['b-lat-upper-l','b-lat-upper-r'],label:'Full Core · Lat'},
+  'Hollow Body Hold': {primary:['f-abs3-l','f-abs3-r','f-abs2-l','f-abs2-r'],secondary:['f-abs1-l','f-abs1-r'],label:'Lower Core Compression'},
+  'Mountain Climber': {primary:['f-abs2-l','f-abs2-r','f-abs3-l','f-abs3-r'],secondary:['f-oblique-l','f-oblique-r','f-serratus-l','f-serratus-r'],label:'Core Dynamic'},
+  'Side Plank':       {primary:['f-oblique-l','f-oblique-r'],secondary:['f-abs2-l','f-abs2-r'],label:'Obliques · Anti-Lateral'},
+  'Pallof Press (Anti-Rotation)':{primary:['f-oblique-l','f-oblique-r'],secondary:['f-abs2-l','f-abs2-r'],label:'Core Anti-Rotation'},
+  'Dead Bug':         {primary:['f-abs3-l','f-abs3-r','f-abs2-l','f-abs2-r'],secondary:['f-oblique-l','f-oblique-r'],label:'Core Stability'},
 };
 
 // Equipment labels
@@ -6445,7 +6631,7 @@ function openExPanel(exName,fromWorkoutId){
   }
 
   // Render muscle diagram
-  renderMuscleHighlight(ex.muscle);
+  renderMuscleHighlight(ex.muscle,ex.nameVi||ex.name);
   renderMuscleEquip(ex);
 
   // Render form guide
@@ -6486,53 +6672,54 @@ function switchExTab(tab,btn){
   if(el)el.classList.add('show');
 }
 
-function renderMuscleHighlight(muscle){
-  const info=MUSCLE_MAP[muscle];
+function renderMuscleHighlight(muscle,exName){
+  // Try per-exercise specific map first
+  const exMap=exName?EXERCISE_MUSCLE_MAP[exName]:null;
+  const info=exMap?{...MUSCLE_MAP[muscle],...exMap,color:MUSCLE_MAP[muscle]?.color,secondColor:MUSCLE_MAP[muscle]?.secondColor}:MUSCLE_MAP[muscle];
+  const color=MUSCLE_MAP[muscle]?.color||'#4d9fff';
+  const secondColor=MUSCLE_MAP[muscle]?.secondColor||'rgba(77,159,255,.35)';
+
   // Reset all
   document.querySelectorAll('.muscle-region').forEach(el=>{
     el.setAttribute('fill','#1a1a2e');
-    el.style.filter='none';
-    el.style.animation='none';
+    el.style.filter='none';el.style.animation='none';el.style.opacity='1';
   });
   if(!info)return;
-  // Primary muscles - bright
-  info.primary.forEach(id=>{
+
+  const primary=exMap?.primary||info.primary||[];
+  const secondary=exMap?.secondary||info.secondary||[];
+
+  // Primary - bright + pulse
+  primary.forEach(id=>{
     const el=document.getElementById(id);
     if(el){
-      el.setAttribute('fill',info.color);
-      el.style.filter='drop-shadow(0 0 4px '+info.color+')';
+      el.setAttribute('fill',color);
+      el.style.filter='drop-shadow(0 0 5px '+color+')';
       el.style.animation='musclePulse 1.8s ease-in-out infinite';
     }
   });
-  // Also highlight by data-muscle for any unlisted elements
-  document.querySelectorAll('.muscle-region[data-muscle="'+muscle+'"]').forEach(el=>{
-    if(!info.primary.includes(el.id)&&!info.secondary.includes(el.id)){
-      el.setAttribute('fill',info.secondColor||info.color);
-      el.style.animation='musclePulse 2.4s ease-in-out infinite .4s';
-    }
-  });
-  // Secondary muscles - dimmer
-  info.secondary.forEach(id=>{
+  // Secondary - dimmer
+  secondary.forEach(id=>{
     const el=document.getElementById(id);
     if(el){
-      el.setAttribute('fill',info.secondColor||info.color);
-      el.style.animation='musclePulse 2.4s ease-in-out infinite .6s';
+      el.setAttribute('fill',secondColor);
+      el.style.animation='musclePulse 2.4s ease-in-out infinite .5s';
     }
   });
-  // Update legend
+
+  // Legend
   const legend=document.getElementById('eqp-legend');
   if(legend){
+    const label=exMap?.label||info.label||muscle;
     legend.innerHTML=
-      '<div style="margin-bottom:8px">'
-      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'
-      +'<div style="width:14px;height:14px;border-radius:4px;background:'+info.color+';box-shadow:0 0 6px '+info.color+'"></div>'
-      +'<div><div style="font-size:12px;font-weight:600">'+info.label+'</div>'
-      +'<div style="font-size:10px;color:var(--txt3)">'+info.subLabel+'</div></div>'
-      +'</div>'
-      +(info.secondary.length?'<div style="display:flex;align-items:center;gap:8px">'
-      +'<div style="width:14px;height:14px;border-radius:4px;background:'+info.secondColor+';border:1px solid '+info.color+'"></div>'
-      +'<div style="font-size:11px;color:var(--txt3)">Cơ phụ (synergists)</div></div>':'')
-      +'</div>';
+      '<div style="display:flex;align-items:flex-start;gap:10px">'
+      +'<div style="width:14px;height:14px;border-radius:4px;background:'+color+';box-shadow:0 0 8px '+color+';flex-shrink:0;margin-top:2px"></div>'
+      +'<div><div style="font-size:13px;font-weight:600;color:var(--txt)">'+label+'</div>'
+      +(info.subLabel?'<div style="font-size:10px;color:var(--txt3);margin-top:2px">'+info.subLabel+'</div>':'')
+      +'</div></div>'
+      +(secondary.length?'<div style="display:flex;align-items:center;gap:8px;margin-top:6px">'
+      +'<div style="width:10px;height:10px;border-radius:3px;background:'+secondColor+';border:1px solid '+color+'"></div>'
+      +'<div style="font-size:10px;color:var(--txt3)">Cơ phụ (synergists)</div></div>':'');
   }
 }
 
@@ -6640,6 +6827,68 @@ function openExPanelFromWorkout(name){
     },{passive:true});
   });
 })();
+
+
+// ════════════════════════════════════════════
+// CUSTOM CALORIE GOAL
+// ════════════════════════════════════════════
+function showCustomCalModal(){
+  const modal=document.getElementById('custom-cal-modal');
+  if(!modal)return;
+  modal.style.display='flex';
+  // Show auto-calculated
+  const auto=calcMacroTargets();
+  const autoEl=document.getElementById('ccm-auto-vals');
+  if(autoEl)autoEl.innerHTML=[
+    ['Calo',auto.cal+'kcal','var(--lime)'],
+    ['Protein',auto.protein+'g','var(--blue)'],
+    ['Carbs',auto.carbs+'g','var(--amber)'],
+    ['Fat',auto.fat+'g','#ff6eb4'],
+  ].map(([l,v,c])=>`<div><div style="font-family:var(--FD);font-size:18px;color:${c}">${v}</div><div style="font-size:9px;color:var(--txt3)">${l}</div></div>`).join('');
+  // Pre-fill with current custom or auto
+  const cc=ST.settings?.customCal||{};
+  const calInp=document.getElementById('ccm-cal-input');
+  const pInp=document.getElementById('ccm-p-input');
+  const cInp=document.getElementById('ccm-c-input');
+  if(calInp)calInp.value=cc.cal||'';
+  if(pInp)pInp.value=cc.protein||'';
+  if(cInp)cInp.value=cc.carbs||'';
+}
+function closeCustomCalModal(){
+  const m=document.getElementById('custom-cal-modal');
+  if(m)m.style.display='none';
+}
+function saveCustomCal(){
+  const cal=+document.getElementById('ccm-cal-input')?.value||0;
+  const protein=+document.getElementById('ccm-p-input')?.value||0;
+  const carbs=+document.getElementById('ccm-c-input')?.value||0;
+  if(!ST.settings)ST.settings={};
+  ST.settings.customCal={
+    cal:cal||null,protein:protein||null,carbs:carbs||null
+  };
+  save();renderNutMeals();closeCustomCalModal();
+  toast('✅ Đã lưu mục tiêu calo: '+(cal||'tự động')+'kcal');
+}
+function resetCustomCal(){
+  if(!ST.settings)ST.settings={};
+  ST.settings.customCal={};
+  document.getElementById('ccm-cal-input').value='';
+  document.getElementById('ccm-p-input').value='';
+  document.getElementById('ccm-c-input').value='';
+  toast('Reset về tự động');
+}
+function applyCalPreset(preset){
+  const auto=calcMacroTargets();
+  const mults={cut:0.85,maintain:1,bulk:1.1,aggressive_bulk:1.2};
+  const mult=mults[preset]||1;
+  const newCal=Math.round(auto.cal*mult);
+  const newP=Math.round(auto.protein*(preset==='cut'?1.1:1));
+  document.getElementById('ccm-cal-input').value=newCal;
+  document.getElementById('ccm-p-input').value=newP;
+  document.getElementById('ccm-c-input').value='';
+}
+
+
 
 window.onload=async()=>{
   registerSW();
@@ -6884,6 +7133,56 @@ window.onload=async()=>{
     <div class="ex-panel-footer">
       <button class="btn bg" style="flex:1;height:44px;font-size:13px" onclick="closeExPanel()">Đóng</button>
       <button class="btn bl" id="eqp-add-btn" style="flex:2;height:44px;font-size:14px" onclick="addExFromPanel()">＋ Thêm vào buổi tập</button>
+    </div>
+  </div>
+
+  <!-- Custom Calorie Goal Modal -->
+  <div id="custom-cal-modal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:flex-end">
+    <div style="background:var(--bg2);border-radius:20px 20px 0 0;border-top:1px solid var(--brd2);width:100%;max-width:430px;margin:0 auto;padding:20px 16px calc(20px + env(safe-area-inset-bottom))">
+      <div style="width:36px;height:4px;background:var(--brd2);border-radius:2px;margin:0 auto 16px"></div>
+      <div style="font-size:17px;font-weight:700;margin-bottom:4px">⚙️ Mục tiêu dinh dưỡng</div>
+      <div style="font-size:12px;color:var(--txt3);margin-bottom:16px">Tùy chỉnh theo nhu cầu cá nhân của bạn</div>
+      
+      <!-- Auto calculated -->
+      <div style="background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:14px" id="ccm-auto-display">
+        <div style="font-size:10px;font-family:var(--FM);color:var(--txt3);margin-bottom:6px">TỰ ĐỘNG TÍNH (TDEE)</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap" id="ccm-auto-vals"></div>
+      </div>
+      
+      <!-- Custom override -->
+      <div style="margin-bottom:12px">
+        <label style="font-size:12px;color:var(--txt3);font-family:var(--FM);letter-spacing:.06em;display:block;margin-bottom:6px">CALO MỤC TIÊU (kcal/ngày)</label>
+        <div style="display:flex;gap:8px">
+          <input class="inp" type="number" inputmode="decimal" id="ccm-cal-input" placeholder="Để trống = tự động" style="flex:1;height:44px">
+          <button class="btn bg" onclick="resetCustomCal()" style="height:44px;padding:0 12px;font-size:12px">Reset</button>
+        </div>
+      </div>
+      <div class="g2" style="gap:8px;margin-bottom:14px">
+        <div>
+          <label style="font-size:11px;color:var(--txt3);display:block;margin-bottom:4px">Protein (g)</label>
+          <input class="inp" type="number" inputmode="decimal" id="ccm-p-input" placeholder="Auto" style="height:40px;font-size:14px">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--txt3);display:block;margin-bottom:4px">Carbs (g)</label>
+          <input class="inp" type="number" inputmode="decimal" id="ccm-c-input" placeholder="Auto" style="height:40px;font-size:14px">
+        </div>
+      </div>
+      
+      <!-- Goal quick-set -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;color:var(--txt3);font-family:var(--FM);margin-bottom:8px">PRESET NHANH</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button onclick="applyCalPreset('cut')" class="pill">🔥 Giảm mỡ (-15%)</button>
+          <button onclick="applyCalPreset('maintain')" class="pill">⚖️ Duy trì</button>
+          <button onclick="applyCalPreset('bulk')" class="pill">💪 Tăng cơ (+10%)</button>
+          <button onclick="applyCalPreset('aggressive_bulk')" class="pill">🚀 Bulk mạnh (+20%)</button>
+        </div>
+      </div>
+      
+      <div style="display:flex;gap:8px">
+        <button class="btn bg" style="flex:1;height:46px" onclick="closeCustomCalModal()">Huỷ</button>
+        <button class="btn bl" style="flex:2;height:46px" onclick="saveCustomCal()">Lưu mục tiêu</button>
+      </div>
     </div>
   </div>
 </body>
