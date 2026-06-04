@@ -33,21 +33,187 @@
   unicode-range:U+0000-00FF,U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB;
 }
 
-/* ═══ GLOBAL UI IMPROVEMENTS ═══ */
-.sec-label{
-  font-size:10px;font-weight:600;letter-spacing:.12em;
-  color:var(--txt3);text-transform:uppercase;
-  font-family:var(--FM);margin:16px 0 8px;
-  display:flex;align-items:center;gap:8px;
+/* ═══ WORKOUT UPGRADE CSS ═══ */
+.ex-act-btn{
+  flex:1;height:32px;border-radius:8px;
+  background:var(--bg3);border:1px solid var(--brd2);
+  color:var(--txt2);font-size:11px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:3px;
+  transition:all .12s;font-family:var(--FM);white-space:nowrap;
 }
-.sec-label::after{content:'';flex:1;height:1px;background:var(--brd);opacity:.5;}
-.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--rl);padding:14px;margin-bottom:10px}
-.card-lime{background:var(--lime-dim);border:1px solid rgba(200,241,53,.2);border-radius:var(--rl);padding:14px;margin-bottom:10px}
-/* Better scrollbar hiding */
-.screen::-webkit-scrollbar{display:none}
-.screen{scrollbar-width:none;-ms-overflow-style:none}
-/* Better safe area handling */
-.bnav{padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+.ex-act-btn:active{background:var(--bg4);transform:scale(.95)}
+/* Bigger done button */
+.sdone{
+  width:36px;height:36px;border-radius:9px;
+  background:var(--bg3);border:1.5px solid var(--brd2);
+  color:var(--txt3);font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.sdone.on{background:var(--lime);border-color:var(--lime);color:#0a0a0a;font-size:16px;}
+.sdone:active{transform:scale(.85)}
+/* Better workout header */
+.wtb{
+  background:rgba(7,7,9,.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--brd);padding:10px 14px;
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+  position:sticky;top:0;z-index:20;
+}
+.wtb-title{font-family:var(--FD);font-size:22px;letter-spacing:.04em;flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wtb-timer{
+  font-family:var(--FM);font-size:13px;color:var(--lime);
+  padding:4px 11px;background:rgba(200,241,53,.08);
+  border:1px solid rgba(200,241,53,.2);border-radius:20px;
+  display:flex;align-items:center;gap:5px;cursor:pointer;
+}
+/* Stats strip */
+.workout-strip{display:flex;background:var(--bg2);border-bottom:1px solid var(--brd);padding:8px 0;flex-shrink:0}
+.ws-item{flex:1;text-align:center;border-right:1px solid var(--brd)}
+.ws-item:last-child{border-right:none}
+.ws-val{font-family:var(--FM);font-size:15px;font-weight:700;color:var(--txt);line-height:1}
+.ws-lbl{font-size:8.5px;color:var(--txt3);letter-spacing:.08em;margin-top:3px;font-family:var(--FM)}
+/* Better home cards */
+.start-card-main{
+  background:linear-gradient(135deg,var(--bg3) 0%,rgba(200,241,53,.07) 100%);
+  border:1px solid rgba(200,241,53,.15);border-radius:16px;
+  padding:20px;cursor:pointer;transition:transform .12s;
+}
+.start-card-main:active{transform:scale(.98)}
+/* Bottom nav */
+.bnav{height:calc(54px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom)}
+/* Screen */
+.screen{bottom:calc(54px + env(safe-area-inset-bottom))}
+/* ═══════════════════════════════════════════════════
+   EXERCISE QUICK-VIEW PANEL - Nudges Me style
+   Slides up from bottom, stays within workout screen
+═══════════════════════════════════════════════════ */
+
+/* Overlay backdrop */
+.ex-panel-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  z-index:400;opacity:0;pointer-events:none;
+  transition:opacity .25s ease;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+.ex-panel-backdrop.show{opacity:1;pointer-events:auto}
+
+/* Main panel - slides up from bottom */
+.ex-quick-panel{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
+  width:100%;max-width:430px;
+  background:var(--bg2);border-radius:20px 20px 0 0;
+  border-top:1px solid var(--brd2);
+  z-index:401;transition:transform .3s cubic-bezier(.32,.72,0,1);
+  max-height:88dvh;display:flex;flex-direction:column;overflow:hidden;
+}
+.ex-quick-panel.show{transform:translateX(-50%) translateY(0)}
+
+/* Panel handle */
+.ex-panel-handle{
+  width:36px;height:4px;background:var(--brd2);border-radius:2px;
+  margin:12px auto 0;flex-shrink:0;cursor:pointer;
+}
+
+/* Panel header */
+.ex-panel-hdr{
+  padding:12px 18px 10px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--brd);flex-shrink:0;
+}
+.ex-panel-emoji{font-size:28px;flex-shrink:0}
+.ex-panel-title{font-size:16px;font-weight:600;flex:1}
+.ex-panel-muscle{
+  font-size:10px;font-family:var(--FM);color:var(--amber);
+  padding:2px 8px;background:rgba(255,184,77,.1);border-radius:4px;
+}
+.ex-panel-close{
+  width:32px;height:32px;border-radius:50%;background:var(--bg3);
+  border:1px solid var(--brd2);color:var(--txt2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+}
+
+/* Tab bar */
+.ex-panel-tabs{
+  display:flex;border-bottom:1px solid var(--brd);flex-shrink:0;
+  background:var(--bg2);
+}
+.ex-ptab{
+  flex:1;padding:10px 4px;text-align:center;font-size:11px;
+  font-family:var(--FM);color:var(--txt3);cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .15s;letter-spacing:.04em;
+}
+.ex-ptab.on{color:var(--lime);border-bottom-color:var(--lime)}
+
+/* Panel content */
+.ex-panel-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ex-ptab-content{display:none;padding:16px}
+.ex-ptab-content.show{display:block}
+
+/* Muscle diagram */
+.muscle-diagram-wrap{
+  position:relative;margin:0 auto 16px;width:180px;height:260px;
+}
+.muscle-svg{width:100%;height:100%}
+
+/* Animated muscle highlight */
+@keyframes musclePulse{
+  0%,100%{opacity:.7;filter:brightness(1)}
+  50%{opacity:1;filter:brightness(1.3) drop-shadow(0 0 6px currentColor)}
+}
+.muscle-active{animation:musclePulse 1.8s ease-in-out infinite}
+.muscle-secondary{animation:musclePulse 2.4s ease-in-out infinite .6s;opacity:.4}
+
+/* YouTube thumbnail */
+.yt-thumb-wrap{
+  position:relative;border-radius:12px;overflow:hidden;cursor:pointer;
+  background:var(--bg3);aspect-ratio:16/9;margin-bottom:14px;
+}
+.yt-thumb-img{width:100%;height:100%;object-fit:cover;display:block}
+.yt-play-overlay{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.35);transition:background .2s;
+}
+.yt-thumb-wrap:hover .yt-play-overlay{background:rgba(0,0,0,.2)}
+.yt-play-btn{
+  width:52px;height:52px;border-radius:50%;
+  background:rgba(200,241,53,.9);display:flex;align-items:center;justify-content:center;
+}
+.yt-play-icon{width:0;height:0;border-style:solid;
+  border-width:9px 0 9px 18px;border-color:transparent transparent transparent #111;
+  margin-left:3px}
+.yt-video-frame{
+  width:100%;aspect-ratio:16/9;border-radius:12px;border:none;
+  background:#000;margin-bottom:14px;display:none;
+}
+
+/* Form cues */
+.cue-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.cue-item{
+  display:flex;gap:10px;padding:10px;
+  background:var(--bg3);border-radius:10px;align-items:flex-start;
+}
+.cue-num{
+  width:22px;height:22px;border-radius:50%;background:var(--lime);
+  color:#111;font-size:11px;font-weight:800;font-family:var(--FM);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.cue-text{font-size:13px;line-height:1.5;color:var(--txt)}
+
+/* Mistakes */
+.mistake-list{display:flex;flex-direction:column;gap:6px}
+.mistake-item{
+  display:flex;gap:8px;padding:9px 10px;
+  background:rgba(255,69,69,.06);border:1px solid rgba(255,69,69,.15);
+  border-radius:9px;align-items:flex-start;
+}
+.mistake-x{color:var(--red);font-size:14px;flex-shrink:0;margin-top:1px}
+.mistake-text{font-size:12.5px;line-height:1.5;color:var(--txt2)}
+
+/* Add to workout button */
+.ex-panel-footer{
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--brd);flex-shrink:0;display:flex;gap:8px;
+}
 </style>
 <!-- JetBrains Mono from CDN (small, works in VN) -->
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -385,8 +551,7 @@ label.lbl{font-size:10.5px;color:var(--txt3);display:block;margin-bottom:4px;tex
 /* ═══════════════════════════════════════════
    PROGRESS SCREEN
 ═══════════════════════════════════════════ */
-.chart-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--rl);padding:16px;margin-bottom:12px;position:relative;overflow:hidden}
-.chart-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--lime),transparent);opacity:.5}
+.chart-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--rl);padding:14px;margin-bottom:10px}
 .chart-title{font-size:13.5px;font-weight:500;margin-bottom:2px}
 .chart-sub{font-size:11px;color:var(--txt3);margin-bottom:10px}
 .chart-svg{width:100%;overflow:visible}
@@ -2508,24 +2673,13 @@ function hidePro(){
 // ════════════════════════════════════════════════════════
 function goTab(id){
   if(navigator.vibrate&&ST.settings?.haptic!==false)navigator.vibrate(8);
-  // Properly hide all screens first (prevents overlap)
-  document.querySelectorAll('.screen').forEach(s=>{
-    s.classList.remove('active');
-    s.style.display='none'; // force hide in case CSS transition overrode display
-  });
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none';});
   document.querySelectorAll('.bni').forEach(b=>b.classList.remove('on'));
-  const activeScreen=document.getElementById(id);
-  if(activeScreen){activeScreen.style.display='flex';activeScreen.classList.add('active');}
+  const scr=document.getElementById(id);if(scr){scr.style.display='flex';scr.classList.add('active');}
   const map={'s-home':'bn-home','s-workout':'bn-workout','s-plan':'bn-plan','s-progress':'bn-progress','s-nut':'bn-nut','s-schedule':'bn-schedule','s-profile':'bn-home'};
   if(map[id])document.getElementById(map[id]).classList.add('on');
-  if(id==='s-home'){renderHome();}
-  if(id==='s-workout'){renderWHist();
-    // Show correct view - active workout or idle
-    const idle=document.getElementById('w-idle');
-    const active=document.getElementById('w-active');
-    if(ST.activeW){if(idle)idle.style.display='none';if(active)active.style.display='flex';}
-    else{if(idle)idle.style.display='block';if(active)active.style.display='none';}
-  }
+  if(id==='s-home'){renderHome();document.getElementById('s-home').querySelector('[style*="overflow"]')?.scrollTo(0,0);}
+  if(id==='s-workout')renderWHist();
   if(id==='s-plan')renderPlans('all');
   if(id==='s-progress'){renderProgress();document.getElementById('s-progress').scrollTo(0,0);}
   if(id==='s-profile'){syncProfileForm();document.getElementById('s-profile').scrollTo(0,0);}
@@ -2674,22 +2828,13 @@ function startTimer(){
   },1000);
 }
 function addEx(name){
-  ST.exCtr++;
-  const id='e'+ST.exCtr;
+  ST.exCtr++;const id='e'+ST.exCtr;
   const exInfo=EXERCISES.find(e=>e.name===name||e.nameVi===name);
-  // Get last session data for compare + auto-fill
   const lastW=ST.workouts.find(w=>w.exDetails&&w.exDetails[name]);
-  const lastData=lastW?.exDetails[name];
-  // Parse last sets for auto-fill
   let prevSets=[];
-  if(lastData){
-    prevSets=lastData.split(', ').map(s=>{
-      const m=s.match(/(\d+\.?\d*)kg×(\d+)/);
-      return m?{kg:+m[1],reps:+m[2]}:null;
-    }).filter(Boolean);
+  if(lastW?.exDetails[name]){
+    prevSets=lastW.exDetails[name].split(', ').map(s=>{const m=s.match(/(\d+\.?\d*)kg×(\d+)/);return m?{kg:+m[1],reps:+m[2]}:null;}).filter(Boolean);
   }
-  // Auto-suggest weight (last + 2.5 if PR possible)
-  const suggest=prevSets.length?Math.round((prevSets[prevSets.length-1].kg+2.5)*2)/2:null;
   ST.exData[id]={name,note:'',sets:[
     {kg:prevSets[0]?.kg||0,reps:prevSets[0]?.reps||0,rpe:0,done:false},
     {kg:prevSets[1]?.kg||0,reps:prevSets[1]?.reps||0,rpe:0,done:false},
@@ -2698,134 +2843,141 @@ function addEx(name){
   const cont=document.getElementById('aw-exercises');
   const wrap=document.createElement('div');
   wrap.className='ex-block';wrap.id=id+'_b';
-  // Warm-up sets suggestion
-  const workingKg=prevSets[0]?.kg||60;
-  const warmupHtml=prevSets.length?`
-    <div style="background:rgba(255,184,77,.06);border:1px solid rgba(255,184,77,.15);border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:11px;color:var(--amber)">
-      <span style="font-family:var(--FM);font-size:9px;letter-spacing:.08em">WARM-UP GỢI Ý</span>
-      <div style="margin-top:4px;color:var(--txt2)">
-        Bar×10 → ${Math.round(workingKg*0.5)}kg×8 → ${Math.round(workingKg*0.7)}kg×5 → ${Math.round(workingKg*0.85)}kg×3
-      </div>
-    </div>`:'';
-  // Suggest badge
-  const suggestHtml=suggest?`<span style="background:rgba(200,241,53,.15);color:var(--lime);font-size:10px;padding:1px 6px;border-radius:4px;font-family:var(--FM)">↑ Thử ${suggest}kg</span>`:'';
-  const vsHtml=lastData?`
-    <div class="vs-row" style="flex-wrap:wrap;gap:6px">
-      📅 Lần trước: <span class="vs-better">${lastData}</span>
-      ${suggestHtml}
-      <button onclick="copyPrevSets('${id}')" style="background:none;border:none;color:var(--lime);font-size:10px;cursor:pointer;font-family:var(--FM);padding:0">📋 Copy</button>
-    </div>`:'';
-  const makeSetRow=(i,kg,reps)=>`
-    <div class="set-row" id="${id}_row${i}">
-      <span class="sn" style="position:relative">
-        ${i+1}
-        <span id="${id}_pr${i}" style="display:none;position:absolute;top:-6px;right:-4px;background:var(--lime);color:#111;font-size:7px;font-weight:700;border-radius:3px;padding:1px 3px;font-family:var(--FM)">PR</span>
-      </span>
-      <div style="position:relative">
-        <input class="si" type="number" min="0" step="0.5" inputmode="decimal" value="${kg||''}" placeholder="${prevSets[i]?.kg||0}" 
-          oninput="setV('${id}',${i},'kg',this.value);checkSetPR('${id}',${i})"
-          onfocus="this.select()"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();this.closest('.set-row').querySelectorAll('input')[1]?.focus();}">
-      </div>
-      <div style="position:relative">
-        <input class="si" type="number" min="0" value="${reps||''}" placeholder="${prevSets[i]?.reps||0}"
-          oninput="setV('${id}',${i},'reps',this.value);checkSetPR('${id}',${i})"
-          onfocus="this.select()"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();this.closest('.set-row').querySelectorAll('input')[2]?.focus();}">
-      </div>
-      <input class="si" type="number" min="1" max="10" inputmode="numeric" placeholder="7" 
-        oninput="setV('${id}',${i},'rpe',this.value);trackRPE(+this.value)"
-        onkeydown="if(event.key==='Enter'){event.preventDefault();this.closest('.set-row').querySelector('.sdone')?.click();}">
-      <button class="sdone" id="${id}_s${i}" onclick="doneSet('${id}',${i},this)">✓</button>
-    </div>`;
+  const muscleVi={chest:'Ngực',back:'Lưng',legs:'Chân',shoulders:'Vai',arms:'Tay',core:'Core',glutes:'Mông'};
+  const suggest=prevSets.length?Math.round((prevSets[prevSets.length-1].kg+2.5)*2)/2:null;
+  const prevTxts=prevSets.map(s=>s.kg+'×'+s.reps);
+  // Prev compare bar
+  const prevBar=lastW?`<div style="background:rgba(77,159,255,.06);border-top:1px solid rgba(77,159,255,.1);padding:7px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span style="font-size:9px;font-family:var(--FM);color:var(--blue);letter-spacing:.06em">TRƯỚC</span>
+    <span style="font-size:11px;color:var(--txt2)">${lastW.exDetails[name]}</span>
+    ${suggest?'<span style="background:rgba(200,241,53,.12);color:var(--lime);font-size:10px;padding:2px 7px;border-radius:4px;font-family:var(--FM)">↑ Thử '+suggest+'kg</span>':''}
+    <button onclick="copyAllPrev('${id}')" style="margin-left:auto;font-size:10px;color:var(--lime);background:none;border:none;cursor:pointer;font-family:var(--FM)">📋 Copy tất cả</button>
+  </div>`:'';
   wrap.innerHTML=`
-    <div class="ex-block-header">
+    <div class="ex-block-header" onclick="openExPanel('${name}','${id}')" style="cursor:pointer">
       <div class="ex-block-thumb">${exInfo?.emoji||'💪'}</div>
-      <div style="flex:1">
-        <div class="ex-block-name">${name}</div>
-        ${exInfo?`<div class="xxs muted">${exInfo.nameVi!==name?exInfo.nameVi:''} · ${exInfo.diffVi||''}${exInfo.muscle?' · '+exInfo.muscle:''}</div>`:''}
+      <div style="flex:1;min-width:0">
+        <div class="ex-block-name">${exInfo?.nameVi||name}</div>
+        <div style="font-size:10px;color:var(--txt3);font-family:var(--FM);margin-top:1px;display:flex;align-items:center;gap:6px">
+          ${exInfo?'<span style="background:rgba(255,184,77,.1);color:var(--amber);padding:1px 5px;border-radius:4px;font-size:9px">'+(muscleVi[exInfo.muscle]||exInfo.muscle)+'</span>':''}
+          ${lastW?'<span>📅 '+lastW.date+'</span>':'<span style="opacity:.5">Chưa tập</span>'}
+        </div>
       </div>
-      <div class="ex-block-actions">
-        <button class="btn bg bxs" onclick="showExHistory('${name}')" title="Lịch sử">📈</button>
-        <button class="btn bg bxs" onclick="autoAddWarmup('${id}','${name}')" title="Warm-up">🔥</button>
-        <button class="btn bg bxs" onclick="showPlateCalc('${id}','${name}')" title="Đĩa tạ">🏋️</button>
-        <button class="btn bg bxs" onclick="swapEx('${id}','${name}')">↔</button>
-        <button class="btn bg bxs" onclick="removeEx('${id}')">✕</button>
-      </div>
-    </div>
-    ${vsHtml}
-    ${warmupHtml}
-    <div class="set-table-head"><span>#</span><span>kg</span><span>Reps</span><span>RPE</span><span></span></div>
-    <div id="${id}_sets">
-      ${[0,1,2].map(i=>makeSetRow(i,prevSets[i]?.kg,prevSets[i]?.reps)).join('')}
-    </div>
-    <div style="display:flex;gap:6px;margin-top:5px">
-      <button class="btn bg bxs" onclick="addSet('${id}')">+ Set</button>
-      <button class="btn bg bxs" onclick="finishAllSets('${id}')">✓ All</button>
-      <button class="btn bg bxs" onclick="toggleRestAdj('${id}')">⏱ ±</button>
-    </div>
-    <div id="${id}_rest_adj" style="display:none;margin-top:6px;transition:all .2s">
-      <div class="row" style="gap:6px">
-        <button onclick="adjustRest(-15)" class="btn bg bxs">-15s</button>
-        <button onclick="adjustRest(15)" class="btn bg bxs">+15s</button>
-        <button onclick="adjustRest(30)" class="btn bg bxs">+30s</button>
-        <button onclick="adjustRest(60)" class="btn bg bxs">+1:00</button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span id="${id}_vol" style="font-size:11px;color:var(--lime);font-family:var(--FM);padding:2px 6px;background:rgba(200,241,53,.08);border-radius:4px">— kg</span>
+        <button onclick="removeEx('${id}')" style="background:none;border:none;color:var(--txt3);cursor:pointer;font-size:14px;padding:4px">✕</button>
       </div>
     </div>
-    <div style="margin-top:7px">
-      <input class="inp" id="${id}_note" placeholder="Ghi chú bài này..." style="font-size:12px;padding:7px 10px;color:var(--txt2)" oninput="ST.exData['${id}'].note=this.value">
+    ${prevBar}
+    <div style="overflow-x:auto">
+      <div style="padding:6px 14px 2px;display:grid;grid-template-columns:28px 64px 1fr 64px 36px;gap:4px;align-items:center">
+        <span style="font-size:9px;font-family:var(--FM);color:var(--txt3)">#</span>
+        <span style="font-size:9px;font-family:var(--FM);color:var(--blue);text-align:center">TRƯỚC</span>
+        <span style="font-size:9px;font-family:var(--FM);color:var(--txt3);text-align:center">KG</span>
+        <span style="font-size:9px;font-family:var(--FM);color:var(--txt3);text-align:center">REPS</span>
+        <span style="font-size:9px;font-family:var(--FM);color:var(--txt3);text-align:center">✓</span>
+      </div>
+      <div id="${id}_sets"></div>
     </div>
-    <div class="ai-tip" id="${id}_tip"></div>`;
+    <div class="ex-block-actions">
+      <button class="ex-act-btn" onclick="addSet('${id}')">＋ Set</button>
+      <button class="ex-act-btn" onclick="swapEx('${id}','${name}')">⇄ Đổi</button>
+      <button class="ex-act-btn" style="color:var(--lime);border-color:rgba(200,241,53,.2);background:rgba(200,241,53,.06)" onclick="openExPanel('${name}','${id}')">💪 Form Guide</button>
+      <button class="ex-act-btn" onclick="removeEx('${id}')">✕</button>
+    </div>
+    <div id="${id}_tip" class="ai-tip" style="display:none"></div>`;
   cont.appendChild(wrap);
-  updateWorkoutProgress();
-  // Auto-load AI tip silently
+  // Render 3 set rows
+  const setsDiv=document.getElementById(id+'_sets');
+  for(let i=0;i<3;i++){
+    const div=document.createElement('div');
+    div.className='set-row';div.id=id+'_row'+i;
+    div.style.cssText='padding:4px 14px;display:grid;grid-template-columns:28px 64px 1fr 64px 36px;gap:4px;align-items:center';
+    div.innerHTML=makeSetRowHTML(id,i,prevSets[i]?.kg||0,prevSets[i]?.reps||0,prevTxts[i]||'—');
+    setsDiv.appendChild(div);
+  }
+  updateVolumeDisplay();updateWorkoutProgress();
+  setTimeout(()=>wrap.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
   setTimeout(()=>autoLoadCoachTip(id,name),800);
-  // Auto-fill exData with prev values
-  [0,1,2].forEach(i=>{
-    if(prevSets[i]){ST.exData[id].sets[i].kg=prevSets[i].kg;ST.exData[id].sets[i].reps=prevSets[i].reps;}
-  });
 }
+
+function copyAllPrev(id){
+  const nm=ST.exData[id]?.name;const lw=ST.workouts.find(w=>w.exDetails?.[nm]);if(!lw)return;
+  const prev=lw.exDetails[nm].split(', ').map(s=>{const m=s.match(/(\d+\.?\d*)kg×(\d+)/);return m?{kg:+m[1],reps:+m[2]}:null;}).filter(Boolean);
+  prev.forEach((p,i)=>{
+    setV(id,i,'kg',p.kg);setV(id,i,'reps',p.reps);
+    const ke=document.getElementById(id+'_kg'+i);const re=document.getElementById(id+'_reps'+i);
+    if(ke)ke.value=p.kg;if(re)re.value=p.reps;
+  });
+  toast('📋 Đã copy '+(prev.length)+' sets từ buổi trước');
+  if(navigator.vibrate)navigator.vibrate(40);
+}
+
 function setV(id,i,f,v){if(ST.exData[id]?.sets[i])ST.exData[id].sets[i][f]=+v;}
 function doneSet(id,i,btn){
   if(!ST.exData[id]?.sets[i])return;
   const done=!ST.exData[id].sets[i].done;
   ST.exData[id].sets[i].done=done;
-  btn.classList.toggle('on',done);
+  if(btn){btn.classList.toggle('on',done);btn.textContent=done?'✓':'○';}
+  const row=document.getElementById(id+'_row'+i);
+  if(row)row.style.opacity=done?'.55':'1';
   if(done){
-    updateVolumeDisplay();
-    updateWorkoutProgress();
-    // Check PR on this set
     const s=ST.exData[id].sets[i];
     if(s.kg>0&&s.reps>0){
-      checkSetPR(id,i);
-      // If confirmed PR, show badge and vibrate
       if(checkPR(ST.exData[id].name,s.kg,s.reps)){
-        const badge=document.getElementById(id+'_pr'+i);
-        if(badge)badge.style.display='block';
-        if(navigator.vibrate)navigator.vibrate([100,50,100]);
-      }
+        const pr=document.getElementById(id+'_pr'+i);
+        if(pr){pr.style.display='block';setTimeout(()=>{pr.style.display='none';},2500);}
+        if(navigator.vibrate)navigator.vibrate([80,40,120]);
+        confetti&&confetti(6);
+      } else {if(navigator.vibrate&&ST.settings?.haptic!==false)navigator.vibrate(28);}
     }
-    const doneSets=ST.exData[id].sets.filter(s=>s.done&&s.reps>0);
-    const nextSet=ST.exData[id].sets.find((s,idx)=>idx>i&&!s.done);
-    const nextMsg=nextSet
-      ?`<strong>Set ${i+2}:</strong> ${nextSet.kg||'?'}kg × ${nextSet.reps||'?'} reps · RPE ${nextSet.rpe||7}`
-      :'<strong>Xong bài này!</strong> Chuyển bài tiếp theo 🎉';
-    if(ST.settings?.autoRest!==false)startRest(ST.settings?.defaultRest||120, nextMsg, ST.exData[id].name);
-    // Find next undone set and auto-scroll
-    const nextIdx=ST.exData[id].sets.findIndex((s,idx)=>idx>i&&!s.done);
-    if(nextIdx>=0)scrollToSet(id,nextIdx);
-    // Track RPE
-    const rpeVal=+ST.exData[id].sets[i]?.rpe||0;
-    if(rpeVal>=1&&rpeVal<=10)trackRPE(rpeVal);
-    if(doneSets.length===2){
-      const prompt=`${ST.profile.level} ${ST.profile.kg}kg, ${ST.profile.goal}. Vừa tập ${ST.exData[id].name}: ${doneSets.map(s=>`${s.kg}kg×${s.reps}reps RPE${s.rpe||7}`).join(', ')}. Gợi ý set tiếp theo (1-2 câu tiếng Việt, số kg cụ thể).`;
-      ai(prompt,180).then(r=>{
-        const tip=document.getElementById(id+'_tip');
-        if(tip){tip.textContent=r;tip.classList.add('show');}
-      });
-    }
+    updateVolumeDisplay();updateWorkoutProgress();
+    // Inline rest timer - show in exercise block
+    const restSec=+document.getElementById(id+'_rest')?.value||ST.settings?.defaultRest||90;
+    showInlineRest(id,restSec);
+    // Auto-focus next input
+    setTimeout(()=>{document.getElementById(id+'_kg'+(i+1))?.focus();},150);
   }
 }
+
+function showInlineRest(exId,sec){
+  // Remove existing rest bar for this exercise
+  const old=document.getElementById('irest_'+exId);if(old)old.remove();
+  const body=document.getElementById(exId+'_b');if(!body)return;
+  const div=document.createElement('div');
+  div.id='irest_'+exId;
+  div.style.cssText='margin:0 14px 10px;padding:10px 13px;background:rgba(200,241,53,.07);border:1px solid rgba(200,241,53,.2);border-radius:10px;display:flex;align-items:center;gap:10px';
+  let rem=sec;
+  div.innerHTML=`<div style="font-family:var(--FD);font-size:26px;color:var(--lime);min-width:46px" id="irt_${exId}">${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}</div>
+    <div style="flex:1"><div style="height:3px;background:var(--bg4);border-radius:2px"><div id="irb_${exId}" style="height:100%;background:var(--lime);border-radius:2px;width:100%;transition:width .9s linear"></div></div></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+      <div style="display:flex;gap:4px">
+        <button onclick="irestAdj('${exId}',-15)" style="font-size:9px;font-family:var(--FM);color:var(--lime);padding:3px 7px;background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.2);border-radius:4px;cursor:pointer">−15s</button>
+        <button onclick="irestAdj('${exId}',30)" style="font-size:9px;font-family:var(--FM);color:var(--lime);padding:3px 7px;background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.2);border-radius:4px;cursor:pointer">+30s</button>
+      </div>
+      <span onclick="irestSkip('${exId}')" style="font-size:10px;color:var(--lime);cursor:pointer;font-family:var(--FM)">Skip ✓</span>
+    </div>`;
+  // Insert before ex-block-actions
+  const actions=body.querySelector('.ex-block-actions');
+  if(actions)body.insertBefore(div,actions);else body.appendChild(div);
+  // Countdown
+  const timer=setInterval(()=>{
+    rem--;
+    const te=document.getElementById('irt_'+exId);
+    const be=document.getElementById('irb_'+exId);
+    if(!te){clearInterval(timer);return;}
+    te.textContent=Math.floor(rem/60)+':'+String(Math.max(0,rem%60)).padStart(2,'0');
+    if(be)be.style.width=(rem/sec*100)+'%';
+    if(rem<=3&&rem>0&&navigator.vibrate)navigator.vibrate(60);
+    if(rem<=0){clearInterval(timer);if(ST.settings?.sound!==false)playRestDone?.();
+      if(navigator.vibrate)navigator.vibrate([200,100,200]);
+      const d=document.getElementById('irest_'+exId);if(d)d.remove();}
+  },1000);
+  window._irest=window._irest||{};window._irest[exId]={timer,get rem(){return rem;},set rem(v){rem=v;}};
+}
+function irestSkip(id){const t=window._irest?.[id];if(t)clearInterval(t.timer);const d=document.getElementById('irest_'+id);if(d)d.remove();}
+function irestAdj(id,d){const t=window._irest?.[id];if(!t)return;t.rem=Math.max(5,t.rem+d);}
+
 function updateVolumeDisplay(){
   let v=0,sets=0;
   Object.values(ST.exData).forEach(e=>e.sets.forEach(s=>{if(s.done&&s.kg>0&&s.reps>0){v+=s.kg*s.reps;sets++;}}));
@@ -3403,12 +3555,6 @@ function renderProgress(){
   try{
   const el=document.getElementById('s-progress');
   if(el)el.scrollTo({top:0,behavior:'smooth'});
-  // Animate cards in
-  setTimeout(()=>{
-    document.querySelectorAll('#s-progress .chart-card,#s-progress .card').forEach((c,i)=>{
-      c.style.animation=`fadeUp .3s ease ${i*0.05}s both`;
-    });
-  },50);
   renderCharts();renderMeas();renderAchievements();
   renderMonthlyCalendar('monthly-cal');
   render1RM();
@@ -3453,7 +3599,7 @@ function renderCharts(){
   });
 }
 function drawChart(key,data,lbls){
-  const W=320,H=88,pad=12;
+  const W=320,H=80,pad=12;
   const min=Math.min(...data)-3,max=Math.max(...data)+3;
   const pts=data.map((v,i)=>({x:pad+(i/(data.length-1))*(W-2*pad),y:pad+(1-(v-min)/(max-min))*(H-2*pad)}));
   const line=pts.map((p,i)=>i===0?`M${p.x},${p.y}`:`L${p.x},${p.y}`).join(' ');
@@ -4161,19 +4307,11 @@ function render1RM(){
   });
   const entries=Object.entries(ormMap).sort((a,b)=>b[1]-a[1]).slice(0,6);
   if(!entries.length){el.innerHTML='<div class="xs muted">Chưa có dữ liệu — log workout để tính 1RM</div>';return;}
-  el.innerHTML=entries.map(([name,orm],i)=>{
-    const rank=['🥇','🥈','🥉'][i]||'';
-    return`<div class="rb" style="padding:9px 0;border-bottom:1px solid var(--brd);align-items:center">
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:500">${rank} ${name}</div>
-        <div style="font-size:10px;color:var(--txt3);font-family:var(--FM);margin-top:1px">Est. 1RM</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-family:var(--FD);font-size:22px;letter-spacing:.04em;color:var(--lime)">${dispKg(orm)}</div>
-        <div style="font-size:9px;color:var(--txt3);font-family:var(--FM)">🏆 BEST</div>
-      </div>
-    </div>`;
-  }).join('');
+  el.innerHTML=entries.map(([name,orm])=>`
+    <div class="rb" style="padding:8px 0;border-bottom:1px solid var(--brd)">
+      <span style="font-size:13px;color:var(--txt2)">${name}</span>
+      <span style="font-family:var(--FM);font-size:13px;color:var(--lime)">${dispKg(orm)} 1RM</span>
+    </div>`).join('');
 }
 
 // ════════════════════════════════════════════════════════
@@ -4756,27 +4894,53 @@ function toggleRestAdj(id){
 
 // Upgrade addSet to use consistent row style
 function addSet(id){
-  const idx=ST.exData[id].sets.length;
-  ST.exData[id].sets.push({kg:0,reps:0,rpe:0,done:false});
-  const prevSets=ST.exData[id].sets;
-  const prevKg=prevSets[idx-1]?.kg||0;
-  const prevReps=prevSets[idx-1]?.reps||0;
-  const r=document.createElement('div');
-  r.className='set-row';r.id=`${id}_row${idx}`;
-  r.innerHTML=`
-    <span class="sn" style="position:relative">
-      ${idx+1}
-      <span id="${id}_pr${idx}" style="display:none;position:absolute;top:-6px;right:-4px;background:var(--lime);color:#111;font-size:7px;font-weight:700;border-radius:3px;padding:1px 3px;font-family:var(--FM)">PR</span>
-    </span>
-    <input class="si" type="number" min="0" step="0.5" inputmode="decimal" placeholder="${prevKg}" onfocus="this.select()"
-      oninput="setV('${id}',${idx},'kg',this.value);checkSetPR('${id}',${idx})">
-    <input class="si" type="number" min="0" placeholder="${prevReps}" onfocus="this.select()"
-      oninput="setV('${id}',${idx},'reps',this.value);checkSetPR('${id}',${idx})">
-    <input class="si" type="number" min="1" max="10" inputmode="numeric" placeholder="7" oninput="setV('${id}',${idx},'rpe',this.value);trackRPE(+this.value)">
-    <button class="sdone" id="${id}_s${idx}" onclick="doneSet('${id}',${idx},this)">✓</button>`;
-  document.getElementById(id+'_sets').appendChild(r);
-  updateWorkoutProgress();
+  if(!ST.exData[id])return;
+  const i=ST.exData[id].sets.length;
+  const prev=ST.exData[id].sets[i-1]||{};
+  ST.exData[id].sets.push({kg:prev.kg||0,reps:prev.reps||0,rpe:0,done:false});
+  // Get prev history
+  const nm=ST.exData[id].name;
+  const lw=ST.workouts.find(w=>w.exDetails?.[nm]);
+  let prevSets=[];
+  if(lw?.exDetails[nm]){prevSets=lw.exDetails[nm].split(', ').map(s=>{const m=s.match(/(\d+\.?\d*)kg×(\d+)/);return m?{kg:+m[1],reps:+m[2]}:null;}).filter(Boolean);}
+  // Append new row
+  const tbody=document.getElementById(id+'_sets')||document.getElementById(id+'_b');
+  if(!tbody)return;
+  const prev2=prevSets[i];
+  const prevTxt=prev2?prev2.kg+'×'+prev2.reps:'—';
+  const div=document.createElement('div');
+  div.className='set-row';div.id=id+'_row'+i;
+  div.innerHTML=makeSetRowHTML(id,i,prev.kg||0,prev.reps||0,prevTxt);
+  tbody.appendChild(div);
+  setTimeout(()=>document.getElementById(id+'_kg'+i)?.focus(),50);
 }
+function makeSetRowHTML(id,i,kg,reps,prevTxt){
+  return `<span class="sn" style="position:relative">${i+1}<span id="${id}_pr${i}" style="display:none;position:absolute;top:-6px;right:-4px;background:var(--lime);color:#111;font-size:7px;font-weight:800;border-radius:3px;padding:1px 3px;font-family:var(--FM)">PR</span></span>
+    <span class="prev" onclick="fillPrev('${id}',${i})" style="font-size:10px;color:var(--txt3);font-family:var(--FM);padding:3px 7px;background:var(--bg3);border:1px solid var(--brd2);border-radius:5px;cursor:pointer;min-width:44px;text-align:center;display:inline-block">${prevTxt}</span>
+    <div style="display:flex;align-items:center;gap:3px">
+      <button onclick="adjKg('${id}',${i},-2.5)" style="width:22px;height:22px;border-radius:5px;background:var(--bg4);border:1px solid var(--brd2);color:var(--txt2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">−</button>
+      <div style="position:relative"><input class="si" type="number" step="0.5" inputmode="decimal" id="${id}_kg${i}" value="${kg||''}" placeholder="${kg||'0'}" oninput="setV('${id}',${i},'kg',this.value);checkSetPR('${id}',${i})" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('${id}_reps${i}')?.focus()}" onfocus="this.select()"></div>
+      <button onclick="adjKg('${id}',${i},2.5)" style="width:22px;height:22px;border-radius:5px;background:var(--bg4);border:1px solid var(--brd2);color:var(--txt2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+    </div>
+    <input class="si" type="number" inputmode="numeric" id="${id}_reps${i}" value="${reps||''}" placeholder="${reps||'0'}" oninput="setV('${id}',${i},'reps',this.value);checkSetPR('${id}',${i})" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('${id}_done${i}')?.click()}" onfocus="this.select()">
+    <button class="sdone" id="${id}_done${i}" onclick="doneSet('${id}',${i},this)">○</button>`;
+}
+function adjKg(id,i,d){
+  const el=document.getElementById(id+'_kg'+i);if(!el)return;
+  const v=Math.max(0,Math.round((+el.value+d)*2)/2);
+  el.value=v;setV(id,i,'kg',v);checkSetPR(id,i);
+}
+function fillPrev(id,i){
+  const nm=ST.exData[id]?.name;
+  const lw=ST.workouts.find(w=>w.exDetails?.[nm]);if(!lw)return;
+  const prev=lw.exDetails[nm].split(', ').map(s=>{const m=s.match(/(\d+\.?\d*)kg×(\d+)/);return m?{kg:+m[1],reps:+m[2]}:null;}).filter(Boolean)[i];
+  if(!prev)return;
+  const ke=document.getElementById(id+'_kg'+i);const re=document.getElementById(id+'_reps'+i);
+  if(ke){ke.value=prev.kg;setV(id,i,'kg',prev.kg);}
+  if(re){re.value=prev.reps;setV(id,i,'reps',prev.reps);}
+  if(navigator.vibrate)navigator.vibrate(35);
+}
+
 
 // ════════════════════════════════════════════════════════
 // SESSION NOTE (whole workout)
@@ -4833,26 +4997,17 @@ function quickAddRecentFood(i){
 // SMOOTH PAGE TRANSITIONS
 // ════════════════════════════════════════════════════════
 function addTransitionCSS(){
-  const style=document.createElement('style');
-  // DO NOT touch screen display - keep display:none/flex intact
-  // Only add micro-interaction animations that don't affect layout
-  style.textContent=`
-    .ex-block{animation:fadeUp .2s ease both}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes popIn{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
-    .bni{transition:color .15s,transform .1s}
-    .bni:active{transform:scale(.88)}
-    .btn:active{transform:scale(.96);transition:transform .08s}
-    .plan-card{transition:transform .12s,box-shadow .12s}
+  const s=document.createElement('style');
+  s.textContent=`
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    @keyframes popIn{0%{transform:scale(1)}45%{transform:scale(1.3)}100%{transform:scale(1)}}
+    .ex-block{animation:fadeUp .22s ease both}
+    .bni:active{opacity:.6;transform:scale(.88)}
+    .btn:active{transform:scale(.95)}
     .plan-card:active{transform:scale(.982)}
-    input.si:focus{border-color:var(--lime);background:rgba(200,241,53,.06)}
-    .sdone.on{animation:popIn .25s ease}
-    .food-preset{transition:background .1s}
-    .food-preset:active{background:var(--bg4)}
-    .sb{transition:transform .1s}
-    .sb:active{transform:scale(.97)}
+    .s-done-btn.done{animation:popIn .2s ease}
   `;
-  document.head.appendChild(style);
+  document.head.appendChild(s);
 }
 
 // ════════════════════════════════════════════════════════
@@ -5153,20 +5308,19 @@ function renderBMIIndicator(){
   ];
   const zone=zones.find(z=>bmi<z.max)||zones[zones.length-1];
   el.innerHTML=`
-    <div class="rb" style="margin-bottom:10px;align-items:flex-end">
+    <div class="rb" style="margin-bottom:6px">
       <div>
-        <div style="font-family:var(--FD);font-size:36px;letter-spacing:.04em;color:${zone.color};line-height:1">${bmi.toFixed(1)}</div>
-        <div style="font-size:10px;color:var(--txt3);font-family:var(--FM);letter-spacing:.06em;margin-top:2px">BMI INDEX</div>
+        <span style="font-family:var(--FD);font-size:28px;color:${zone.color};letter-spacing:.04em">${bmi.toFixed(1)}</span>
+        <span class="xs muted" style="margin-left:4px">BMI</span>
       </div>
-      <span class="tag" style="background:${zone.color}22;color:${zone.color};font-size:12px;padding:4px 10px">${zone.label}</span>
+      <span class="tag" style="background:${zone.color}22;color:${zone.color}">${zone.label}</span>
     </div>
-    <div style="position:relative;height:10px;background:linear-gradient(to right,#4d9fff 0%,#c8f135 30%,#ffb84d 60%,#ff4545 100%);border-radius:5px;margin-bottom:6px;box-shadow:0 2px 8px rgba(0,0,0,.3)">
-      <div style="position:absolute;top:-4px;left:${Math.max(2,Math.min(pct,98))}%;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:white;border:3px solid ${zone.color};box-shadow:0 2px 6px rgba(0,0,0,.5);transition:left .4s ease"></div>
+    <div style="position:relative;height:8px;background:linear-gradient(to right,#4d9fff,#c8f135,#ffb84d,#ff4545);border-radius:4px;margin-bottom:4px">
+      <div style="position:absolute;top:-3px;left:${pct}%;transform:translateX(-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid ${zone.color};box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>
     </div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:2px" class="xxs muted">
+    <div style="display:flex;justify-content:space-between" class="xxs muted">
       <span>15</span><span>18.5</span><span>25</span><span>30</span><span>35+</span>
-    </div>
-    <div style="font-size:11px;color:var(--txt3);margin-top:6px">Cân nặng: ${p.kg}kg · Chiều cao: ${p.cm}cm</div>`;
+    </div>`;
 }
 
 // ════════════════════════════════════════════════════════
@@ -5188,8 +5342,8 @@ function renderHeatmap(){
         const ds=d.toLocaleDateString('vi-VN');
         const count=workoutMap[ds]||0;
         const isToday=ds===now.toLocaleDateString('vi-VN');
-        const col=count>0?`rgba(200,241,53,${Math.min(0.3+count*0.35,1)})`:isToday?'rgba(200,241,53,.2)':'rgba(255,255,255,.05)';
-        const op=1;
+        const col=count>0?'var(--lime)':isToday?'rgba(200,241,53,.3)':'var(--bg4)';
+        const op=count>0?Math.min(0.4+count*0.3,1):1;
         return`<div style="aspect-ratio:1;border-radius:2px;background:${col};opacity:${op};cursor:default" title="${ds}${count?': '+count+' buổi':''}"></div>`;
       }).join('')}
     </div>
@@ -5407,31 +5561,16 @@ function initFoodSwipe(){
 // OVERLAY CLICK TO CLOSE MODALS
 // ════════════════════════════════════════════════════════
 function initOverlayDismiss(){
-  const modalMap={
-    'add-food-modal':cancelAddFood,
-    'meas-modal':closeMeasModal,
-    'settings-sheet':closeSettings,
-    'share-modal':closeShareModal,
-    'plate-modal':()=>document.getElementById('plate-modal').style.display='none',
-  };
-  Object.entries(modalMap).forEach(([id,closeFn])=>{
+  ['add-food-modal','meas-modal','settings-sheet'].forEach(id=>{
     const el=document.getElementById(id);
     if(!el)return;
     el.addEventListener('click',e=>{
-      if(e.target===el)closeFn();
-    });
-  });
-  // Swipe down to close bottom sheets
-  ['settings-sheet','add-food-modal'].forEach(id=>{
-    const el=document.getElementById(id);if(!el)return;
-    let sy=0;
-    el.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;},{passive:true});
-    el.addEventListener('touchend',e=>{
-      if(e.changedTouches[0].clientY-sy>60){
-        if(id==='settings-sheet')closeSettings();
-        else cancelAddFood();
+      if(e.target===el){
+        if(id==='add-food-modal')cancelAddFood();
+        else if(id==='meas-modal')closeMeasModal();
+        else if(id==='settings-sheet')closeSettings();
       }
-    },{passive:true});
+    });
   });
 }
 
@@ -5878,6 +6017,277 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 });
 
+
+// ════════════════════════════════════════════════════════
+// EXERCISE QUICK-VIEW PANEL
+// ════════════════════════════════════════════════════════
+
+// Muscle → which SVG parts to highlight
+const MUSCLE_MAP={
+  chest:{
+    primary:['front-chest-l','front-chest-r'],
+    secondary:['front-shoulder-l','front-shoulder-r','back-tricep-l','back-tricep-r'],
+    color:'#e84040',label:'Ngực'
+  },
+  back:{
+    primary:['back-lat-l','back-lat-r','back-trap-l','back-trap-r'],
+    secondary:['back-rdelt-l','back-rdelt-r','back-lower-l','back-lower-l'],
+    color:'#4d9fff',label:'Lưng'
+  },
+  legs:{
+    primary:['front-quad-l','front-quad-r','back-ham-l','back-ham-r'],
+    secondary:['back-glute-l','back-glute-r'],
+    color:'#3dd9b3',label:'Chân'
+  },
+  shoulders:{
+    primary:['front-shoulder-l','front-shoulder-r'],
+    secondary:['back-rdelt-l','back-rdelt-r','back-trap-l','back-trap-r'],
+    color:'#ffb84d',label:'Vai'
+  },
+  arms:{
+    primary:['front-bicep-l','front-bicep-r'],
+    secondary:['back-tricep-l','back-tricep-r'],
+    color:'#c8f135',label:'Tay'
+  },
+  core:{
+    primary:['front-abs-1'],
+    secondary:[],
+    color:'#9b59b6',label:'Core'
+  },
+  glutes:{
+    primary:['back-glute-l','back-glute-r'],
+    secondary:['back-ham-l','back-ham-r'],
+    color:'#ff6eb4',label:'Mông'
+  },
+};
+
+// Equipment labels
+const EQUIP_LABELS={
+  barbell:'🏋️ Barbell',dumbbell:'🪀 Dumbbell',cable:'🔗 Cable',
+  machine:'🤖 Máy',bodyweight:'🤸 Bodyweight',kettlebell:'⚾ Kettlebell',
+  other:'🔧 Khác',band:'🪄 Band',home:'🏠 Tại nhà',
+};
+
+let _panelCurrentEx=null;
+let _panelAddId=null; // which workout exercise triggered this
+
+function openExPanel(exName,fromWorkoutId){
+  const ex=EXERCISES.find(e=>e.name===exName||e.nameVi===exName);
+  if(!ex)return;
+  _panelCurrentEx=ex;
+  _panelAddId=fromWorkoutId||null;
+
+  // Header
+  document.getElementById('eqp-emoji').textContent=ex.emoji||'💪';
+  document.getElementById('eqp-title').textContent=ex.nameVi||ex.name;
+  const muscleInfo=MUSCLE_MAP[ex.muscle]||{label:ex.muscle,color:'var(--txt2)'};
+  document.getElementById('eqp-muscle').textContent=muscleInfo.label;
+  document.getElementById('eqp-muscle').style.color=muscleInfo.color;
+  document.getElementById('eqp-diff').textContent=ex.diffVi||'';
+
+  // Footer button
+  const addBtn=document.getElementById('eqp-add-btn');
+  if(addBtn){
+    if(ST.activeW){
+      addBtn.textContent='＋ Thêm vào buổi tập';addBtn.style.display='flex';
+    } else {
+      addBtn.style.display='none';
+    }
+  }
+
+  // Render muscle diagram
+  renderMuscleHighlight(ex.muscle);
+  renderMuscleEquip(ex);
+
+  // Render form guide
+  renderFormGuide(ex);
+
+  // Render video tab
+  renderVideoTab(ex);
+
+  // Reset to first tab
+  switchExTab('muscle',document.getElementById('eqt-muscle'));
+
+  // Show panel
+  document.getElementById('ex-panel-backdrop').classList.add('show');
+  document.getElementById('ex-quick-panel').classList.add('show');
+  document.body.style.overflow='hidden';
+
+  // Stop any playing video
+  const frame=document.getElementById('eqp-yt-frame');
+  if(frame){frame.style.display='none';frame.src='';}
+  document.getElementById('eqp-yt-thumb').style.display='block';
+}
+
+function closeExPanel(){
+  document.getElementById('ex-panel-backdrop').classList.remove('show');
+  document.getElementById('ex-quick-panel').classList.remove('show');
+  document.body.style.overflow='';
+  // Stop video
+  const frame=document.getElementById('eqp-yt-frame');
+  if(frame){frame.src='';frame.style.display='none';}
+  document.getElementById('eqp-yt-thumb').style.display='block';
+}
+
+function switchExTab(tab,btn){
+  document.querySelectorAll('.ex-ptab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.ex-ptab-content').forEach(c=>c.classList.remove('show'));
+  if(btn)btn.classList.add('on');
+  const el=document.getElementById('eqtc-'+tab);
+  if(el)el.classList.add('show');
+}
+
+function renderMuscleHighlight(muscle){
+  // Reset all muscles
+  document.querySelectorAll('.muscle-region').forEach(el=>{
+    el.style.fill='var(--bg4)';
+    el.style.animation='';
+    el.classList.remove('muscle-active','muscle-secondary');
+  });
+
+  const info=MUSCLE_MAP[muscle];
+  if(!info)return;
+
+  // Highlight primary muscles
+  info.primary.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){
+      el.style.fill=info.color;
+      el.classList.add('muscle-active');
+    }
+  });
+
+  // Highlight secondary muscles (lighter)
+  info.secondary.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){
+      el.style.fill=info.color;
+      el.style.opacity='.5';
+      el.classList.add('muscle-secondary');
+    }
+  });
+
+  // Legend
+  const legend=document.getElementById('eqp-legend');
+  if(legend){
+    legend.innerHTML=`
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px">
+        <div style="width:12px;height:12px;border-radius:3px;background:${info.color}"></div>
+        <span>Cơ chính: ${info.label}</span>
+      </div>
+      ${info.secondary.length?`<div style="display:flex;align-items:center;gap:5px;font-size:11px">
+        <div style="width:12px;height:12px;border-radius:3px;background:${info.color};opacity:.5"></div>
+        <span style="color:var(--txt3)">Cơ phụ</span>
+      </div>`:''}
+    `;
+  }
+}
+
+function renderMuscleEquip(ex){
+  const el=document.getElementById('eqp-equip');
+  if(!el)return;
+  const eLabel=EQUIP_LABELS[ex.equip]||ex.equip||'—';
+  el.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span>🛠️ Thiết bị cần: <strong>${eLabel}</strong></span>
+      <span>⭐ ${ex.diffVi||'—'}</span>
+    </div>`;
+}
+
+function renderFormGuide(ex){
+  // Cues
+  const cuesEl=document.getElementById('eqp-cues');
+  if(cuesEl){
+    const cues=ex.cues||[];
+    cuesEl.innerHTML=cues.length
+      ?cues.map((c,i)=>`<div class="cue-item"><span class="cue-num">${i+1}</span><span class="cue-text">${c}</span></div>`).join('')
+      :'<div style="color:var(--txt3);font-size:12px">Chưa có cues cho bài này.</div>';
+  }
+
+  // Mistakes
+  const mistEl=document.getElementById('eqp-mistakes');
+  if(mistEl){
+    const mistakes=ex.mistakes||[];
+    mistEl.innerHTML=mistakes.length
+      ?mistakes.map(m=>`<div class="mistake-item"><span class="mistake-x">✕</span><span class="mistake-text">${m}</span></div>`).join('')
+      :'<div style="color:var(--txt3);font-size:12px">Không có lỗi thường gặp.</div>';
+  }
+
+  // Sets recommendation
+  const setsEl=document.getElementById('eqp-sets');
+  if(setsEl&&ex.sets){
+    const recs=[
+      {goal:'muscle',label:'Hypertrophy',val:ex.sets.muscle,color:'var(--lime)'},
+      {goal:'strength',label:'Sức mạnh',val:ex.sets.strength,color:'var(--amber)'},
+      {goal:'endurance',label:'Sức bền',val:ex.sets.endurance,color:'var(--blue)'},
+    ].filter(r=>r.val);
+    setsEl.innerHTML=recs.map(r=>`
+      <div style="padding:7px 12px;background:var(--bg4);border-radius:8px;border-left:3px solid ${r.color}">
+        <div style="font-size:9px;font-family:var(--FM);color:var(--txt3);margin-bottom:3px">${r.label.toUpperCase()}</div>
+        <div style="font-size:13px;font-weight:600;color:${r.color}">${r.val}</div>
+      </div>`).join('')||'<span style="font-size:12px;color:var(--txt3)">Không có gợi ý.</span>';
+  }
+}
+
+function renderVideoTab(ex){
+  const thumb=document.getElementById('eqp-yt-img');
+  const thumbWrap=document.getElementById('eqp-yt-thumb');
+  if(thumb&&ex.ytId){
+    thumb.src=`https://img.youtube.com/vi/${ex.ytId}/mqdefault.jpg`;
+    thumb.style.display='block';
+    thumbWrap.style.display='block';
+  } else if(thumbWrap){
+    thumbWrap.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--txt3);font-size:13px">Chưa có video</div>`;
+  }
+}
+
+function playExPanelVideo(){
+  const ex=_panelCurrentEx;if(!ex?.ytId)return;
+  const frame=document.getElementById('eqp-yt-frame');
+  const thumb=document.getElementById('eqp-yt-thumb');
+  if(!frame)return;
+  frame.src=`https://www.youtube-nocookie.com/embed/${ex.ytId}?autoplay=1&rel=0&modestbranding=1`;
+  frame.style.display='block';
+  if(thumb)thumb.style.display='none';
+}
+
+
+function previewThenAdd(name){
+  // Close search
+  const sr=document.getElementById('aw-search-results');
+  if(sr)sr.style.display='none';
+  const si=document.getElementById('aw-ex-search');
+  if(si)si.value='';
+  // Open panel with add button
+  openExPanel(name,null);
+}
+
+function addExFromPanel(){
+  if(!_panelCurrentEx||!ST.activeW)return;
+  addEx(_panelCurrentEx.name);
+  closeExPanel();
+  toast(`✅ Đã thêm ${_panelCurrentEx.nameVi||_panelCurrentEx.name}`);
+}
+
+// ═══ Patch addEx header to open panel on tap ═══
+// Called from exercise header in workout
+function openExPanelFromWorkout(name){
+  openExPanel(name,null);
+}
+
+// ═══ Swipe down to close panel ═══
+(function(){
+  let sy=0;
+  document.addEventListener('DOMContentLoaded',()=>{
+    const panel=document.getElementById('ex-quick-panel');
+    if(!panel)return;
+    panel.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;},{passive:true});
+    panel.addEventListener('touchend',e=>{
+      if(e.changedTouches[0].clientY-sy>80)closeExPanel();
+    },{passive:true});
+  });
+})();
+
 window.onload=async()=>{
   registerSW();
   injectPWAMeta();
@@ -5902,5 +6312,176 @@ window.onload=async()=>{
   },5000);
 };
 </script>
+
+  <!-- ═══ EXERCISE QUICK-VIEW PANEL ═══ -->
+  <div class="ex-panel-backdrop" id="ex-panel-backdrop" onclick="closeExPanel()"></div>
+  <div class="ex-quick-panel" id="ex-quick-panel">
+    <div class="ex-panel-handle" onclick="closeExPanel()"></div>
+
+    <!-- Header -->
+    <div class="ex-panel-hdr">
+      <span class="ex-panel-emoji" id="eqp-emoji">💪</span>
+      <div style="flex:1;min-width:0">
+        <div class="ex-panel-title" id="eqp-title">Exercise</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+          <span class="ex-panel-muscle" id="eqp-muscle">—</span>
+          <span style="font-size:10px;color:var(--txt3);font-family:var(--FM)" id="eqp-diff">—</span>
+        </div>
+      </div>
+      <button class="ex-panel-close" onclick="closeExPanel()">✕</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="ex-panel-tabs">
+      <div class="ex-ptab on" onclick="switchExTab('muscle',this)" id="eqt-muscle">💪 Cơ</div>
+      <div class="ex-ptab" onclick="switchExTab('guide',this)" id="eqt-guide">📋 Kỹ thuật</div>
+      <div class="ex-ptab" onclick="switchExTab('video',this)" id="eqt-video">▶ Video</div>
+    </div>
+
+    <!-- Panel body -->
+    <div class="ex-panel-body">
+
+      <!-- TAB 1: MUSCLE DIAGRAM -->
+      <div class="ex-ptab-content show" id="eqtc-muscle">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <!-- Front body -->
+          <div style="flex:1;text-align:center">
+            <div style="font-size:9px;font-family:var(--FM);color:var(--txt3);letter-spacing:.08em;margin-bottom:8px">PHÍA TRƯỚC</div>
+            <svg viewBox="0 0 100 200" style="width:100%;max-width:130px" id="body-front-svg">
+              <!-- Head -->
+              <ellipse cx="50" cy="18" rx="13" ry="15" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1"/>
+              <!-- Neck -->
+              <rect x="44" y="31" width="12" height="8" rx="3" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1"/>
+              <!-- Chest/Pec L -->
+              <path d="M22 42 Q22 36 38 36 Q44 36 44 42 L44 56 Q38 60 22 56 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="front-chest-l" class="muscle-region" data-muscle="chest"/>
+              <!-- Chest/Pec R -->
+              <path d="M78 42 Q78 36 62 36 Q56 36 56 42 L56 56 Q62 60 78 56 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="front-chest-r" class="muscle-region" data-muscle="chest"/>
+              <!-- Shoulder L -->
+              <ellipse cx="16" cy="44" rx="9" ry="11" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="front-shoulder-l" class="muscle-region" data-muscle="shoulders"/>
+              <!-- Shoulder R -->
+              <ellipse cx="84" cy="44" rx="9" ry="11" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="front-shoulder-r" class="muscle-region" data-muscle="shoulders"/>
+              <!-- Bicep L -->
+              <path d="M8 56 Q6 62 8 74 Q11 78 15 76 Q18 72 17 62 Q15 56 8 56 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="front-bicep-l" class="muscle-region" data-muscle="arms"/>
+              <!-- Bicep R -->
+              <path d="M92 56 Q94 62 92 74 Q89 78 85 76 Q82 72 83 62 Q85 56 92 56 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="front-bicep-r" class="muscle-region" data-muscle="arms"/>
+              <!-- Forearm L -->
+              <path d="M8 76 Q7 82 9 92 Q12 96 16 94 Q18 88 17 78 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" class="muscle-region" data-muscle="arms"/>
+              <!-- Forearm R -->
+              <path d="M92 76 Q93 82 91 92 Q88 96 84 94 Q82 88 83 78 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" class="muscle-region" data-muscle="arms"/>
+              <!-- Abs -->
+              <rect x="40" y="58" width="8" height="9" rx="2" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="front-abs-1" class="muscle-region" data-muscle="core"/>
+              <rect x="52" y="58" width="8" height="9" rx="2" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" class="muscle-region" data-muscle="core"/>
+              <rect x="40" y="70" width="8" height="9" rx="2" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" class="muscle-region" data-muscle="core"/>
+              <rect x="52" y="70" width="8" height="9" rx="2" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" class="muscle-region" data-muscle="core"/>
+              <rect x="40" y="82" width="8" height="8" rx="2" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" class="muscle-region" data-muscle="core"/>
+              <rect x="52" y="82" width="8" height="8" rx="2" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" class="muscle-region" data-muscle="core"/>
+              <!-- Obliques -->
+              <path d="M35 60 Q30 70 31 84 L38 86 L38 58 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" class="muscle-region" data-muscle="core"/>
+              <path d="M65 60 Q70 70 69 84 L62 86 L62 58 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" class="muscle-region" data-muscle="core"/>
+              <!-- Hip flexor area -->
+              <path d="M37 92 Q34 100 35 110 L44 112 L44 90 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1"/>
+              <path d="M63 92 Q66 100 65 110 L56 112 L56 90 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1"/>
+              <!-- Quad L -->
+              <path d="M34 112 Q30 120 31 138 Q34 144 40 144 Q44 140 44 112 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="front-quad-l" class="muscle-region" data-muscle="legs"/>
+              <!-- Quad R -->
+              <path d="M66 112 Q70 120 69 138 Q66 144 60 144 Q56 140 56 112 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="front-quad-r" class="muscle-region" data-muscle="legs"/>
+              <!-- Knee area -->
+              <ellipse cx="37" cy="147" rx="7" ry="5" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1"/>
+              <ellipse cx="63" cy="147" rx="7" ry="5" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1"/>
+              <!-- Shin L -->
+              <path d="M32 152 Q30 164 32 178 Q35 182 40 180 Q43 174 42 152 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" class="muscle-region" data-muscle="legs"/>
+              <!-- Shin R -->
+              <path d="M68 152 Q70 164 68 178 Q65 182 60 180 Q57 174 58 152 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" class="muscle-region" data-muscle="legs"/>
+              <!-- Foot area -->
+              <ellipse cx="37" cy="184" rx="8" ry="4" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1"/>
+              <ellipse cx="63" cy="184" rx="8" ry="4" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1"/>
+            </svg>
+          </div>
+          <!-- Back body -->
+          <div style="flex:1;text-align:center">
+            <div style="font-size:9px;font-family:var(--FM);color:var(--txt3);letter-spacing:.08em;margin-bottom:8px">PHÍA SAU</div>
+            <svg viewBox="0 0 100 200" style="width:100%;max-width:130px" id="body-back-svg">
+              <!-- Head back -->
+              <ellipse cx="50" cy="18" rx="13" ry="15" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1"/>
+              <!-- Neck -->
+              <rect x="44" y="31" width="12" height="8" rx="3" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1"/>
+              <!-- Trap L -->
+              <path d="M22 36 Q30 34 44 38 L44 46 Q34 48 22 46 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="back-trap-l" class="muscle-region" data-muscle="back"/>
+              <!-- Trap R -->
+              <path d="M78 36 Q70 34 56 38 L56 46 Q66 48 78 46 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="back-trap-r" class="muscle-region" data-muscle="back"/>
+              <!-- Rear Delt L -->
+              <ellipse cx="16" cy="44" rx="9" ry="11" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="back-rdelt-l" class="muscle-region" data-muscle="shoulders"/>
+              <!-- Rear Delt R -->
+              <ellipse cx="84" cy="44" rx="9" ry="11" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="back-rdelt-r" class="muscle-region" data-muscle="shoulders"/>
+              <!-- Lat L -->
+              <path d="M22 46 Q16 56 18 72 Q22 78 36 78 L36 60 Q30 56 22 46 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="back-lat-l" class="muscle-region" data-muscle="back"/>
+              <!-- Lat R -->
+              <path d="M78 46 Q84 56 82 72 Q78 78 64 78 L64 60 Q70 56 78 46 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="back-lat-r" class="muscle-region" data-muscle="back"/>
+              <!-- Tricep L -->
+              <path d="M8 56 Q6 64 8 76 Q11 80 15 78 Q17 72 16 62 Q14 56 8 56 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="back-tricep-l" class="muscle-region" data-muscle="arms"/>
+              <!-- Tricep R -->
+              <path d="M92 56 Q94 64 92 76 Q89 80 85 78 Q83 72 84 62 Q86 56 92 56 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="back-tricep-r" class="muscle-region" data-muscle="arms"/>
+              <!-- Lower back -->
+              <rect x="38" y="78" width="24" height="14" rx="4" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="back-lower-l" class="muscle-region" data-muscle="back"/>
+              <!-- Glute L -->
+              <path d="M34 94 Q30 102 32 114 Q36 120 46 118 L48 92 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="back-glute-l" class="muscle-region" data-muscle="glutes"/>
+              <!-- Glute R -->
+              <path d="M66 94 Q70 102 68 114 Q64 120 54 118 L52 92 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="back-glute-r" class="muscle-region" data-muscle="glutes"/>
+              <!-- Hamstring L -->
+              <path d="M32 116 Q29 126 31 140 Q35 146 41 144 Q44 136 44 116 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="back-ham-l" class="muscle-region" data-muscle="legs"/>
+              <!-- Hamstring R -->
+              <path d="M68 116 Q71 126 69 140 Q65 146 59 144 Q56 136 56 116 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" id="back-ham-r" class="muscle-region" data-muscle="legs"/>
+              <!-- Calf L -->
+              <path d="M31 148 Q29 160 31 174 Q34 180 40 178 Q43 170 42 148 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" class="muscle-region" data-muscle="legs"/>
+              <!-- Calf R -->
+              <path d="M69 148 Q71 160 69 174 Q66 180 60 178 Q57 170 58 148 Z" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1" class="muscle-region" data-muscle="legs"/>
+              <!-- Feet -->
+              <ellipse cx="37" cy="182" rx="8" ry="4" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1"/>
+              <ellipse cx="63" cy="182" rx="8" ry="4" fill="var(--bg4)" stroke="var(--brd2)" stroke-width="1"/>
+            </svg>
+          </div>
+        </div>
+        <!-- Muscle legend -->
+        <div id="eqp-legend" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;padding-top:12px;border-top:1px solid var(--brd)"></div>
+        <!-- Equipment info -->
+        <div id="eqp-equip" style="margin-top:12px;padding:10px;background:var(--bg3);border-radius:10px;font-size:12px;color:var(--txt2)"></div>
+      </div>
+
+      <!-- TAB 2: FORM GUIDE -->
+      <div class="ex-ptab-content" id="eqtc-guide">
+        <div style="font-size:10px;font-family:var(--FM);color:var(--lime);letter-spacing:.1em;margin-bottom:12px">CUES KỸ THUẬT</div>
+        <div class="cue-list" id="eqp-cues"></div>
+        <div style="font-size:10px;font-family:var(--FM);color:var(--red);letter-spacing:.1em;margin-bottom:10px;margin-top:4px">LỖI PHỔ BIẾN</div>
+        <div class="mistake-list" id="eqp-mistakes"></div>
+        <!-- Sets recommendation -->
+        <div style="margin-top:14px;padding:12px;background:var(--bg3);border-radius:12px">
+          <div style="font-size:10px;font-family:var(--FM);color:var(--txt3);letter-spacing:.08em;margin-bottom:8px">GỢI Ý SETS/REPS</div>
+          <div id="eqp-sets" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+        </div>
+      </div>
+
+      <!-- TAB 3: VIDEO -->
+      <div class="ex-ptab-content" id="eqtc-video">
+        <!-- YouTube thumbnail + player -->
+        <div class="yt-thumb-wrap" id="eqp-yt-thumb" onclick="playExPanelVideo()">
+          <img id="eqp-yt-img" src="" alt="Exercise video" class="yt-thumb-img" onerror="this.style.display='none'">
+          <div class="yt-play-overlay">
+            <div class="yt-play-btn"><div class="yt-play-icon"></div></div>
+          </div>
+        </div>
+        <iframe id="eqp-yt-frame" class="yt-video-frame" allowfullscreen allow="autoplay"></iframe>
+        <div style="padding:10px;background:var(--bg3);border-radius:10px;font-size:12px;color:var(--txt3)">
+          Nhấn thumbnail để xem video hướng dẫn form. Video mở ngay tại đây — không cần rời màn hình tập.
+        </div>
+      </div>
+
+    </div><!-- end panel body -->
+
+    <!-- Footer -->
+    <div class="ex-panel-footer">
+      <button class="btn bg" style="flex:1;height:44px;font-size:13px" onclick="closeExPanel()">Đóng</button>
+      <button class="btn bl" id="eqp-add-btn" style="flex:2;height:44px;font-size:14px" onclick="addExFromPanel()">＋ Thêm vào buổi tập</button>
+    </div>
+  </div>
 </body>
 </html>
